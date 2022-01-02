@@ -20,6 +20,9 @@ export default Vue.extend({
 </script>
 
 <style>
+body {
+  background-color: #9de;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
