@@ -1,6 +1,11 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    <button @click="fetchAWS">test AWS fetch</button>
+    <button @click="axiosAWS">test AWS axios</button>
+    <div>
+      {{ responseStr }}
+    </div>
     <p>
       For a guide and recipes on how to configure / customize this project,<br />
       check out the
@@ -111,13 +116,49 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import Vue from "vue"
+import axios from 'axios'
 
 export default Vue.extend({
   name: "HelloWorld",
   props: {
     msg: String,
   },
+  data() {
+    return {
+      responseStr: '' as string
+    }
+  },
+  methods: {
+    async axiosAWS() {
+      console.log("axiosAWS: Start.")
+
+      let body = {
+        firstName: "Rand",
+        lastName: "al'Thor",
+      }
+      let r = await axios.post("https://q1n530x0ej.execute-api.us-west-2.amazonaws.com/dev", body)
+      console.log("r:")
+      console.log(r)
+
+      this.responseStr = r.data.body
+
+      console.log("Done.")
+    },
+    async fetchAWS() {
+      console.log("fetchAWS: Start.")
+
+      await fetch("https://q1n530x0ej.execute-api.us-west-2.amazonaws.com/dev", {
+        "referrer": "https://dev4317.dq4zxpahcrq3a.amplifyapp.com/",
+        "body": "{\"firstName\":\"Lyra\",\"lastName\":\"Silvertongue\"}",
+        "method": "POST",
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+
+      console.log("Done.")
+    },
+  }
 });
 </script>
 
