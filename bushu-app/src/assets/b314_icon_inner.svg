@@ -1,5 +1,5 @@
 <svg
-  viewBox="2 2.5 18 17.5"
+  viewBox="2 2.5 16 15"
   xmlns="http://www.w3.org/2000/svg"
   fill="none"
   stroke="url('#myGradient')"
@@ -16,17 +16,7 @@
       <stop offset="95%" stop-color="red" />
     </linearGradient>
   </defs>
-  <!-- Background -->
-  <!-- <rect
-    x="0"
-    y="0"
-    width="100%"
-    height="100%"
-    fill="#9de"
-    stroke="none"
-    mask="none"
-  /> -->
-  <!-- Inner box -->
+  <!-- Box -->
   <path
     d="
       M 2.5 3
