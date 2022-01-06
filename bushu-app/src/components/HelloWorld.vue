@@ -148,14 +148,18 @@ export default Vue.extend({
     async fetchAWS() {
       console.log("fetchAWS: Start.")
 
+      let fetchData = null as null | { statusCode: number, body: string }
       await fetch("https://q1n530x0ej.execute-api.us-west-2.amazonaws.com/dev", {
         "referrer": "https://dev4317.dq4zxpahcrq3a.amplifyapp.com/",
         "body": "{\"firstName\":\"Lyra\",\"lastName\":\"Silvertongue\"}",
         "method": "POST",
       })
       .then(response => response.json())
-      .then(data => console.log(data))
+      .then(data => fetchData = data)
 
+      this.responseStr = fetchData ? fetchData.body : '[fetchData is undefined]'
+      console.log(fetchData)
+      console.log(this.responseStr)
       console.log("Done.")
     },
   }
