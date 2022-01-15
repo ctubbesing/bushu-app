@@ -1,6 +1,9 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    <div>
+      <slot></slot>
+    </div>
     <button @click="fetchAWS">test AWS fetch</button>
     <button @click="axiosAWS">test AWS axios</button>
     <div>

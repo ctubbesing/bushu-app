@@ -5,7 +5,11 @@
       alt="bushu314 logo"
       style="max-width: 300px"
     />
-    <HelloWorld msg="Welcome to BushuApp" />
+    <HelloWorld msg="Welcome to BushuApp">
+      text
+      <b-badge>badge</b-badge>
+      <b-spinner type="grow" />
+    </HelloWorld>
   </div>
 </template>
 

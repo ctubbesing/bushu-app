@@ -21,7 +21,7 @@ export default Vue.extend({
 
 <style>
 body {
-  background-color: #9de;
+  background-color: #9de !important;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -29,18 +29,5 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
 }
 </style>
