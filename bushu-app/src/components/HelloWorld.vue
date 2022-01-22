@@ -16,6 +16,22 @@
         >vue-cli documentation</a
       >.
     </p>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
     <h3>Installed CLI Plugins</h3>
     <ul>
       <li>

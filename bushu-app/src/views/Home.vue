@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img
-      src="../assets/b314_icon_inner.svg"
+      src="@/assets/b314_icon_inner.svg"
       alt="bushu314 logo"
       style="margin-top: 50px; max-width: 300px"
     />
