@@ -12,12 +12,16 @@
     </div>
     <div v-else>
       <div class="widget-section">
-        <div class="lessons-reviews" style="background-color: #ff00aa">
-          Lessons: {{ lessonCount }}
-        </div>
-        <div class="lessons-reviews" style="background-color: #00aaff">
-          Reviews: {{ reviewCount }}
-        </div>
+        <a href="https://www.wanikani.com/lesson">
+          <div class="lessons-reviews" style="background-color: #ff00aa">
+            Lessons: {{ lessonCount }}
+          </div>
+        </a>
+        <a href="https://www.wanikani.com/review">
+          <div class="lessons-reviews" style="background-color: #00aaff">
+            Reviews: {{ reviewCount }}
+          </div>
+        </a>
       </div>
       <div class="widget-section">
         <h5>Level {{ userLevel }}</h5>
@@ -52,6 +56,12 @@ export default Vue.extend({
     this.loading = false
   },
   methods: {
+    openLessons() {
+      window.open('https://www.wanikani.com/lesson')
+    },
+    openReviews() {
+      window.open('https://www.wanikani.com/review')
+    },
     async getUserData() {
       let r = await axios.get('https://api.wanikani.com/v2/user', {
         headers: {
@@ -83,5 +93,9 @@ export default Vue.extend({
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-weight: bold;
+  cursor: pointer;
+}
+a:hover {
+  text-decoration: none;
 }
 </style>
