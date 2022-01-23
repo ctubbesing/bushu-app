@@ -7,32 +7,68 @@
       >
     </template>
     <!-- Content -->
-    <div class="widget-section">
-      <div class="lessons-reviews" style="background-color: #ff00aa">
-        Lessons: {{ lessonCount }}
+    <div v-if="loading">
+      <b-spinner />
+    </div>
+    <div v-else>
+      <div class="widget-section">
+        <div class="lessons-reviews" style="background-color: #ff00aa">
+          Lessons: {{ lessonCount }}
+        </div>
+        <div class="lessons-reviews" style="background-color: #00aaff">
+          Reviews: {{ reviewCount }}
+        </div>
       </div>
-      <div class="lessons-reviews" style="background-color: #00aaff">
-        Reviews: {{ reviewCount }}
+      <div class="widget-section">
+        <h5>Level {{ userLevel }}</h5>
+        <b-button href="https://www.wanikani.com">Go to WaniKani</b-button>
       </div>
     </div>
-    <b-button href="https://www.wanikani.com">Go to WaniKani</b-button>
   </basic-widget>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import BasicWidget from "@/components/BasicWidget.vue"
+import axios from 'axios'
+import BasicWidget from '@/components/BasicWidget.vue'
 
 export default Vue.extend({
-  name: "WanikaniWidget",
+  name: 'WanikaniWidget',
   components: {
     BasicWidget: BasicWidget,
   },
   data() {
     return {
+      loading: false as boolean,
+      userLevel: 0 as number,
       lessonCount: 0 as number,
       reviewCount: 0 as number,
     };
+  },
+  async created() {
+    this.loading = true
+    await this.getUserData()
+    await this.getSummary()
+    this.loading = false
+  },
+  methods: {
+    async getUserData() {
+      let r = await axios.get('https://api.wanikani.com/v2/user', {
+        headers: {
+          'Authorization': ('Bearer ' + process.env.VUE_APP_WANIKANI_API_KEY)
+        }
+      })
+      this.userLevel = r.data.data.level
+    },
+    async getSummary() {
+      let r = await axios.get('https://api.wanikani.com/v2/summary', {
+        headers: {
+          'Authorization': ('Bearer ' + process.env.VUE_APP_WANIKANI_API_KEY)
+        }
+      })
+      this.lessonCount = r.data.data.lessons[0].subject_ids.length
+      this.reviewCount = r.data.data.reviews[0].subject_ids.length
+    },
   },
 })
 </script>
@@ -47,6 +83,5 @@ export default Vue.extend({
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 18px;
   font-weight: bold;
-  /* display: block; */ 
 }
 </style>
