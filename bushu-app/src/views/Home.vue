@@ -6,6 +6,8 @@
       style="margin-top: 50px; max-width: 250px"
     />
     <div class="all-widgets">
+      <!-- WaniKani -->
+      <wanikani-widget />
       <basic-widget
         v-for="num in 5"
         :key="num"
@@ -28,20 +30,37 @@
 <script lang="ts">
 import Vue from "vue";
 import BasicWidget from "@/components/BasicWidget.vue"
+import WanikaniWidget from "@/components/WanikaniWidget.vue"
 
 export default Vue.extend({
   name: "Home",
   components: {
     BasicWidget: BasicWidget,
+    WanikaniWidget: WanikaniWidget,
   },
 });
 </script>
 
-<style scoped>
+<style>
 .all-widgets {
   margin: 20px;
   padding: 10px;
   border-radius: 10px;
   background-color: #fff5;
+}
+.widget {
+  display: inline-block;
+  margin: 5px;
+  padding: 10px;
+  background-color: #fff9;
+  border-radius: 8px;
+}
+.widget-section {
+  display: inline-block;
+  margin: 5px;
+  padding: 5px;
+  background-color: #fff9;
+  box-shadow: 0 0px 2px #888;
+  border-radius: 5px;
 }
 </style>

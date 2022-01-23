@@ -1,14 +1,21 @@
 <template>
-  <div class="main-body">
+  <div class="widget">
     <!-- Header -->
-    <div>
+    <div class="header">
       <h3>
         <slot name="header"></slot>
       </h3>
+      <b-dropdown
+        variant="transparent-secondary"
+        style="height:25px; padding-left:50px"
+      >
+        <b-dropdown-item>Test item 1</b-dropdown-item>
+        <b-dropdown-item>Test item 2</b-dropdown-item>
+      </b-dropdown>
     </div>
     <!-- maybe add options list here -->
     <!-- Body -->
-    <div>
+    <div class="main-body">
       <slot></slot>
     </div>
   </div>
@@ -23,11 +30,13 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.header {
+  height: 45px;
+  border-bottom: #ddd solid 1px;
+  display: flex;
+  justify-content: space-between;
+}
 .main-body {
-  display: inline-block;
-  margin: 5px;
-  padding: 10px;
-  background-color: #fff9;
-  border-radius: 8px;
+  margin-top: 5px;
 }
 </style>
