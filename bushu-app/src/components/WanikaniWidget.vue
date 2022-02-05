@@ -12,12 +12,12 @@
     </div>
     <div v-else>
       <div class="widget-section">
-        <a href="https://www.wanikani.com/lesson">
+        <a href="https://www.wanikani.com/lesson" target="_blank">
           <div class="lessons-reviews" style="background-color: #ff00aa">
             Lessons: {{ lessonCount }}
           </div>
         </a>
-        <a href="https://www.wanikani.com/review">
+        <a href="https://www.wanikani.com/review" target="_blank">
           <div class="lessons-reviews" style="background-color: #00aaff">
             Reviews: {{ reviewCount }}
           </div>
@@ -25,7 +25,7 @@
       </div>
       <div class="widget-section">
         <h5>Level {{ userLevel }}</h5>
-        <b-button href="https://www.wanikani.com">Go to WaniKani</b-button>
+        <b-button href="https://www.wanikani.com" target="_blank">Go to WaniKani</b-button>
       </div>
     </div>
   </basic-widget>
