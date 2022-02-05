@@ -5,6 +5,9 @@
       alt="bushu314 logo"
       style="margin-top: 50px; max-width: 250px"
     />
+    <div>
+      window.ScrollY: {{ scrollVal }}
+    </div>
     <div class="all-widgets">
       <!-- WaniKani -->
       <wanikani-widget />
@@ -38,11 +41,33 @@ export default Vue.extend({
     BasicWidget: BasicWidget,
     WanikaniWidget: WanikaniWidget,
   },
+  data() {
+    return {
+      scrollVal: 0
+    };
+  },
+  created () {
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  destroyed () {
+    window.removeEventListener('scroll', this.handleScroll);
+  },
+  computed: {
+    scrollAmt() {
+      return window.scrollY
+    }
+  },
+  methods: {
+    handleScroll() {
+      this.scrollVal = window.scrollY
+    },
+  },
 });
 </script>
 
 <style>
 .all-widgets {
+  height: 2000px;
   margin: 20px;
   padding: 10px;
   border-radius: 10px;
