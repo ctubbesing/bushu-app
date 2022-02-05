@@ -74,7 +74,8 @@ export default Vue.extend({
       let r = await axios.get('https://api.wanikani.com/v2/summary', {
         headers: {
           'Authorization': ('Bearer ' + process.env.VUE_APP_WANIKANI_API_KEY)
-        }
+        },
+        params: { 't': Date.now() },
       })
       this.lessonCount = r.data.data.lessons[0].subject_ids.length
       this.reviewCount = r.data.data.reviews[0].subject_ids.length
