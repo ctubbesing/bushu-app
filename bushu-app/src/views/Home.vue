@@ -6,11 +6,10 @@
       style="margin-top: 50px; max-width: 250px"
     />
     <div>
-      window.ScrollY: {{ scrollVal }}
     </div>
     <div class="all-widgets">
       <!-- WaniKani -->
-      <wanikani-widget />
+      <wanikani-widget :key="refreshTrigger" />
       <basic-widget
         v-for="num in 5"
         :key="num"
@@ -43,7 +42,8 @@ export default Vue.extend({
   },
   data() {
     return {
-      scrollVal: 0
+      doRefresh: false as boolean,
+      refreshTrigger: '' as string
     };
   },
   created () {
@@ -52,14 +52,16 @@ export default Vue.extend({
   destroyed () {
     window.removeEventListener('scroll', this.handleScroll);
   },
-  computed: {
-    scrollAmt() {
-      return window.scrollY
-    }
+  watch: {
+    doRefresh() {
+      if (this.doRefresh) {
+        this.refreshTrigger = Date.now().toString()
+      }
+    },
   },
   methods: {
     handleScroll() {
-      this.scrollVal = window.scrollY
+      this.doRefresh = window.scrollY < -50
     },
   },
 });
@@ -67,7 +69,6 @@ export default Vue.extend({
 
 <style>
 .all-widgets {
-  height: 2000px;
   margin: 20px;
   padding: 10px;
   border-radius: 10px;
