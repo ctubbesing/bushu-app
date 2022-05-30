@@ -12,6 +12,7 @@
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.6.5",
+    "eventsource": "^2.0.2",
     "follow-redirects": "^1.14.7",
     "glob-parent": "^6.0.2",
     "node-fetch": "^3.2.0",
