@@ -148,8 +148,6 @@ export default Vue.extend({
 
       // build object
       this.ktListObject = {
-        "uuid": process.env.VUE_APP_KANJI_TEACHER_OBJ_UUID,
-        "device": process.env.VUE_APP_KANJI_TEACHER_OBJ_DEVICE,
         "learninglist": {
           "own": kanjiList,
           "list1": [],
