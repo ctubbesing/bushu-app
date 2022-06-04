@@ -1,9 +1,34 @@
 <template>
   <div>
+    <div>
+      <b style="margin-right:10px">Scene:</b>
+      <b-form-spinbutton
+        v-model="mainSceneIdx"
+        min="0"
+        max="4"
+        wrap
+        inline
+        @change="generateCanvasImage()"
+        style="margin:10px auto; width:200px"
+      />
+    </div>
+    <div>
+      <b style="margin-right:10px">Size:</b>
+      <b-form-radio-group
+        v-model="canvasSettingsControl.size"
+        :options="[
+          { text: 'Small', value: 1 },
+          { text: 'Large', value: 2 },
+        ]"
+        buttons
+        @change="generateCanvasImage()"
+        style="margin:10px auto; width:200px"
+      />
+    </div>
     <canvas
       id="c"
-      :width="cWidth"
-      :height="cHeight"
+      :width="canvasWidth"
+      :height="canvasHeight"
       :style="getWidthInfo + 'border:1px solid #000000'"
       @click="look($event)"
     />
@@ -173,19 +198,12 @@ export default Vue.extend({
   data() {
     return {
       vueCanvas: {} as CanvasRenderingContext2D,
-      canvasSettings: {
-        pxCols: 600 as number,
-        pxRows: 300 as number,
-        // pxCols: 300 as number,
-        // pxRows: 150 as number,
+      canvasSettingsControl: {
+        size: 1,
         reflectLimit: 3 as number,
-        refractLimit: 3 as number,
+        // refractLimit: 3 as number,
         superSampleLvl: 1 as number,
-      } as ImageSettings,
-      cWidth: 600 as number,
-      cHeight: 300 as number,
-      // cWidth: 300 as number,
-      // cHeight: 150 as number,
+      },
       cMat: [] as number[][][], /////////////////// outdated
 
       doOut: false,
@@ -196,7 +214,7 @@ export default Vue.extend({
       subSceneCount: null as null | number,
 
       allScenes: [] as Scene[],
-      mainSceneIdx: 3 as number,
+      mainSceneIdx: 0 as number,
       doGlobalCameraSettings: true as boolean,
     }
   },
@@ -1189,7 +1207,22 @@ export default Vue.extend({
       return this.getRuntime(this.startTime, this.endTime)
     },
     getWidthInfo() : string {
-      return window.innerWidth < this.cWidth ? 'max-width:' + this.cWidth + 'px;' : ''
+      return window.innerWidth < this.canvasWidth ? 'max-width:' + this.canvasWidth + 'px;' : ''
+    },
+    canvasWidth() : number {
+      return this.canvasSettingsControl.size * 300
+    },
+    canvasHeight() : number {
+      return this.canvasSettingsControl.size * 150
+    },
+    canvasSettings() : ImageSettings {
+      return {
+        pxRows: this.canvasHeight,
+        pxCols: this.canvasWidth,
+        reflectLimit: 3,
+        // refractLimit: 3,
+        superSampleLvl: 1,
+      } as ImageSettings
     },
   },
   methods: {
@@ -1279,15 +1312,15 @@ export default Vue.extend({
       let rect = canvas!.getBoundingClientRect()
       let x = evt.clientX - rect.left - 1
       let y = evt.clientY - rect.top - 1
-      if (x >= 0 && x < this.cWidth && y >= 0 && y < this.cHeight) {
+      if (x >= 0 && x < this.canvasWidth && y >= 0 && y < this.canvasHeight) {
         let scene = this.allScenes[this.mainSceneIdx]
         let cameraLeft = this.vCross(scene.camera.up, scene.camera.dir)
         let screenWidth = 2 * Math.tan(scene.camera.fov[0])
         let screenHeight = 2 * Math.tan(scene.camera.fov[1])
-        let pxWidth = screenWidth / this.cWidth
-        let pxHeight = screenHeight / this.cHeight
-        let pxYaw = pxWidth * (this.cWidth / 2 - x - 0.5)
-        let pxPitch = pxHeight * (this.cHeight / 2 - y - 0.5)
+        let pxWidth = screenWidth / this.canvasWidth
+        let pxHeight = screenHeight / this.canvasHeight
+        let pxYaw = pxWidth * (this.canvasWidth / 2 - x - 0.5)
+        let pxPitch = pxHeight * (this.canvasHeight / 2 - y - 0.5)
 
         let targetDir = this.norm(
           this.vAdd(
@@ -1347,8 +1380,8 @@ export default Vue.extend({
       let imgPxCols = img.length > 0 ? img[0].length : 0
       // let imgPxRows = this.cMat.length
       // let imgPxCols = this.cMat.length > 0 ? this.cMat[0].length : 0
-      let pxWidth = this.cWidth / imgPxCols
-      let pxHeight = this.cHeight / imgPxRows
+      let pxWidth = this.canvasWidth / imgPxCols
+      let pxHeight = this.canvasHeight / imgPxRows
       for (let row = 0; row < imgPxRows; row++) {
         for (let col = 0; col < imgPxCols; col++) {
           let colorString = 'rgb(' +
@@ -1916,7 +1949,8 @@ export default Vue.extend({
 
       return color
     },
-    generateCanvasImage() {
+    async generateCanvasImage() {
+      this.loading = true
       this.startTime = moment()
 
       // first generate any images used by main scene
@@ -1930,29 +1964,23 @@ export default Vue.extend({
       this.subSceneCount = scenesNeeded.size
       scenesNeeded.forEach((sceneIdx: number) => this.capture(sceneIdx))
 
-      // console.log('scene 0 image:')
-      // console.log(this.allScenes[0].camera.image)
-
       // capture main scene
       this.capture(this.mainSceneIdx)
 
-      // set cMat from main scene image
-      // this.cMat = mainScene.camera.image.map((row: vec3[]) : number[][] => {
-      //   return row.map((pxColor: vec3) : number[] => {
-      //     return [pxColor.x, pxColor.y, pxColor.z]
-      //   })
-      // })
-
       this.refreshCanvas()
       this.endTime = moment()
+      this.loading = false
     },
     capture(sceneIdx: number) {
-      this.loading = true
+      // this.loading = true
       let timingData = {} as TimingData
       timingData.start = moment()
       // this.startTime = moment()
       // sceneIdx = (sceneIdx === -1) ? this.mainSceneIdx : sceneIdx
       let scene = this.allScenes[sceneIdx]
+      if (this.doGlobalCameraSettings) {
+        scene.camera.settings = this.canvasSettings
+      }
       let scenePxRows = scene.camera.settings.pxRows
       let scenePxCols = scene.camera.settings.pxCols
       scene.camera.image = new Array(scenePxRows).fill(0).map(() => new Array(scenePxCols).fill({ x: 0, y: 1, z: 1 } as vec3)) as vec3[][];
@@ -2020,7 +2048,7 @@ export default Vue.extend({
       timingData.sceneIdx = sceneIdx
       timingData.sceneSettings = scene.camera.settings
       this.captureTimes.push(timingData)
-      this.loading = false
+      // this.loading = false
     },
     unpackCompound(item: Item, sceneIdx = -1) {
       sceneIdx = (sceneIdx === -1) ? this.mainSceneIdx : sceneIdx
