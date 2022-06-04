@@ -4,7 +4,7 @@
       id="c"
       :width="cWidth"
       :height="cHeight"
-      style="border:1px solid #000000"
+      :style="getWidthInfo + 'border:1px solid #000000'"
       @click="look($event)"
     />
     <!-- <div>
@@ -196,7 +196,7 @@ export default Vue.extend({
       subSceneCount: null as null | number,
 
       allScenes: [] as Scene[],
-      mainSceneIdx: 0 as number,
+      mainSceneIdx: 3 as number,
       doGlobalCameraSettings: true as boolean,
     }
   },
@@ -1187,6 +1187,9 @@ export default Vue.extend({
   computed: {
     totalRuntime() : null | string {
       return this.getRuntime(this.startTime, this.endTime)
+    },
+    getWidthInfo() : string {
+      return window.innerWidth < this.cWidth ? 'max-width:' + this.cWidth + 'px;' : ''
     },
   },
   methods: {
