@@ -1093,6 +1093,12 @@ export default Vue.extend({
           //   d: { x: 1, y: 0, z: 0 } as vec3,
           //   r: 0.25
           // } as Tube,
+          // {// cylinder null volume
+          //   type: 'sphere',
+          //   material: matteD,
+          //   c: { x: 2, y: 0.75, z: 1 } as vec3,
+          //   r: 0.4
+          // } as Sphere,
           {
             type: 'cylinder',
             material: sampleMaterialB,
@@ -1485,7 +1491,7 @@ export default Vue.extend({
       }
       return false
     },
-    intersect(ray: Ray, item: Item) : null | number {
+    intersect(ray: Ray, item: Item, isNullVolume = false) : null | number {
       // let t = null as null | number
       let ts = [] as number[]////////////////////////////////////////////////////////////////maybe make this just number[]?
 
@@ -1672,22 +1678,63 @@ export default Vue.extend({
       //   t = Math.min(...ts.filter(t => t > 0))
       // }
       ts = ts.filter(t => t > 0)
-      if (!item.nullVolumes || item.nullVolumes.length === 0) {
-        t = Math.min(...ts)
+      if (ts.length === 0) {
+        // no intersection
+        return null
       }
-      // else {////////////////////////////////////////////////////////////////////////// left off here
-      //   ts.sort()
-      //   for (let i = 0; i < ts.length; i++) {
-      //     t = ts[i]
-      //     let p = this.getRayPoint(ray, t)
-      //     let isInNullVolume = false as boolean
-      //     item.nullVolumes.forEach((nv: Item) => {
-      //       if (this.isInside(p, nv)) {
-      //         // do sumthin
-      //       }
-      //     })
-      //   }
-      // }
+      else if (!item.nullVolumes || item.nullVolumes.length === 0) {
+        // normal intersection
+        t = isNullVolume ? Math.max(...ts) : Math.min(...ts)
+      }
+      else {
+        // intersection with null volumes
+        if(this.doOut)console.log('Beginning NV check.')
+        ts.sort()
+        t = ts[0]
+        let nullVolumes = item.nullVolumes as Item[]
+        let doNullVolCheck = true as boolean
+        while (doNullVolCheck) {
+          if(this.doOut)console.log('Starting while loop')
+          let p = this.getRayPoint(ray, t)
+          if(this.doOut)console.log('t: ' + t.toFixed(2))
+          if(this.doOut)console.log('p: ' + this.vec3ToStr(p))
+          let maxNullVolT = null as null | number
+          let maxNullVolIdx = null as null | number
+          nullVolumes.forEach((nv: Item, idx: number) => {
+            if(this.doOut)console.log('Testing NV ' + idx + ':')
+            if(this.doOut)console.log(nv)
+            if (this.isInside(p, nv)) {
+              if(this.doOut)console.log('p is inside nv.')
+              let nullVolT = this.intersect(ray, nv, true)
+              if (nullVolT !== null) {
+                if(this.doOut)console.log('nvT: ' + nullVolT.toFixed(2))
+                ts = ts.filter(t => t > nullVolT!)
+                if (ts.length === 0) {
+                  return null
+                }
+                else if (maxNullVolT === null || maxNullVolT < nullVolT) {
+                  if(this.doOut)console.log('asdf')
+                  maxNullVolT = nullVolT
+                  maxNullVolIdx = idx
+                }
+                if(this.doOut)console.log('asdf2')
+              }
+              else {if(this.doOut)console.log('!!! shouldn\'t be here')}
+            }
+          })
+          if (ts.length > 0 && maxNullVolT !== null && maxNullVolIdx !== null) {
+            if(this.doOut)console.log('setting t to ' + maxNullVolT)
+            t = maxNullVolT
+            nullVolumes.splice(maxNullVolIdx, 1)
+            doNullVolCheck = (nullVolumes.length > 0)
+          }
+          else {
+            if(this.doOut)console.log('No new nv intersections found')
+            doNullVolCheck = false
+          }
+        }
+        if(this.doOut)console.log('Final t = ' + t.toFixed(2))
+      }
 
       return t ? (isFinite(t) ? t : null) : null
     },
@@ -1755,11 +1802,11 @@ export default Vue.extend({
         let E = this.norm(this.vSubtract(scene.camera.pos, p))
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////
-        if(this.doOut && ray.reflectLvl === 0) {
-          // console.log('reflectLvl: ' + ray.reflectLvl)
-          console.log('p: ' + this.vec3ToStr(p))
-          console.log('N: ' + this.vec3ToStr(N))
-        }
+        // if(this.doOut && ray.reflectLvl === 0) {
+        //   // console.log('reflectLvl: ' + ray.reflectLvl)
+        //   console.log('p: ' + this.vec3ToStr(p))
+        //   console.log('N: ' + this.vec3ToStr(N))
+        // }
         //////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // let I = Math.max(Math.abs(this.vDot(ray.dir, n)), 0.2)
@@ -1916,8 +1963,8 @@ export default Vue.extend({
         let pxPitch = pxHeight * (scenePxRows / 2 - row - 0.5)
         for (let col = 0; col < scenePxCols; col++) {
           ///////////////////////////////////////////////////////////
-          // this.doOut = row === Math.floor(scenePxRows * 3 / 4) - 0 && col === Math.floor(scenePxCols * 1 / 3) - 0
-          // if(this.doOut)console.log('row ' + row + ', col ' + col)
+          this.doOut = row === Math.floor(scenePxRows * 1 / 5) - 0 && col === Math.floor(scenePxCols * 7 / 16) - 0
+          if(this.doOut)console.log('row ' + row + ', col ' + col)
           ///////////////////////////////////////////////////////////
 
           let pxYaw = pxWidth * (scenePxCols / 2 - col - 0.5)
