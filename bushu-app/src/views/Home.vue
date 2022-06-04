@@ -37,8 +37,8 @@ import WanikaniWidget from "@/components/WanikaniWidget.vue"
 export default Vue.extend({
   name: "Home",
   components: {
-    BasicWidget: BasicWidget,
-    WanikaniWidget: WanikaniWidget,
+    basicWidget: BasicWidget,
+    wanikaniWidget: WanikaniWidget,
   },
   data() {
     return {

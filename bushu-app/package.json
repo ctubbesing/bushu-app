@@ -16,6 +16,7 @@
     "eventsource": "^2.0.2",
     "follow-redirects": "^1.14.7",
     "glob-parent": "^6.0.2",
+    "moment": "^2.29.3",
     "node-fetch": "^3.2.0",
     "node-forge": "^1.2.1",
     "postcss": "^8.4.5",
