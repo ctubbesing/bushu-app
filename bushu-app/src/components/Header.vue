@@ -1,20 +1,4 @@
 <template>
-  <!-- <div class="navbar navbar-default navbar-fixed-top">
-    <nav>
-      <ul class="navbar">
-        <li class="nav-tab">
-          <router-link to="/">
-            Home
-          </router-link>
-        </li>
-        <li>
-          <router-link to="/images">
-            Images
-          </router-link>
-        </li>
-      </ul>
-    </nav>
-  </div> -->
   <div>
     <b-navbar
       style="height: 50px"
@@ -32,7 +16,8 @@
       </b-navbar-brand>
       <b-navbar-nav>
         <b-nav-item href="#/">Home</b-nav-item>
-        <b-nav-item href="#/images">About</b-nav-item>
+        <b-nav-item href="#/about">About</b-nav-item>
+        <b-nav-item href="#/raytracer">Ray Tracer</b-nav-item>
       </b-navbar-nav>
     </b-navbar>
     <div style="height: 50px; width: 100%" />
