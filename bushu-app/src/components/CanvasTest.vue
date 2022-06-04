@@ -174,18 +174,18 @@ export default Vue.extend({
     return {
       vueCanvas: {} as CanvasRenderingContext2D,
       canvasSettings: {
-        // pxCols: 600 as number,
-        // pxRows: 300 as number,
-        pxCols: 300 as number,
-        pxRows: 150 as number,
+        pxCols: 600 as number,
+        pxRows: 300 as number,
+        // pxCols: 300 as number,
+        // pxRows: 150 as number,
         reflectLimit: 3 as number,
         refractLimit: 3 as number,
         superSampleLvl: 1 as number,
       } as ImageSettings,
-      // cWidth: 600 as number,
-      // cHeight: 300 as number,
-      cWidth: 300 as number,
-      cHeight: 150 as number,
+      cWidth: 600 as number,
+      cHeight: 300 as number,
+      // cWidth: 300 as number,
+      // cHeight: 150 as number,
       cMat: [] as number[][][], /////////////////// outdated
 
       doOut: false,
@@ -196,7 +196,7 @@ export default Vue.extend({
       subSceneCount: null as null | number,
 
       allScenes: [] as Scene[],
-      mainSceneIdx: 4 as number,
+      mainSceneIdx: 0 as number,
       doGlobalCameraSettings: true as boolean,
     }
   },
@@ -1963,8 +1963,8 @@ export default Vue.extend({
         let pxPitch = pxHeight * (scenePxRows / 2 - row - 0.5)
         for (let col = 0; col < scenePxCols; col++) {
           ///////////////////////////////////////////////////////////
-          this.doOut = row === Math.floor(scenePxRows * 1 / 5) - 0 && col === Math.floor(scenePxCols * 7 / 16) - 0
-          if(this.doOut)console.log('row ' + row + ', col ' + col)
+          // this.doOut = row === Math.floor(scenePxRows * 1 / 5) - 0 && col === Math.floor(scenePxCols * 7 / 16) - 0
+          // if(this.doOut)console.log('row ' + row + ', col ' + col)
           ///////////////////////////////////////////////////////////
 
           let pxYaw = pxWidth * (scenePxCols / 2 - col - 0.5)
