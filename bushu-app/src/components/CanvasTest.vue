@@ -43,14 +43,16 @@
         Movement enabled
       </span>
     </div> -->
-    <!-- <div v-if="loading">
-      <b style="color:#b35">Loading...</b>
-    </div> -->
-    <div>
-      {{ allScenes[mainSceneIdx].items.length }} items
+    <div v-if="loading">
+      <b-spinner variant="secondary" />
     </div>
-    <div v-if="subSceneCount != null">
-      {{ subSceneCount }} sub scenes
+    <div v-else>
+      <div>
+        {{ allScenes[mainSceneIdx].items.length }} items
+      </div>
+      <div v-if="subSceneCount != null">
+        {{ subSceneCount }} sub scenes
+      </div>
     </div>
     <br>
     <div v-if="startTime">
@@ -207,7 +209,6 @@ export default Vue.extend({
       cMat: [] as number[][][], /////////////////// outdated
 
       doOut: false,
-      loading: false as boolean,
       startTime: null as null | moment.Moment,
       endTime: null as null | moment.Moment,
       captureTimes: [] as TimingData[],
@@ -1224,6 +1225,13 @@ export default Vue.extend({
         superSampleLvl: 1,
       } as ImageSettings
     },
+    loading() : boolean {
+      if (this.captureTimes.length === 0) {
+        return true
+      }
+      let currentSceneShown = this.captureTimes[this.captureTimes.length - 1] as TimingData
+      return this.mainSceneIdx !== currentSceneShown.sceneIdx
+    },
   },
   methods: {
     getRuntime(start: null | moment.Moment, end: null | moment.Moment) : null | string {
@@ -1950,7 +1958,6 @@ export default Vue.extend({
       return color
     },
     async generateCanvasImage() {
-      this.loading = true
       this.startTime = moment()
 
       // first generate any images used by main scene
@@ -1969,10 +1976,8 @@ export default Vue.extend({
 
       this.refreshCanvas()
       this.endTime = moment()
-      this.loading = false
     },
     capture(sceneIdx: number) {
-      // this.loading = true
       let timingData = {} as TimingData
       timingData.start = moment()
       // this.startTime = moment()
@@ -2048,7 +2053,6 @@ export default Vue.extend({
       timingData.sceneIdx = sceneIdx
       timingData.sceneSettings = scene.camera.settings
       this.captureTimes.push(timingData)
-      // this.loading = false
     },
     unpackCompound(item: Item, sceneIdx = -1) {
       sceneIdx = (sceneIdx === -1) ? this.mainSceneIdx : sceneIdx
