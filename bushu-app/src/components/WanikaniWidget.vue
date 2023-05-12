@@ -42,6 +42,15 @@
           <b-button variant="success" size="sm">Download KT List</b-button>
         </a>
       </div>
+      <div>
+        <!-- temp solution to load data with manual token input before proper way is implemented -->
+        <input
+          type="text"
+          v-model="apiAccessToken"
+          placeholder="Token"
+        />
+        <button @click="loadData()">Load with token</button>
+      </div>
     </div>
   </basic-widget>
 </template>
@@ -64,13 +73,14 @@ export default Vue.extend({
       lessonCount: 0 as number,
       reviewCount: 0 as number,
       ktListObject: null as any,
+      apiAccessToken: '' as string,
     };
   },
   async created() {
-    this.loading = true
-    await this.getUserData()
-    await this.getSummary()
-    this.loading = false
+    if (process.env.VUE_APP_WANIKANI_API_KEY) {
+      this.apiAccessToken = process.env.VUE_APP_WANIKANI_API_KEY
+      await this.loadData()
+    }
   },
   computed: {
     ktListBlob() : string {
@@ -84,10 +94,22 @@ export default Vue.extend({
     openReviews() {
       window.open('https://www.wanikani.com/review')
     },
+    async loadData() {
+      try {
+        this.loading = true
+        await this.getUserData()
+        await this.getSummary()
+      } catch (e: any) {
+        console.error('Error loading data: ' + e.message)
+        console.log(e)
+      } finally {
+        this.loading = false
+      }
+    },
     async getUserData() {
       let r = await axios.get('https://api.wanikani.com/v2/user', {
         headers: {
-          'Authorization': ('Bearer ' + process.env.VUE_APP_WANIKANI_API_KEY)
+          'Authorization': ('Bearer ' + this.apiAccessToken)
         }
       })
       this.userLevel = r.data.data.level
@@ -95,7 +117,7 @@ export default Vue.extend({
     async getSummary() {
       let r = await axios.get('https://api.wanikani.com/v2/summary', {
         headers: {
-          'Authorization': ('Bearer ' + process.env.VUE_APP_WANIKANI_API_KEY)
+          'Authorization': ('Bearer ' + this.apiAccessToken)
         },
         params: { 't': Date.now() },
       })
@@ -113,7 +135,7 @@ export default Vue.extend({
       while (url !== null) {
         let r = await axios.get(url, {
           headers: {
-            'Authorization': ('Bearer ' + process.env.VUE_APP_WANIKANI_API_KEY)
+            'Authorization': ('Bearer ' + this.apiAccessToken)
           },
         })
         let assignments = r.data as Collection
@@ -133,7 +155,7 @@ export default Vue.extend({
       while (url !== null) {
         let r = await axios.get(url, {
           headers: {
-            'Authorization': ('Bearer ' + process.env.VUE_APP_WANIKANI_API_KEY)
+            'Authorization': ('Bearer ' + this.apiAccessToken)
           },
         })
         let subjects = r.data as Collection
