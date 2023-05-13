@@ -14,14 +14,23 @@ export default new VueRouter({
       component: Home,
     },
     {
+      path: "/about",
+      name: "About",
+      component: About,
+    },
+    {
       path: "/raytracer",
       name: "RayTracer",
       component: RayTracer,
     },
     {
-      path: "/about",
-      name: "About",
-      component: About,
+      path: "/dropboxLogin",
+      name: "DropboxLogin",
+      redirect: (to) => {
+          console.log('to:')
+          console.log(to)
+          return { path: '/about' }
+      }
     },
   ]
 });

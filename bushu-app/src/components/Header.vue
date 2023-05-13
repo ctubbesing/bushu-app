@@ -19,6 +19,9 @@
         <b-nav-item href="#/about">About</b-nav-item>
         <b-nav-item href="#/raytracer">Ray Tracer</b-nav-item>
       </b-navbar-nav>
+      <b-navbar-brand href="#">
+        <dropbox-sign-in :isSignedIn="isSignedIn" />
+      </b-navbar-brand>
     </b-navbar>
     <div style="height: 50px; width: 100%" />
   </div>
@@ -26,7 +29,14 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import DropboxSignIn from './DropboxSignIn.vue'
 export default Vue.extend({
+  components: { DropboxSignIn },
   name: 'Header',
+  data() {
+    return {
+      isSignedIn: false as boolean,
+    }
+  },
 })
 </script>
