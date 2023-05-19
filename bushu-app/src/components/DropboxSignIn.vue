@@ -6,6 +6,7 @@
     >
       <div v-if="isSignedIn">
         Hi ur signed in
+        <!-- TODO: add logout option to clear access & refresh tokens -->
       </div>
       <div v-else>
         Sign in with Dropbox
@@ -16,7 +17,7 @@
       title="Sign in with Dropbox"
       hide-footer
     >
-      <p>Sign in with Dropbox</p>
+      <p>Sign in to load custom user data</p>
       <b-form-checkbox
         v-model="rememberMe"
       >
@@ -40,6 +41,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import dropbox from '@/utils/dropbox'
 
 export default Vue.extend({
   name: 'BasicWidget',
@@ -58,51 +60,8 @@ export default Vue.extend({
     closeModal() {
       this.$bvModal.hide('loginModal')
     },
-    dec2hex(dec: number): string {
-      return ('0' + dec.toString(16)).substr(-2)
-    },
-    generateRandomHexString() {
-      var array = new Uint32Array(32);
-      window.crypto.getRandomValues(array);
-      return Array.from(array, this.dec2hex).join('');
-    },
-    hexToBase64(hexStr: string): string {
-      let hexPairs = hexStr.match(/\w{2}/g)
-      if (hexPairs !== null) {
-        return btoa(hexPairs.map((a) => {
-          return String.fromCharCode(parseInt(a, 16));
-        }).join(''))
-      }
-      return ''
-    },
-    base64URLEncode(b64str: string): string {
-      return b64str.replace(/\+/g, '-')
-                   .replace(/\//g, '_')
-                   .replace(/=/g, '')
-    },
-    generateCodeVerifier() {
-      return this.base64URLEncode(this.hexToBase64(this.generateRandomHexString()))
-    },
-    async sha256(str: string): Promise<string> {
-      const encoder = new TextEncoder()
-      const data = encoder.encode(str)
-      let buf = await window.crypto.subtle.digest('SHA-256', data)
-      let bytes = new Uint8Array(buf)
-      let len = bytes.byteLength
-      let resultStr = ''
-      for (let i = 0; i < len; i++) {
-        resultStr += String.fromCharCode(bytes[i])
-      }
-      return this.base64URLEncode(btoa(resultStr))
-    },
     async openSignInScreen() {
-      let codeVerifier: string = this.generateCodeVerifier()
-      let codeChallenge: string = await this.sha256(codeVerifier)
-
-      console.log(this.rememberMe ? 'remembering' : 'not remembering')
-      console.log('codeVerifier:  ' + codeVerifier)
-      console.log('codeChallenge: ' + codeChallenge)
-
+      await dropbox.authorizeWithDropbox(this.rememberMe)
       this.closeModal()
     },
   },
@@ -110,4 +69,16 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.sign-in-button {
+  background-color: #F7F5F2;
+  color: #1E1919;
+  /* font-family: "Atlas Grotesk"; */
+  padding: 1px 4px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.sign-in-button:hover {
+  background-color: #E8E4DC;
+  box-shadow: 0 0 0 2px #0061FE;
+}
 </style>
