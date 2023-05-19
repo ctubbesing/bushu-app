@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-navbar
-      style="height: 50px"
+      toggleable="lg"
       fixed="top"
       type="dark"
       variant="secondary"
@@ -14,14 +14,17 @@
         />
         BushuApp
       </b-navbar-brand>
-      <b-navbar-nav>
-        <b-nav-item href="#/">Home</b-nav-item>
-        <b-nav-item href="#/about">About</b-nav-item>
-        <b-nav-item href="#/raytracer">Ray Tracer</b-nav-item>
-      </b-navbar-nav>
-      <b-navbar-brand href="#">
-        <dropbox-sign-in :isSignedIn="isSignedIn" />
-      </b-navbar-brand>
+      <b-navbar-toggle target="headerOptions" />
+      <b-collapse id="headerOptions" is-nav>
+        <b-navbar-nav>
+          <b-nav-item href="#/">Home</b-nav-item>
+          <b-nav-item href="#/about">About</b-nav-item>
+          <b-nav-item href="#/raytracer">Ray Tracer</b-nav-item>
+        </b-navbar-nav>
+        <b-navbar-nav class="ml-auto">
+          <dropbox-sign-in :isSignedIn="isSignedIn" />
+        </b-navbar-nav>
+      </b-collapse>
     </b-navbar>
     <div style="height: 50px; width: 100%" />
   </div>
