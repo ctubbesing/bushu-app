@@ -23,14 +23,5 @@ export default new VueRouter({
       name: "RayTracer",
       component: RayTracer,
     },
-    {
-      path: "/dropboxLogin",
-      name: "DropboxLogin",
-      redirect: (to) => {
-          console.log('to:')
-          console.log(to)
-          return { path: '/about' }
-      }
-    },
   ]
 });
