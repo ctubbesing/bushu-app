@@ -8,25 +8,28 @@ Vue.use(VueRouter);
 
 export default new VueRouter({
   mode: 'history',
+  base: '/bushu-app',
   routes: [
+    // {
+    //   path: "/",
+    //   redirect: { name: 'Home' },
+    // },
     {
       path: "/",
-      redirect: { name: 'Home' },
-    },
-    {
-      path: "/bushu-app/",
       name: "Home",
       component: Home,
     },
     {
-      path: "/bushu-app/about",
+      path: "/about",
       name: "About",
-      component: About,
+      component: () => import(/* webpackChunkName: "about" */ "../views/About.vue"),
+      // component: About,
     },
     {
-      path: "/bushu-app/raytracer",
+      path: "/raytracer",
       name: "RayTracer",
-      component: RayTracer,
+      component: () => import(/* webpackChunkName: "about" */ "../views/RayTracer.vue"),
+      // component: RayTracer,
     },
   ]
 });
