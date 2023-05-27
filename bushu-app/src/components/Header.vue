@@ -17,9 +17,9 @@
       <b-navbar-toggle target="headerOptions" />
       <b-collapse id="headerOptions" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="/">Home</b-nav-item>
-          <b-nav-item href="/about">About</b-nav-item>
-          <b-nav-item href="/raytracer">Ray Tracer</b-nav-item>
+          <b-nav-item href="/bushu-app/">Home</b-nav-item>
+          <b-nav-item href="/bushu-app/about">About</b-nav-item>
+          <b-nav-item href="/bushu-app/raytracer">Ray Tracer</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <dropbox-sign-in :isSignedIn="isSignedIn" />

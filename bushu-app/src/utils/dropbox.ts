@@ -4,7 +4,7 @@ import tools from "@/utils/tools"
 
 const vm = Vue.prototype
 const db_app_client_id = '28mt3r9bdugbsoh'
-const redirect_uri = 'http://localhost:8080'
+const redirect_uri = window.location.origin
 
 export default {
   // step 1 of PKCE authorization code flow
@@ -23,6 +23,7 @@ export default {
 
     window.location.replace(authorizationURL)
   },
+
   // step 2 of PKCE authorization code flow
   async handleDropboxOAuthRedirect(authorizationCode: string, codeVerifier: string): Promise<string> {
     const tokenRequestURL = `https://api.dropbox.com/oauth2/token` +

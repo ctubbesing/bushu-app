@@ -11,16 +11,20 @@ export default new VueRouter({
   routes: [
     {
       path: "/",
+      redirect: { name: 'Home' },
+    },
+    {
+      path: "/bushu-app/",
       name: "Home",
       component: Home,
     },
     {
-      path: "/about",
+      path: "/bushu-app/about",
       name: "About",
       component: About,
     },
     {
-      path: "/raytracer",
+      path: "/bushu-app/raytracer",
       name: "RayTracer",
       component: RayTracer,
     },
