@@ -23,10 +23,10 @@ export default Vue.extend({
   methods: {
     async handleOauthRedirect() {
       // if code query parameter and code_verifier cookie exist, handle as a Dropbox OAuth redirect
-      const authorizationCode = this.$route.query.code
+      const params = new URLSearchParams(window.location.search)
+      const authorizationCode = params.get('code')
       const codeVerifier = this.$cookies.get('code_verifier')
-      if (authorizationCode !== undefined && typeof authorizationCode === 'string' && codeVerifier !== null) {
-        this.$router.replace({ query: undefined })
+      if (authorizationCode !== null && codeVerifier !== null) {
         this.$cookies.remove('code_verifier')
 
         const accessToken = await dropbox.handleDropboxOAuthRedirect(authorizationCode, codeVerifier)
