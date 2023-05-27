@@ -4,7 +4,7 @@ import tools from "@/utils/tools"
 
 const vm = Vue.prototype
 const db_app_client_id = '28mt3r9bdugbsoh'
-const redirect_uri = window.location.origin
+const redirect_uri = window.location.origin + '/bushu-app'
 
 export default {
   // step 1 of PKCE authorization code flow
