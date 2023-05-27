@@ -6,7 +6,7 @@
       type="dark"
       variant="secondary"
     >
-      <b-navbar-brand href="/">
+      <b-navbar-brand to="/">
         <img
           src="@/assets/b_favicon.svg"
           alt="B icon"
@@ -17,9 +17,9 @@
       <b-navbar-toggle target="headerOptions" />
       <b-collapse id="headerOptions" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="/bushu-app/">Home</b-nav-item>
-          <b-nav-item href="/bushu-app/about">About</b-nav-item>
-          <b-nav-item href="/bushu-app/raytracer">Ray Tracer</b-nav-item>
+          <b-nav-item to="/">Home</b-nav-item>
+          <b-nav-item to="/about">About</b-nav-item>
+          <b-nav-item to="/raytracer">Ray Tracer</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <dropbox-sign-in :isSignedIn="isSignedIn" />
