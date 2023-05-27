@@ -5,7 +5,7 @@
       @click="openModal()"
     >
       <div v-if="isSignedIn">
-        Hi ur signed in
+        Hi {{ userName }}
         <!-- TODO: add logout option to clear access & refresh tokens -->
       </div>
       <div v-else>
@@ -45,13 +45,18 @@ import dropbox from '@/utils/dropbox'
 
 export default Vue.extend({
   name: 'BasicWidget',
-  props: {
-    isSignedIn: Boolean,
-  },
   data() {
     return {
       rememberMe: false as boolean,
     }
+  },
+  computed: {
+    isSignedIn(): boolean {
+      return this.$store.state.db_userInfo !== null
+    },
+    userName(): string {
+      return this.$store.state.db_userInfo.name.familiar_name
+    },
   },
   methods: {
     openModal() {
