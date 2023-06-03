@@ -18,25 +18,11 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    updateAccessToken(context, accessToken) {
+    updateAccessToken(context, accessToken: string) {
       context.commit('setAccessToken', accessToken)
     },
-    async loadUserInfo(context) {
-      const url = `https://api.dropboxapi.com/2/users/get_current_account`
-
-      try {
-        const response = await axios.post(url, null, {
-          headers: {
-            'Authorization': `Bearer ${context.state.db_accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        })
-
-        context.commit('setUserInfo', response.data)
-      } catch (e) {
-        console.log('!!! Error getting user info')
-        console.log(e)
-      }
+    updateUserInfo(context, userInfo) {
+      context.commit('setUserInfo', userInfo)
     },
   },
   modules: {},

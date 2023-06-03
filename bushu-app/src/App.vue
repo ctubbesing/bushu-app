@@ -20,6 +20,11 @@ export default Vue.extend({
   async created() {
     // update access and refresh tokens if login redirect
     await this.handleOauthRedirect()
+
+    // attempt to log in with tokens
+    if (await dropbox.tryRefreshAccessToken()) {
+      await dropbox.loadUserInfo()
+    }
   },
   methods: {
     async handleOauthRedirect() {
@@ -30,15 +35,7 @@ export default Vue.extend({
       if (authorizationCode !== null && codeVerifier !== null) {
         this.$cookies.remove('code_verifier')
 
-        const tokenData = await dropbox.handleDropboxOAuthRedirect(authorizationCode, codeVerifier)
-        if (tokenData.refresh_token) {
-          this.$cookies.set('db_refresh', tokenData.refresh_token)
-        } else {
-          this.$cookies.remove('db_refresh')
-        }
-
-        this.$store.dispatch('updateAccessToken', tokenData.access_token)
-        await this.$store.dispatch('loadUserInfo')
+        await dropbox.handleDropboxOAuthRedirect(authorizationCode, codeVerifier)
       }
     },
   },
