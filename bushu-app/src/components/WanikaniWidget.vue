@@ -59,7 +59,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 import BasicWidget from '@/components/BasicWidget.vue'
-import { Resource, Collection } from '@/types'
+import { Resource, Collection } from '@/types/wanikaniTypes'
 
 export default Vue.extend({
   name: 'WanikaniWidget',

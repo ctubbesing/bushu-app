@@ -1,6 +1,7 @@
 import Vue from "vue"
 import axios from "axios"
 import tools from "@/utils/tools"
+import { TokenResponse } from "@/types/dropboxTypes"
 
 const vm = Vue.prototype
 const db_app_client_id = '28mt3r9bdugbsoh'
@@ -25,7 +26,7 @@ export default {
   },
 
   // step 2 of PKCE authorization code flow
-  async handleDropboxOAuthRedirect(authorizationCode: string, codeVerifier: string): Promise<string> {
+  async handleDropboxOAuthRedirect(authorizationCode: string, codeVerifier: string): Promise<TokenResponse> {
     const tokenRequestURL = `https://api.dropbox.com/oauth2/token` +
                             `?client_id=${db_app_client_id}` +
                             `&redirect_uri=${encodeURIComponent(redirect_uri)}` +
@@ -34,7 +35,8 @@ export default {
                             `&grant_type=authorization_code`
     
     const response = await axios.post(tokenRequestURL)
+    const tokenData: TokenResponse = response.data
 
-    return response.data.access_token
+    return tokenData
   }
 }
