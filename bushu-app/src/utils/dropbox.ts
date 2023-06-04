@@ -5,7 +5,7 @@ import tools from "@/utils/tools"
 import { TokenResponse } from "@/types/dropboxTypes"
 
 const vm = Vue.prototype
-const db_app_client_id = '28mt3r9bdugbsoh'
+const db_app_client_id = 'q9aarn0najvippt'
 const redirect_uri = window.location.origin + process.env.BASE_URL
 
 function getBearerToken(): string {
@@ -65,8 +65,8 @@ export default {
         store.dispatch('updateAccessToken', tokenData.access_token)
         return true
       } catch (e: any) {
-        if (e.response && e.response.status === 401) {
-          // refresh token has expired
+        if (e.response && (e.response.status === 400 || e.response.status === 401)) {
+          // refresh token is invalid or expired
           vm.$cookies.remove('db_refresh')
           alert('Dropbox login expired. Please log in again.')
         }

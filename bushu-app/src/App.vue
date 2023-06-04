@@ -37,9 +37,9 @@ export default Vue.extend({
       const params = new URLSearchParams(window.location.search)
       const authorizationCode = params.get('code')
       const codeVerifier = this.$cookies.get('code_verifier')
-      if (authorizationCode !== null && codeVerifier !== null) {
-        this.$cookies.remove('code_verifier')
+      this.$cookies.remove('code_verifier')
 
+      if (authorizationCode !== null && codeVerifier !== null) {
         await dropbox.handleDropboxOAuthRedirect(authorizationCode, codeVerifier)
         return true
       }
