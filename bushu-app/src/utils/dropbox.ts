@@ -9,7 +9,9 @@ const db_app_client_id = 'q9aarn0najvippt'
 const redirect_uri = window.location.origin + process.env.BASE_URL
 
 function getBearerToken(): string {
-  return `Bearer ${(store.state.db_accessToken === '') ? 'invalidToken' : store.state.db_accessToken}`
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return `Bearer ${(store.state.dropbox.db_accessToken === '') ? 'invalidToken' : store.state.dropbox.db_accessToken}`
 }
 
 export default {

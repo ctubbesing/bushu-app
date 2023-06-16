@@ -27,7 +27,7 @@ export default Vue.extend({
     }
 
     // load user data if logged in
-    if (this.$store.state.db_accessToken) {
+    if (this.$store.state.dropbox.db_accessToken) {
       await dropbox.loadUserInfo()
     }
   },

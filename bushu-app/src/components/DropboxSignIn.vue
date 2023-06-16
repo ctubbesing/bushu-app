@@ -52,10 +52,10 @@ export default Vue.extend({
   },
   computed: {
     isSignedIn(): boolean {
-      return this.$store.state.db_userInfo !== null
+      return this.$store.state.dropbox.db_userInfo !== null
     },
     userName(): string {
-      return this.$store.state.db_userInfo.name.familiar_name
+      return this.$store.state.dropbox.db_userInfo.name.familiar_name
     },
   },
   methods: {
