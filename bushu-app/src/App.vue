@@ -34,18 +34,21 @@ export default Vue.extend({
         await dropbox.tryRefreshAccessToken()
       }
 
+      // default home widget list
+      let widgetList = [
+        'wanikani',
+        'test',
+      ]
+
       // load user settings and data from Dropbox if logged in
       if (this.$store.state.dropbox.db_accessToken) {
         // basic user info
         await dropbox.loadUserInfo()
 
-        // widget list settings
-        const tempWidgetList = [
-          'wanikani',
-          'test',
-        ]
-        this.$store.dispatch('updateUserWidgets', tempWidgetList)
+        // TODO: custom widget list settings
+        // widgetList = await ...
       }
+      this.$store.dispatch('updateUserWidgets', widgetList)
     },
     async tryHandleOauthRedirect(): Promise<boolean> {
       // if code query parameter and code_verifier cookie exist, handle as a Dropbox OAuth redirect
