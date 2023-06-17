@@ -1,27 +1,33 @@
 <template>
   <div class="all-widgets">
-    <template v-for="(widget, idx) in displayedWidgets">
-      <!-- WaniKani -->
-      <wanikani-widget
-        v-if="widget === 'wanikani'"
-        :key="'wanikani' + idx + refreshTrigger"
-      />
-      <!-- Another sample widget -->
-      <basic-widget
-        v-if="widget === 'test'"
-        :key="'test' + idx + refreshTrigger"
-      >
-        <template v-slot:header>
-          Test Widget {{ idx }}
-        </template>
-        <div>
-          test content a
-        </div>
-        <div>
-          test content b
-        </div>
-        <b-button>Test Button</b-button>
-      </basic-widget>
+    <b-spinner
+      v-if="$store.state.isLoading"
+      variant="secondary"
+    />
+    <template v-else>
+      <template v-for="(widget, idx) in displayedWidgets">
+        <!-- WaniKani -->
+        <wanikani-widget
+          v-if="widget === 'wanikani'"
+          :key="'wanikani' + idx + refreshTrigger"
+        />
+        <!-- Another sample widget -->
+        <basic-widget
+          v-if="widget === 'test'"
+          :key="'test' + idx + refreshTrigger"
+        >
+          <template v-slot:header>
+            Test Widget {{ idx }}
+          </template>
+          <div>
+            test content a
+          </div>
+          <div>
+            test content b
+          </div>
+          <b-button>Test Button</b-button>
+        </basic-widget>
+      </template>
     </template>
   </div>
 </template>

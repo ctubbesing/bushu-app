@@ -18,7 +18,11 @@ export default Vue.extend({
     AppHeader: Header,
   },
   async created() {
+    this.$store.dispatch('updateIsLoading', true)
+
     await this.initializeDropbox()
+
+    this.$store.dispatch('updateIsLoading', false)
   },
   methods: {
     async initializeDropbox() {

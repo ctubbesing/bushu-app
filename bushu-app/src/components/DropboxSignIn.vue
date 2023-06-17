@@ -4,7 +4,12 @@
       class="sign-in-button"
       @click="openModal()"
     >
-      <div v-if="isSignedIn">
+      <b-spinner
+        v-if="$store.state.isLoading"
+        variant="secondary"
+        small
+      />
+      <div v-else-if="isSignedIn">
         Hi {{ userName }}
         <!-- TODO: add logout option to clear access & refresh tokens -->
       </div>
