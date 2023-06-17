@@ -8,6 +8,7 @@ export default new Vuex.Store({
   state: {
     isLoading: false as boolean,
     userWidgets: [] as string[],
+    accessTokens: {} as { [ name: string ]: string }
   },
   mutations: {
     setIsLoading(state: any, isLoading: boolean) {
@@ -16,6 +17,9 @@ export default new Vuex.Store({
     setUserWidgets(state: any, userWidgets: string[]) {
       state.userWidgets = userWidgets
     },
+    setAccessTokens(state: any, accessTokens: { [ name: string ]: string }) {
+      state.accessTokens = accessTokens
+    },
   },
   actions: {
     updateIsLoading(context: any, isLoading: boolean) {
@@ -23,6 +27,9 @@ export default new Vuex.Store({
     },
     updateUserWidgets(context: any, userWidgets: string[]) {
       context.commit('setUserWidgets', userWidgets)
+    },
+    updateAccessTokens(context: any, accessTokens: { [ name: string ]: string }) {
+      context.commit('setAccessTokens', accessTokens)
     },
   },
   modules: {

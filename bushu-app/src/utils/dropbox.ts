@@ -80,7 +80,7 @@ export default {
 
   // load user info
   async loadUserInfo() {
-    const url = `https://api.dropboxapi.com/2/users/get_current_account`
+    const url = 'https://api.dropboxapi.com/2/users/get_current_account'
 
     try {
       const response = await axios.post(url, null, {
@@ -91,6 +91,58 @@ export default {
       })
 
       store.dispatch('updateUserInfo', response.data)
+    } catch (e: any) {
+      if (e.response && e.response.status === 401) {
+        if (await this.tryRefreshAccessToken()) {
+          this.loadUserInfo()
+        }
+      }
+    }
+  },
+
+  // get folder list
+  async getFolders(path: string): Promise<null | any> {
+    const url = 'https://api.dropboxapi.com/2/files/list_folder'
+    const body = {
+      'path': path,
+      'recursive': true,
+    }
+
+    try {
+      const response = await axios.post(url, body, {
+        headers: {
+          'Authorization': getBearerToken(),
+          'Content-Type': 'application/json'
+        },
+      })
+      return response.data
+
+    } catch (e: any) {
+      if (e.response && e.response.status === 401) {
+        if (await this.tryRefreshAccessToken()) {
+          this.loadUserInfo()
+        }
+      }
+    }
+  },
+
+  // load file data
+  async getData(path: string): Promise<null | any> {
+    const url = 'https://content.dropboxapi.com/2/files/download'
+    const downloadArg = {
+      'path': path,
+    }
+
+    try {
+      const response = await axios.post(url, null, {
+        headers: {
+          'Authorization': getBearerToken(),
+          'Dropbox-API-Arg': JSON.stringify(downloadArg),
+          'Content-Type': 'text/plain'
+        },
+      })
+      return response.data
+
     } catch (e: any) {
       if (e.response && e.response.status === 401) {
         if (await this.tryRefreshAccessToken()) {

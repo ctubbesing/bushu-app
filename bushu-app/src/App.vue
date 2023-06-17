@@ -45,8 +45,13 @@ export default Vue.extend({
         // basic user info
         await dropbox.loadUserInfo()
 
-        // TODO: custom widget list settings
-        // widgetList = await ...
+        // user access tokens
+        const tokens = await dropbox.getData('/General/Private/tokens.json')
+        this.$store.dispatch('updateAccessTokens', tokens)
+
+        // custom widget list settings
+        const settings = await dropbox.getData('/General/settings.json')
+        widgetList = settings?.widgetList || widgetList
       }
       this.$store.dispatch('updateUserWidgets', widgetList)
     },

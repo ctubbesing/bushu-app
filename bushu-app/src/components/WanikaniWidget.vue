@@ -42,15 +42,6 @@
           <b-button variant="success" size="sm">Download KT List</b-button>
         </a>
       </div>
-      <div>
-        <!-- temp solution to load data with manual token input before proper way is implemented -->
-        <input
-          type="text"
-          v-model="apiAccessToken"
-          placeholder="Token"
-        />
-        <button @click="loadData()">Load with token</button>
-      </div>
     </div>
   </basic-widget>
 </template>
@@ -73,16 +64,22 @@ export default Vue.extend({
       lessonCount: 0 as number,
       reviewCount: 0 as number,
       ktListObject: null as any,
-      apiAccessToken: '' as string,
     };
   },
   async created() {
-    if (process.env.VUE_APP_WANIKANI_API_KEY) {
-      this.apiAccessToken = process.env.VUE_APP_WANIKANI_API_KEY
+    if (this.apiAccessToken) {
       await this.loadData()
     }
   },
+  watch: {
+    apiAccessToken() {
+      this.loadData()
+    },
+  },
   computed: {
+    apiAccessToken(): string {
+      return this.$store.state.accessTokens?.wanikani || ''
+    },
     ktListBlob() : string {
       return URL.createObjectURL(new Blob([JSON.stringify(this.ktListObject, null, 2)]))
     },

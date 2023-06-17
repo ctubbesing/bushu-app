@@ -5,8 +5,6 @@
       alt="bushu314 logo"
       style="margin-top: 50px; max-width: 250px"
     />
-    <div>
-    </div>
     <widget-list
       :refreshTrigger="refreshTrigger"
     />
