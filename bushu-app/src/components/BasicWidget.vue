@@ -30,6 +30,13 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.widget {
+  display: inline-block;
+  margin: 5px;
+  padding: 10px;
+  background-color: #fff9;
+  border-radius: 8px;
+}
 .header {
   height: 45px;
   border-bottom: #ddd solid 1px;
@@ -38,5 +45,13 @@ export default Vue.extend({
 }
 .main-body {
   margin-top: 5px;
+}
+.widget-section {
+  display: inline-block;
+  margin: 5px;
+  padding: 5px;
+  background-color: #fff9;
+  box-shadow: 0 0px 2px #888;
+  border-radius: 5px;
 }
 </style>

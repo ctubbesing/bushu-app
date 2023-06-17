@@ -18,20 +18,31 @@ export default Vue.extend({
     AppHeader: Header,
   },
   async created() {
-    // update access and refresh tokens if login redirect
-    let isRedirect = await this.tryHandleOauthRedirect()
-
-    // attempt to log in with tokens
-    if (!isRedirect) {
-      await dropbox.tryRefreshAccessToken()
-    }
-
-    // load user data if logged in
-    if (this.$store.state.dropbox.db_accessToken) {
-      await dropbox.loadUserInfo()
-    }
+    await this.initializeDropbox()
   },
   methods: {
+    async initializeDropbox() {
+      // update access and refresh tokens if login redirect
+      let isRedirect = await this.tryHandleOauthRedirect()
+
+      // attempt to log in with tokens
+      if (!isRedirect) {
+        await dropbox.tryRefreshAccessToken()
+      }
+
+      // load user settings and data from Dropbox if logged in
+      if (this.$store.state.dropbox.db_accessToken) {
+        // basic user info
+        await dropbox.loadUserInfo()
+
+        // widget list settings
+        const tempWidgetList = [
+          'wanikani',
+          'test',
+        ]
+        this.$store.dispatch('updateUserWidgets', tempWidgetList)
+      }
+    },
     async tryHandleOauthRedirect(): Promise<boolean> {
       // if code query parameter and code_verifier cookie exist, handle as a Dropbox OAuth redirect
       const params = new URLSearchParams(window.location.search)
