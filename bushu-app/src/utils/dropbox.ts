@@ -79,7 +79,7 @@ export default {
   },
 
   // load user info
-  async loadUserInfo() {
+  async loadUserInfo(retries = 0) {
     const url = 'https://api.dropboxapi.com/2/users/get_current_account'
 
     try {
@@ -93,15 +93,15 @@ export default {
       store.dispatch('updateUserInfo', response.data)
     } catch (e: any) {
       if (e.response && e.response.status === 401) {
-        if (await this.tryRefreshAccessToken()) {
-          this.loadUserInfo()
+        if (retries < 3 && await this.tryRefreshAccessToken()) {
+          this.loadUserInfo(++retries)
         }
       }
     }
   },
 
   // get folder list
-  async getFolders(path: string): Promise<null | any> {
+  async getFolders(path: string, retries = 0): Promise<null | any> {
     const url = 'https://api.dropboxapi.com/2/files/list_folder'
     const body = {
       'path': path,
@@ -119,15 +119,15 @@ export default {
 
     } catch (e: any) {
       if (e.response && e.response.status === 401) {
-        if (await this.tryRefreshAccessToken()) {
-          this.loadUserInfo()
+        if (retries < 3 && await this.tryRefreshAccessToken()) {
+          return await this.getFolders(path, ++retries)
         }
       }
     }
   },
 
   // load file data
-  async getData(path: string): Promise<null | any> {
+  async getData(path: string, retries = 0): Promise<null | any> {
     const url = 'https://content.dropboxapi.com/2/files/download'
     const downloadArg = {
       'path': path,
@@ -145,8 +145,8 @@ export default {
 
     } catch (e: any) {
       if (e.response && e.response.status === 401) {
-        if (await this.tryRefreshAccessToken()) {
-          this.loadUserInfo()
+        if (retries < 3 && await this.tryRefreshAccessToken()) {
+          return await this.getData(path, ++retries)
         }
       }
     }
