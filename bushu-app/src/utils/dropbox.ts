@@ -49,7 +49,7 @@ export default {
     const tokenData: TokenResponse = response.data
 
     if (tokenData.refresh_token) {
-      vm.$cookies.set('db_refresh', tokenData.refresh_token)
+      vm.$cookies.set('db_refresh', tokenData.refresh_token, -1)
     } else {
       vm.$cookies.remove('db_refresh')
     }
