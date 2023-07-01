@@ -10,6 +10,10 @@
         small
       />
       <div v-else-if="isSignedIn">
+        <b-avatar
+          style="margin-right: 10px"
+          :src="imgLink"
+        />
         Hi {{ userName }}
         <!-- TODO: add logout option to clear access & refresh tokens -->
       </div>
@@ -62,6 +66,9 @@ export default Vue.extend({
     userName(): string {
       return this.$store.state.dropbox.db_userInfo.name.familiar_name
     },
+    imgLink(): string {
+      return this.$store.state.dropbox.db_userInfo.profile_photo_url
+    },
   },
   methods: {
     openModal() {
@@ -90,5 +97,10 @@ export default Vue.extend({
 .sign-in-button:hover {
   background-color: #E8E4DC;
   box-shadow: 0 0 0 2px #0061FE;
+}
+.sign-in-button > div {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px;
 }
 </style>
