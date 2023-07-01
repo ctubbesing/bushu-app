@@ -7,6 +7,10 @@ import { TokenResponse, AppSettings } from "@/types/dropboxTypes"
 const vm = Vue.prototype
 const db_app_client_id = 'q9aarn0najvippt'
 const redirect_uri = window.location.origin + process.env.BASE_URL
+const paths = {
+  settingsPath: '/General/settings.json',
+  tokensPath: '/General/Private/tokens.json',
+}
 
 function getBearerToken(): string {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -183,12 +187,27 @@ export default {
     }
   },
 
+  // load API tokens
+  async loadTokens() {
+    const tokens = await this.getData(paths.tokensPath)
+
+    store.dispatch('updateAccessTokens', tokens)
+  },
+
+  // load general settings
+  async loadSettings() {
+    const settings: AppSettings = await this.getData(paths.settingsPath)
+    const widgetList = settings?.widgetList || []
+
+    store.dispatch('updateUserWidgets', widgetList)
+  },
+
   // save all general settings
   async saveSettings() {
     const settings: AppSettings = {
       widgetList: store.state.userWidgets
     }
 
-    await this.saveData('/General/settings.json', settings)
+    await this.saveData(paths.settingsPath, settings)
   },
 }
