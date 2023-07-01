@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import DropboxSignIn from './DropboxSignIn.vue'
+import DropboxSignIn from '@/components/DropboxSignIn.vue'
 export default Vue.extend({
   components: { DropboxSignIn },
   name: 'Header',

@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import Vue from "vue"
-import Header from "@/components/Header.vue"
+import Header from "@/components/utils/Header.vue"
 import dropbox from '@/utils/dropbox'
 
 export default Vue.extend({
