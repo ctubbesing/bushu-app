@@ -2,7 +2,7 @@ import Vue from "vue"
 import axios from "axios"
 import store from "@/store"
 import tools from "@/utils/tools"
-import { TokenResponse } from "@/types/dropboxTypes"
+import { TokenResponse, AppSettings } from "@/types/dropboxTypes"
 
 const vm = Vue.prototype
 const db_app_client_id = 'q9aarn0najvippt'
@@ -78,6 +78,63 @@ export default {
     return false
   },
 
+  // load file data
+  async getData(path: string, retries = 0): Promise<null | any> {
+    const url = 'https://content.dropboxapi.com/2/files/download'
+    const dropboxAPIArg = {
+      'path': path,
+    }
+
+    try {
+      const response = await axios.post(url, null, {
+        headers: {
+          'Authorization': getBearerToken(),
+          'Dropbox-API-Arg': JSON.stringify(dropboxAPIArg),
+          'Content-Type': 'text/plain'
+        },
+      })
+      return response.data
+
+    } catch (e: any) {
+      if (e.response && e.response.status === 401) {
+        if (retries < 3 && await this.tryRefreshAccessToken()) {
+          return await this.getData(path, ++retries)
+        }
+      }
+    }
+  },
+
+  // save file data
+  async saveData(path: string, data: any, retries = 0) {
+    const url = 'https://content.dropboxapi.com/2/files/upload'
+    const dropboxAPIArg = {
+      'path': path,
+      'autorename': true,
+      'mode': 'overwrite',
+    }
+    const dataBlob = new Blob([JSON.stringify(data, null, 2)])
+    const dataBuffer = await dataBlob.arrayBuffer()
+
+    try {
+      await axios.post(url, dataBuffer, {
+        headers: {
+          'Authorization': getBearerToken(),
+          'Dropbox-API-Arg': JSON.stringify(dropboxAPIArg),
+          'Content-Type': 'application/octet-stream'
+        },
+      })
+      
+    } catch (e: any) {
+      console.log('save failed:')
+      console.log(e)
+      if (e.response && e.response.status === 401) {
+        if (retries < 3 && await this.tryRefreshAccessToken()) {
+          await this.saveData(path, data, ++retries)
+        }
+      }
+    }
+  },
+
   // load user info
   async loadUserInfo(retries = 0) {
     const url = 'https://api.dropboxapi.com/2/users/get_current_account'
@@ -126,29 +183,12 @@ export default {
     }
   },
 
-  // load file data
-  async getData(path: string, retries = 0): Promise<null | any> {
-    const url = 'https://content.dropboxapi.com/2/files/download'
-    const downloadArg = {
-      'path': path,
+  // save all general settings
+  async saveSettings() {
+    const settings: AppSettings = {
+      widgetList: store.state.userWidgets
     }
 
-    try {
-      const response = await axios.post(url, null, {
-        headers: {
-          'Authorization': getBearerToken(),
-          'Dropbox-API-Arg': JSON.stringify(downloadArg),
-          'Content-Type': 'text/plain'
-        },
-      })
-      return response.data
-
-    } catch (e: any) {
-      if (e.response && e.response.status === 401) {
-        if (retries < 3 && await this.tryRefreshAccessToken()) {
-          return await this.getData(path, ++retries)
-        }
-      }
-    }
+    await this.saveData('/General/settings.json', settings)
   },
 }

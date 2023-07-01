@@ -36,4 +36,7 @@ export default {
     }
     return this.base64URLEncode(btoa(resultStr))
   },
+  deepClone(obj: any): any {
+    return JSON.parse(JSON.stringify(obj))
+  },
 }

@@ -32,3 +32,7 @@ export interface DBAccountInfo {
     root_namespace_id: string
   }
 }
+
+export interface AppSettings {
+  widgetList: string[]
+}
