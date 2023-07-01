@@ -210,4 +210,11 @@ export default {
 
     await this.saveData(paths.settingsPath, settings)
   },
+
+  // reload all data
+  async reloadAll() {
+    await this.loadUserInfo()
+    await this.loadTokens()
+    await this.loadSettings()
+  }
 }

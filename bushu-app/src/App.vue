@@ -36,9 +36,7 @@ export default Vue.extend({
 
       // load user settings and data from Dropbox if logged in
       if (this.$store.state.dropbox.db_accessToken) {
-        await dropbox.loadUserInfo()
-        await dropbox.loadTokens()
-        await dropbox.loadSettings()
+        await dropbox.reloadAll()
       } else {
         // set up default settings if not logged in
         let widgetList = [

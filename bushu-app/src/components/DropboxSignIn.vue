@@ -7,7 +7,7 @@
       <b-spinner
         v-if="$store.state.isLoading"
         variant="secondary"
-        small
+        style="margin: 5px"
       />
       <div v-else-if="isSignedIn">
         <b-avatar
