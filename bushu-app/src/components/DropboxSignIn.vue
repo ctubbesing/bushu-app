@@ -87,6 +87,9 @@ export default Vue.extend({
 
 <style scoped>
 .sign-in-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: #F7F5F2;
   color: #1E1919;
   /* font-family: "Atlas Grotesk"; */
