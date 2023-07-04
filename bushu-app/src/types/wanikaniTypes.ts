@@ -1,4 +1,4 @@
-export interface Resource {
+export interface WKResource {
   id: number
   object: string
   url: string
@@ -9,7 +9,7 @@ export interface Resource {
   }
 }
 
-export interface Collection {
+export interface WKCollection {
   object: string
   url: string
   pages: {
@@ -19,5 +19,21 @@ export interface Collection {
   }
   total_count: number
   data_updated_at: null | Date
-  data: Resource[]
+  data: WKResource[]
+}
+
+export interface WKUserData {
+  id: string
+  username: string
+  level: number
+  profile_url: string
+  started_at: Date
+  current_vacation_started_at: null | Date
+  subscription: {
+    active: boolean
+    type: string
+    max_level_granted: number
+    period_ends_at: null | Date
+  }
+  preferences: any
 }

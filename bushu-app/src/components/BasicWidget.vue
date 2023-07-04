@@ -9,8 +9,10 @@
         variant="transparent-secondary"
         style="height:25px; padding-left:50px"
       >
-        <b-dropdown-item>Test item 1</b-dropdown-item>
-        <b-dropdown-item>Test item 2</b-dropdown-item>
+        <slot name="dropdown-items">
+          <b-dropdown-item>Test item 1</b-dropdown-item>
+          <b-dropdown-item>Test item 2</b-dropdown-item>
+        </slot>
       </b-dropdown>
     </div>
     <!-- maybe add options list here -->

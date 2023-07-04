@@ -194,6 +194,13 @@ export default {
     store.dispatch('updateAccessTokens', tokens)
   },
 
+  // save API tokens
+  async saveTokens() {
+    const tokens: { [ name: string ]: string } = store.state.accessTokens
+
+    await this.saveData(paths.tokensPath, tokens)
+  },
+
   // load general settings
   async loadSettings() {
     const settings: AppSettings = await this.getData(paths.settingsPath)

@@ -17,6 +17,9 @@ export default new Vuex.Store({
     setUserWidgets(state: any, userWidgets: string[]) {
       state.userWidgets = userWidgets
     },
+    setSingleAccessToken(state: any, token: { key: string, value: string }) {
+      state.accessTokens[token.key] = token.value
+    },
     setAccessTokens(state: any, accessTokens: { [ name: string ]: string }) {
       state.accessTokens = accessTokens
     },
@@ -27,6 +30,9 @@ export default new Vuex.Store({
     },
     updateUserWidgets(context: any, userWidgets: string[]) {
       context.commit('setUserWidgets', userWidgets)
+    },
+    updateSingleAccessToken(context: any, token: { key: string, value: string }) {
+      context.commit('setSingleAccessToken', token)
     },
     updateAccessTokens(context: any, accessTokens: { [ name: string ]: string }) {
       context.commit('setAccessTokens', accessTokens)
