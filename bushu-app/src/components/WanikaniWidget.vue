@@ -52,12 +52,12 @@
       title="Update Access Token"
       centered
       ok-variant="success"
+      ok-title="Save"
       cancel-variant="outline-danger"
       @ok="saveTokenUpdate()"
       @cancel="cancelTokenUpdate()"
       @hidden="onLoginModalClose()"
     >
-      <template v-slot:modal-ok>Save</template>
       <!-- hide-footer -->
       Edit access token for your WaniKani account:
       <b-input-group>

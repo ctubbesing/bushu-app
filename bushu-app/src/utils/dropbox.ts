@@ -57,6 +57,13 @@ export default {
     store.dispatch('updateAccessToken', tokenData.access_token)
   },
 
+  // delete tokens and user account data
+  disconnectAccount() {
+    store.dispatch('updateAccessToken', '')
+    store.dispatch('updateUserInfo', null)
+    vm.$cookies.remove('db_refresh')
+  },
+
   // refresh access token with refresh token if available
   async tryRefreshAccessToken(): Promise<boolean> {
     const refreshToken: string = vm.$cookies.get('db_refresh')

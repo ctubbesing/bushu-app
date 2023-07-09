@@ -14,7 +14,7 @@
           style="margin-right: 10px"
           :src="imgLink"
         />
-        Hi {{ userName }}
+        Hi {{ userShortName }}
         <!-- TODO: add logout option to clear access & refresh tokens -->
       </div>
       <div v-else>
@@ -23,27 +23,47 @@
     </div>
     <b-modal
       id="loginModal"
-      title="Sign in with Dropbox"
+      title="Dropbox Sign In"
       hide-footer
+      centered
     >
-      <p>Sign in to load custom user data</p>
-      <b-form-checkbox
-        v-model="rememberMe"
-      >
-        Remember Me
-      </b-form-checkbox>
-      <b-button
-        @click="closeModal()"
-        variant="outline-secondary"
-      >
-        Cancel
-      </b-button>
-      <b-button
-        @click="openSignInScreen()"
-        variant="success"
-      >
-        Sign In
-      </b-button>
+      <div class="sign-in-modal-content">
+        <p v-if="isSignedIn">
+          Currently signed in as {{ userFullName }}.
+        </p>
+        <p v-else>
+          Sign in with your Dropbox account to be able to
+          load and save custom user data and settings.
+        </p>
+        <div>
+          <b-form-checkbox
+            v-if="!isSignedIn"
+            v-model="doRememberMe"
+          >
+            Remember Me
+          </b-form-checkbox>
+          <b-button
+            @click="closeModal()"
+            variant="outline-secondary"
+          >
+            Cancel
+          </b-button>
+          <b-button
+            v-if="isSignedIn"
+            @click="signOut()"
+            variant="danger"
+          >
+            Disconnect Account
+          </b-button>
+          <b-button
+            v-else
+            @click="openSignInScreen()"
+            variant="success"
+          >
+            Sign In
+          </b-button>
+        </div>
+      </div>
     </b-modal>
   </div>
 </template>
@@ -56,15 +76,18 @@ export default Vue.extend({
   name: 'BasicWidget',
   data() {
     return {
-      rememberMe: false as boolean,
+      doRememberMe: false as boolean,
     }
   },
   computed: {
     isSignedIn(): boolean {
-      return this.$store.state.dropbox.db_userInfo !== null
+      return this.$store.getters.db_isLoggedIn
     },
-    userName(): string {
+    userShortName(): string {
       return this.$store.state.dropbox.db_userInfo.name.familiar_name
+    },
+    userFullName(): string {
+      return this.$store.state.dropbox.db_userInfo.name.display_name
     },
     imgLink(): string {
       return this.$store.state.dropbox.db_userInfo.profile_photo_url
@@ -77,8 +100,12 @@ export default Vue.extend({
     closeModal() {
       this.$bvModal.hide('loginModal')
     },
+    signOut() {
+      dropbox.disconnectAccount()
+      this.closeModal()
+    },
     async openSignInScreen() {
-      await dropbox.authorizeWithDropbox(this.rememberMe)
+      await dropbox.authorizeWithDropbox(this.doRememberMe)
       this.closeModal()
     },
   },
@@ -105,5 +132,11 @@ export default Vue.extend({
   display: inline-flex;
   align-items: center;
   padding: 5px;
+}
+.sign-in-modal-content {
+  text-align: center;
+}
+.sign-in-modal-content button {
+  margin: 5px;
 }
 </style>
