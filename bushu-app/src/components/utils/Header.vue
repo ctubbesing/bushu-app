@@ -18,15 +18,18 @@
       <b-collapse id="headerOptions" is-nav>
         <b-navbar-nav>
           <b-nav-item to="/">Home</b-nav-item>
-          <b-nav-item to="/about">About</b-nav-item>
+          <!-- <b-nav-item to="/about">About</b-nav-item> -->
+          <b-nav-item-dropdown text="Apps">
+            <b-dropdown-item to="/watchlist">Watchlist</b-dropdown-item>
+          </b-nav-item-dropdown>
           <b-nav-item to="/raytracer">Ray Tracer</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
-          <dropbox-sign-in :isSignedIn="isSignedIn" />
+          <dropbox-sign-in />
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-    <div style="height: 50px; width: 100%" />
+    <div :style="'height: 58px; width: 100%'" />
   </div>
 </template>
 
@@ -37,9 +40,7 @@ export default Vue.extend({
   components: { DropboxSignIn },
   name: 'Header',
   data() {
-    return {
-      isSignedIn: false as boolean,
-    }
+    return {}
   },
 })
 </script>

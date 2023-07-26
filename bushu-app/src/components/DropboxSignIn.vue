@@ -12,6 +12,7 @@
       <div v-else-if="isSignedIn">
         <b-avatar
           style="margin-right: 10px"
+          size="34"
           :src="imgLink"
         />
         Hi {{ userShortName }}
@@ -73,7 +74,7 @@ import Vue from 'vue'
 import dropbox from '@/utils/dropbox'
 
 export default Vue.extend({
-  name: 'BasicWidget',
+  name: 'DropboxSignIn',
   data() {
     return {
       doRememberMe: false as boolean,
@@ -117,6 +118,7 @@ export default Vue.extend({
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 42px;
   background-color: #F7F5F2;
   color: #1E1919;
   /* font-family: "Atlas Grotesk"; */

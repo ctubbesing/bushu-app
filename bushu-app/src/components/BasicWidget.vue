@@ -6,6 +6,7 @@
         <slot name="header"></slot>
       </h3>
       <b-dropdown
+        right
         variant="transparent-secondary"
         style="height:25px; padding-left:50px"
       >
