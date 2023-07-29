@@ -1,6 +1,6 @@
 <template>
   <b-icon
-    :icon="icon + (isHovering ? '-fill' : '')"
+    :icon="icon + getSuffix()"
     :font-scale="scale ? scale : '1'"
     :variant="variant"
     style="cursor: pointer"
@@ -24,6 +24,11 @@ export default Vue.extend({
     return {
       isHovering: false as boolean,
     }
+  },
+  methods: {
+    getSuffix(): string {
+      return (!this.isHovering || this.icon.slice(-5) === '-fill') ? '' : '-fill'
+    },
   },
 })
 </script>

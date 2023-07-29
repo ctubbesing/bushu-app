@@ -39,4 +39,7 @@ export default {
   deepClone(obj: any): any {
     return JSON.parse(JSON.stringify(obj))
   },
+  pluralFormat(val: number, unit: string): string {
+    return `${val} ${unit}${val === 1 ? '' : 's'}`
+  },
 }

@@ -111,6 +111,9 @@ export default {
         if (retries < 3 && await this.tryRefreshAccessToken()) {
           return await this.getData(path, ++retries)
         }
+      } else if (e.response && e.response.status === 409) {
+        // path not found
+        return null
       }
     }
   },

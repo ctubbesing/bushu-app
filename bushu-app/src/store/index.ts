@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import dropbox from "./modules/dropbox";
+import watchlist from "./modules/watchlist";
 
 Vue.use(Vuex);
 
@@ -40,5 +41,6 @@ export default new Vuex.Store({
   },
   modules: {
     dropbox,
+    watchlist,
   },
 });
