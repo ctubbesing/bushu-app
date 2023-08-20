@@ -77,105 +77,127 @@
             </div>
             <div class="seasons-section">
               <div
-                class="show-info show-season"
                 v-for="(season, idx) in showData.seasons"
                 :key="idx"
+                style="display: flex; align-items: center; justify-content: flex-end"
               >
-                <b-container>
-                  <b-form-row>
-                    <b-col cols="3">
-                      <label :for="`form-szn-${idx}-number`">Season #:</label>
-                    </b-col>
-                    <b-col>
-                      <b-form-input
-                        :id="`form-szn-${idx}-number`"
-                        type="number"
-                        v-model="season.seasonNumber"
-                        required
-                      />
-                    </b-col>
-                  </b-form-row>
-                  <b-form-row>
-                    <b-col cols="3">
-                      <label :for="`form-szn-${idx}-name`">Season name:</label>
-                    </b-col>
-                    <b-col>
-                      <b-form-input
-                        :id="`form-szn-${idx}-name`"
-                        type="text"
-                        v-model="season.name"
-                      />
-                    </b-col>
-                  </b-form-row>
-                  <b-form-row>
-                    <b-col cols="3">
-                      <label :for="`form-szn-${idx}-episode-count`">Episode count:</label>
-                    </b-col>
-                    <b-col>
-                      <b-form-input
-                        :id="`form-szn-${idx}-episode-count`"
-                        type="number"
-                        v-model="season.totalEpisodeCount"
-                      />
-                    </b-col>
-                  </b-form-row>
-                  <b-form-row>
-                    <b-col cols="3">
-                      <label :for="`form-szn-${idx}-start-date`">Start date:</label>
-                    </b-col>
-                    <b-col>
-                      <b-form-input
-                        :id="`form-szn-${idx}-start-date`"
-                        type="date"
-                        v-model="season.startDate"
-                      />
-                    </b-col>
-                  </b-form-row>
-                  <b-form-row>
-                    <b-col cols="3">
-                      <label :for="`form-szn-${idx}-end-date`">End date:</label>
-                    </b-col>
-                    <b-col>
-                      <b-form-input
-                        :id="`form-szn-${idx}-end-date`"
-                        type="date"
-                        v-model="season.endDate"
-                      />
-                    </b-col>
-                  </b-form-row>
-                  <b-form-row v-if="showData.isAnime">
-                    <b-col cols="3">
-                      <label :for="`form-szn-${idx}-airing-szn`">Season aired:</label>
-                    </b-col>
-                    <b-col cols="6">
-                      <b-form-radio-group
-                        :id="`form-szn-${idx}-airing-szn`"
-                        v-model="season.airingSeason"
-                        :options="[ '冬', '春', '夏', '秋' ]"
-                        buttons
-                        size="sm"
-                      ></b-form-radio-group>
-                    </b-col>
-                    <b-col cols="3">
-                      <b-form-input
-                        :id="`form-szn-${idx}-airing-year`"
-                        type="number"
-                        v-model="season.airingYear"
-                      />
-                    </b-col>
-                  </b-form-row>
-                </b-container>
+                <div class="delete-button">
+                  <b-icon
+                    icon="trash"
+                    variant="light"
+                  />
+                </div>
+                <div class="show-season-edit">
+                  <b-container>
+                    <b-form-row>
+                      <b-col cols="3">
+                        <label :for="`form-szn-${idx}-number`">Season #:</label>
+                      </b-col>
+                      <b-col>
+                        <b-form-input
+                          :id="`form-szn-${idx}-number`"
+                          type="number"
+                          v-model="season.seasonNumber"
+                          required
+                        />
+                      </b-col>
+                    </b-form-row>
+                    <b-form-row>
+                      <b-col cols="3">
+                        <label :for="`form-szn-${idx}-name`">Season name:</label>
+                      </b-col>
+                      <b-col>
+                        <b-form-input
+                          :id="`form-szn-${idx}-name`"
+                          type="text"
+                          v-model="season.name"
+                        />
+                      </b-col>
+                    </b-form-row>
+                    <b-form-row>
+                      <b-col cols="3">
+                        <label :for="`form-szn-${idx}-episode-count`">Episode count:</label>
+                      </b-col>
+                      <b-col>
+                        <b-form-input
+                          :id="`form-szn-${idx}-episode-count`"
+                          type="number"
+                          v-model="season.totalEpisodeCount"
+                        />
+                      </b-col>
+                    </b-form-row>
+                    <b-form-row>
+                      <b-col cols="3">
+                        <label :for="`form-szn-${idx}-start-date`">Start date:</label>
+                      </b-col>
+                      <b-col>
+                        <b-form-input
+                          :id="`form-szn-${idx}-start-date`"
+                          type="date"
+                          v-model="season.startDate"
+                        />
+                      </b-col>
+                    </b-form-row>
+                    <b-form-row>
+                      <b-col cols="3">
+                        <label :for="`form-szn-${idx}-end-date`">End date:</label>
+                      </b-col>
+                      <b-col>
+                        <b-form-input
+                          :id="`form-szn-${idx}-end-date`"
+                          type="date"
+                          v-model="season.endDate"
+                        />
+                      </b-col>
+                    </b-form-row>
+                    <b-form-row v-if="showData.isAnime">
+                      <b-col cols="3">
+                        <label :for="`form-szn-${idx}-airing-szn`">Season aired:</label>
+                      </b-col>
+                      <b-col cols="6">
+                        <b-form-radio-group
+                          :id="`form-szn-${idx}-airing-szn`"
+                          v-model="season.airingSeason"
+                          :options="[ '冬', '春', '夏', '秋' ]"
+                          buttons
+                          size="sm"
+                        ></b-form-radio-group>
+                      </b-col>
+                      <b-col cols="3">
+                        <b-form-input
+                          :id="`form-szn-${idx}-airing-year`"
+                          type="number"
+                          v-model="season.airingYear"
+                        />
+                      </b-col>
+                    </b-form-row>
+                  </b-container>
+                </div>
+              </div>
+              <div
+                class="add-season-button"
+              >
+                <b-icon
+                  icon="plus"
+                  font-scale="2"
+                  variant="light"
+                />
               </div>
             </div>
           </div>
         </b-form>
+        <!-- //////////////////////////////////////////////////
+        - gotta add a "new szn" button
+        - and do some validation maybe asdf
+        - and hook up proper save button stuff for the saveChanges() fxn
+        ////////////////////////////////////////////////// -->
       </div>
     </b-modal>
   </div>
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import Vue, { PropType } from 'vue'
 import { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
 
 export default Vue.extend({
@@ -226,5 +248,38 @@ export default Vue.extend({
 .form-row > div {
   display: flex;
   align-items: center;
+}
+.add-season-button {
+  padding: 5px;
+  margin: 3px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: hsl(192, 71%, 45%);
+  width: 90%;
+  text-align: center;
+}
+.add-season-button:hover {
+  background-color: hsl(192, 71%, 35%);
+}
+.delete-button {
+  display: inline-block;
+  background-color: red;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+}
+.delete-button:hover {
+  background-color: hsl(0, 100%, 40%);
+}
+.show-season-edit {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  margin: 3px;
+  border-radius: 5px;
+  min-height: 80px;
+  width: 90%;
+  background-color: hsl(192, 71%, 65%);
+  font-size: 0.8em;
 }
 </style>
