@@ -2,7 +2,7 @@ export interface ShowInfo {
   id: string
   name: string
   altName?: string
-  isAnime: boolean
+  isAnime?: boolean
   doEpisodeCountOverall?: boolean
   seasonCount?: number
   seasons: ShowSeason[]
@@ -18,5 +18,6 @@ export interface ShowSeason {
   endDate?: string
   infoLink?: string
   airingSeason?: string
+  airingYear?: string
   imgPath?: string
 }

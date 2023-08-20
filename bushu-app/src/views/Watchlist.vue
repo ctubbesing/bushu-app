@@ -4,20 +4,12 @@
     <div>
       <b-button @click="openCatalog()">View Catalog</b-button>
     </div>
-    <b-modal
-      id="catalogModal"
-      title="Catalog"
-      hide-footer
-      centered
-      scrollable
-    >
-      <show-catalog />
-    </b-modal>
+    <catalog-modal id="catalogModal"/>
   </div>
 </template>
 
 <script lang="ts">
-import ShowCatalog from "@/components/Watchlist/ShowCatalog.vue";
+import CatalogModal from "@/components/Watchlist/CatalogModal.vue";
 import { ShowInfo } from "@/types/watchlistTypes";
 import dropbox from "@/utils/dropbox";
 import Vue from "vue";
@@ -25,14 +17,100 @@ import Vue from "vue";
 export default Vue.extend({
   name: "Watchlist",
   components: {
-    showCatalog: ShowCatalog,
+    catalogModal: CatalogModal,
   },
   data() {
     return {};
   },
   async created() {
     // load catalog data from Dropbox
-    let catalogData: null | ShowInfo[] = await dropbox.getData('/Watchlist/catalog.json')
+    // let catalogData: null | ShowInfo[] = await dropbox.getData('/Watchlist/catalog.json')
+    let catalogData: ShowInfo[] = [
+      {
+        id: 'peaky_blinders',
+        name: 'Peaky Blinders',
+        isAnime: false,
+        seasonCount: 6,
+        seasons: [
+          {
+            id: 'peaky_blinders_s1',
+            showId: 'peaky_blinders',
+            seasonNumber: 1,
+            totalEpisodeCount: 6,
+          },
+          {
+            id: 'peaky_blinders_s2',
+            showId: 'peaky_blinders',
+            seasonNumber: 2,
+            totalEpisodeCount: 6,
+          },
+          {
+            id: 'peaky_blinders_s3',
+            showId: 'peaky_blinders',
+            seasonNumber: 3,
+            totalEpisodeCount: 6,
+          },
+          {
+            id: 'peaky_blinders_s4',
+            showId: 'peaky_blinders',
+            seasonNumber: 4,
+            totalEpisodeCount: 6,
+          },
+          {
+            id: 'peaky_blinders_s5',
+            showId: 'peaky_blinders',
+            seasonNumber: 5,
+            totalEpisodeCount: 6,
+          },
+          {
+            id: 'peaky_blinders_s6',
+            showId: 'peaky_blinders',
+            seasonNumber: 6,
+            totalEpisodeCount: 6,
+          },
+        ]
+      },
+      {
+        id: 'one_piece',
+        name: 'One Piece',
+        isAnime: true,
+        doEpisodeCountOverall: true,
+        seasons: [
+          {
+            id: 'one_piece_s1',
+            showId: 'one_piece',
+            seasonNumber: 1,
+            name: 'East Blue',
+            totalEpisodeCount: 61,
+          },
+          {
+            id: 'one_piece_s2',
+            showId: 'one_piece',
+            seasonNumber: 2,
+            name: 'Alabasta',
+            totalEpisodeCount: 74,
+          },
+        ]
+      },
+      {
+        id: 'tengoku_daimakyou',
+        name: 'Tengoku Daimakyou',
+        altName: '天国大魔境',
+        isAnime: true,
+        seasonCount: 1,
+        seasons: [
+          {
+            id: 'tengoku_daimakyou_s1',
+            showId: 'tengoku_daimakyou',
+            seasonNumber: 1,
+            totalEpisodeCount: 13,
+            startDate: '4/1/2023',
+            endDate: '6/24/2023',
+            airingSeason: '2023春'
+          },
+        ]
+      },
+    ]
     this.$store.dispatch('updateCatalog', (catalogData === null ? [] : catalogData))
 
   },
