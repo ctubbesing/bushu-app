@@ -155,11 +155,6 @@ export default Vue.extend({
     })
   },
   methods: {
-    async testLoadData() {
-      let result = await dropbox.getData('/Watchlist/fakeData.json')
-      console.log('result:')
-      console.log(result)
-    },
     toggleShow(showId: string) {
       this.$root.$emit('bv::toggle::collapse', showId)
     },
@@ -177,7 +172,7 @@ export default Vue.extend({
     createNewEntry() {
       this.editingShowId = ''
       this.editingShowInfo = {
-        id: self.crypto.randomUUID(),
+        id: '', ////////////// use something like self.crypto.randomUUID()
         name: '',
         seasons: [],
       }
@@ -188,7 +183,7 @@ export default Vue.extend({
       this.editingShowId = this.editingShowInfo.id
       this.openEditModal()
     },
-    saveShowEntry() {
+    async saveShowEntry() {
       let updatedShowIdx = this.catalog.findIndex((s: ShowInfo) => s.id === this.editingShowId)
       if (updatedShowIdx === -1) {
         // add data as new entry
@@ -198,7 +193,7 @@ export default Vue.extend({
         // update existing entry
         this.catalog[updatedShowIdx] = this.editingShowInfo
       }
-      //////// save to Dropbox here ///////////////////////////////////////////////////////////////////////
+      await this.$store.dispatch('updateCatalog', this.catalog)
     },
     openEditModal() {
       this.$bvModal.show('editModal')
