@@ -99,7 +99,10 @@
                 :key="idx"
                 style="display: flex; align-items: center; justify-content: flex-end"
               >
-                <div class="delete-button">
+                <div
+                  class="delete-button"
+                  @click="deleteSeason(idx)"
+                >
                   <b-icon
                     icon="trash"
                     variant="light"
@@ -194,6 +197,7 @@
               </div>
               <div
                 class="add-season-button"
+                @click="addSeason()"
               >
                 <b-icon
                   icon="plus"
@@ -270,6 +274,15 @@ export default Vue.extend({
     },
   },
   methods: {
+    deleteSeason(idx: number) {
+      this.showData.seasons.splice(idx, 1)
+    },
+    addSeason() {
+      this.showData.seasons.push({
+        id: self.crypto.randomUUID(),
+        showId: this.showData.id,
+      })
+    },
     loadValue() {
       this.showData = tools.deepClone(this.value)
       this.originalData = tools.deepClone(this.value)

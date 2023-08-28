@@ -177,7 +177,7 @@ export default Vue.extend({
     createNewEntry() {
       this.editingShowId = ''
       this.editingShowInfo = {
-        id: '',
+        id: self.crypto.randomUUID(),
         name: '',
         seasons: [],
       }
