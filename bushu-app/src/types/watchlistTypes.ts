@@ -16,8 +16,8 @@ export interface ShowSeason {
   totalEpisodeCount: number | null
   startDate?: string
   endDate?: string
-  infoLink?: string
   airingSeason?: string
-  airingYear?: string
+  airingYear?: number
+  infoLink?: string
   imgPath?: string
 }

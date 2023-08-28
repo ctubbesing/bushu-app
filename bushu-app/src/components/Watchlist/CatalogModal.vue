@@ -98,8 +98,8 @@
                   <span v-if="season.startDate || season.endDate">
                     Aired {{ formatDate(season.startDate) }} - {{ formatDate(season.endDate) }}
                   </span>
-                  <span v-if="season.airingSeason">
-                    <b>{{ season.airingSeason }}</b>
+                  <span v-if="season.airingYear && season.airingSeason">
+                    <b>{{ season.airingYear + season.airingSeason }}</b>
                   </span>
                 </div>
               </div>
@@ -188,16 +188,17 @@ export default Vue.extend({
       this.editingShowId = this.editingShowInfo.id
       this.openEditModal()
     },
-    // saveShowEntry(originalShowId: string) {
     saveShowEntry() {
       let updatedShowIdx = this.catalog.findIndex((s: ShowInfo) => s.id === this.editingShowId)
       if (updatedShowIdx === -1) {
         // add data as new entry
         this.catalog.push(this.editingShowInfo)
+        //////// sort alphabetically here ///////////////////////////////////////////////////////////////////
       } else {
         // update existing entry
         this.catalog[updatedShowIdx] = this.editingShowInfo
       }
+      //////// save to Dropbox here ///////////////////////////////////////////////////////////////////////
     },
     openEditModal() {
       this.$bvModal.show('editModal')

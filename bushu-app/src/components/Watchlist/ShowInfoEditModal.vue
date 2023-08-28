@@ -7,8 +7,26 @@
       scrollable
       @show="loadValue()"
     >
+      <template v-slot:modal-footer>
+        <div style="width: 100%; display: flex; justify-content: space-between">
+          <b-button
+            @click="closeModal()"
+            style="width: 30%"
+          >
+            Cancel
+          </b-button>
+          <b-button
+            variant="outline-success"
+            @click="checkValidity()"
+            style="width: 60%"
+            :disabled="!isChanged"
+          >
+            Save
+          </b-button>
+        </div>
+      </template>
       <div>
-        <b-form>
+        <b-form id="show-info-form">
           <div class="show-entry">
             <div class="show-info">
               <b-container>
@@ -45,7 +63,7 @@
                     <b-form-input
                       id="form-season-count"
                       type="number"
-                      v-model="showData.seasonCount"
+                      v-model.number="showData.seasonCount"
                     />
                   </b-col>
                 </b-form-row>
@@ -97,7 +115,7 @@
                         <b-form-input
                           :id="`form-szn-${idx}-number`"
                           type="number"
-                          v-model="season.seasonNumber"
+                          v-model.number="season.seasonNumber"
                           required
                         />
                       </b-col>
@@ -122,7 +140,7 @@
                         <b-form-input
                           :id="`form-szn-${idx}-episode-count`"
                           type="number"
-                          v-model="season.totalEpisodeCount"
+                          v-model.number="season.totalEpisodeCount"
                         />
                       </b-col>
                     </b-form-row>
@@ -167,7 +185,7 @@
                         <b-form-input
                           :id="`form-szn-${idx}-airing-year`"
                           type="number"
-                          v-model="season.airingYear"
+                          v-model.number="season.airingYear"
                         />
                       </b-col>
                     </b-form-row>
@@ -186,11 +204,6 @@
             </div>
           </div>
         </b-form>
-        <!-- //////////////////////////////////////////////////
-        - gotta add a "new szn" button
-        - and do some validation maybe asdf
-        - and hook up proper save button stuff for the saveChanges() fxn
-        ////////////////////////////////////////////////// -->
       </div>
     </b-modal>
   </div>
@@ -198,6 +211,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
+import tools from '@/utils/tools';
 import { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
 
 export default Vue.extend({
@@ -215,6 +229,7 @@ export default Vue.extend({
   data() {
     return {
       showData: {} as ShowInfo,
+      originalData: {} as ShowInfo,
     };
   },
   watch: {
@@ -229,16 +244,53 @@ export default Vue.extend({
       }
       return 'Edit Show Info' + (this.showData.name ? (': ' + this.showData.name) : '')
     },
+    isChanged(): boolean {
+      let isShowDataChanged = this.showData.id !== this.originalData.id ||
+                              this.showData.name !== this.originalData.name ||
+                              this.showData.altName !== this.originalData.altName ||
+                              this.showData.isAnime !== this.originalData.isAnime ||
+                              this.showData.doEpisodeCountOverall !== this.originalData.doEpisodeCountOverall ||
+                              this.showData.seasonCount !== this.originalData.seasonCount
+      let isSznDataChanged = false
+      if (this.showData.seasons && this.originalData.seasons) {
+        isSznDataChanged = this.showData.seasons.length !== this.originalData.seasons.length ||
+                           this.showData.seasons.some((szn: ShowSeason, idx: number) => {
+                             return szn.id !== this.originalData.seasons[idx].id ||
+                                    szn.showId !== this.originalData.seasons[idx].showId ||
+                                    szn.seasonNumber !== this.originalData.seasons[idx].seasonNumber ||
+                                    szn.name !== this.originalData.seasons[idx].name ||
+                                    szn.totalEpisodeCount !== this.originalData.seasons[idx].totalEpisodeCount ||
+                                    szn.startDate !== this.originalData.seasons[idx].startDate ||
+                                    szn.endDate !== this.originalData.seasons[idx].endDate ||
+                                    szn.airingSeason !== this.originalData.seasons[idx].airingSeason ||
+                                    szn.airingYear !== this.originalData.seasons[idx].airingYear
+                           })
+      }
+      return isShowDataChanged || isSznDataChanged
+    },
   },
   methods: {
     loadValue() {
-      this.showData = this.value
+      this.showData = tools.deepClone(this.value)
+      this.originalData = tools.deepClone(this.value)
     },
     syncModel() {
       this.$emit('input', this.showData)
     },
-    saveChanges() {/////////////////// make sure this emit won't fire unless showData is valid
-      this.$emit('save-changes')
+    checkValidity() {
+      let form = document.getElementById('show-info-form') as HTMLFormElement
+      let isValid = form.reportValidity()
+      if (isValid) {
+        this.saveChanges()
+      }
+    },
+    saveChanges() {
+      this.syncModel()
+      this.$emit('save-changes') 
+      this.closeModal()
+    },
+    closeModal() {
+      this.$bvModal.hide('editModal')
     },
   },
 });
@@ -281,5 +333,8 @@ export default Vue.extend({
   width: 90%;
   background-color: hsl(192, 71%, 65%);
   font-size: 0.8em;
+}
+.show-info {
+  cursor: auto;
 }
 </style>

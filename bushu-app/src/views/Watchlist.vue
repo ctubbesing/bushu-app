@@ -104,9 +104,10 @@ export default Vue.extend({
             showId: 'tengoku_daimakyou',
             seasonNumber: 1,
             totalEpisodeCount: 13,
-            startDate: '4/1/2023',
-            endDate: '6/24/2023',
-            airingSeason: '2023春'
+            startDate: '2023-04-01',
+            endDate: '2023-06-24',
+            airingSeason: '春',
+            airingYear: 2023,
           },
         ]
       },
