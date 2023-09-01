@@ -42,4 +42,10 @@ export default {
   pluralFormat(val: number, unit: string): string {
     return `${val} ${unit}${val === 1 ? '' : 's'}`
   },
+  getGUID(): string {
+    return (`${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`).replace(/[018]/g, c => {
+      const cInt = parseInt(c)
+      return (cInt ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> cInt / 4).toString(16)
+    });
+  }
 }

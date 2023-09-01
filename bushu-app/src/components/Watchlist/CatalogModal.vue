@@ -183,7 +183,7 @@ export default Vue.extend({
     createNewEntry() {
       this.editingShowId = ''
       this.editingShowInfo = {
-        id: '', ////////////// use something like self.crypto.randomUUID()
+        id: tools.getGUID(),
         name: '',
         seasons: [],
       }

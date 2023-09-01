@@ -279,7 +279,7 @@ export default Vue.extend({
     },
     addSeason() {
       this.showData.seasons.push({
-        id: '', ////////////// use something like self.crypto.randomUUID()
+        id: tools.getGUID(),
         showId: this.showData.id,
       })
     },
