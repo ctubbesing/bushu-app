@@ -42,7 +42,7 @@
         >
           <div class="show-details">
             <div>
-              <h4>{{ show.name }}</h4>
+              <h4>{{ show.title }}</h4>
               <div
                 v-if="show.altName"
                 class="alt-name"
@@ -96,8 +96,11 @@
                   <span v-if="season.startDate || season.endDate">
                     Aired {{ formatDate(season.startDate) }} - {{ formatDate(season.endDate) }}
                   </span>
-                  <span v-if="season.airingYear && season.airingSeason">
-                    <b>{{ season.airingYear + season.airingSeason }}</b>
+                  <span
+                    v-if="season.airingYear && season.airingSeason"
+                    style="margin-left: 10px"
+                  >
+                    <b>{{ season.airingYear + ' ' + season.airingSeason }}</b>
                   </span>
                 </div>
               </div>
@@ -178,13 +181,13 @@ export default Vue.extend({
       if (dateStr === null) {
         return '?'
       }
-      return dateStr
+      return (new Date(dateStr)).toLocaleDateString()
     },
     createNewEntry() {
       this.editingShowId = ''
       this.editingShowInfo = {
         id: tools.getGUID(),
-        name: '',
+        title: '',
         seasons: [],
       }
       this.openEditModal()
@@ -199,11 +202,11 @@ export default Vue.extend({
       if (updatedShowIdx === -1) {
         // add data as new entry
         this.catalog.push(this.editingShowInfo)
-        //////// sort alphabetically here ///////////////////////////////////////////////////////////////////
       } else {
         // update existing entry
         this.catalog[updatedShowIdx] = this.editingShowInfo
       }
+      this.catalog.sort((a, b) => a.title.localeCompare(b.title))
       await this.$store.dispatch('updateCatalog', this.catalog)
     },
     openEditModal() {

@@ -38,7 +38,7 @@
                     <b-form-input
                       id="form-title"
                       type="text"
-                      v-model="showData.name"
+                      v-model="showData.title"
                       required
                     />
                   </b-col>
@@ -246,11 +246,11 @@ export default Vue.extend({
       if (this.isNewShow) {
         return 'Create New Show'
       }
-      return 'Edit Show Info' + (this.showData.name ? (': ' + this.showData.name) : '')
+      return 'Edit Show Info' + (this.showData.title ? (': ' + this.showData.title) : '')
     },
     isChanged(): boolean {
       let isShowDataChanged = this.showData.id !== this.originalData.id ||
-                              this.showData.name !== this.originalData.name ||
+                              this.showData.title !== this.originalData.title ||
                               this.showData.altName !== this.originalData.altName ||
                               this.showData.isAnime !== this.originalData.isAnime ||
                               this.showData.doEpisodeCountOverall !== this.originalData.doEpisodeCountOverall ||

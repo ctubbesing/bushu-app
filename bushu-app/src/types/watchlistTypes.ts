@@ -1,6 +1,6 @@
 export interface ShowInfo {
   id: string
-  name: string
+  title: string
   altName?: string
   isAnime?: boolean
   doEpisodeCountOverall?: boolean
