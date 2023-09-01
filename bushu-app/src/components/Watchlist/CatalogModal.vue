@@ -178,7 +178,7 @@ export default Vue.extend({
       }, 0)
     },
     formatDate(dateStr: string | null): string {
-      if (dateStr === null) {
+      if (!dateStr) {
         return '?'
       }
       return (new Date(dateStr)).toLocaleDateString()

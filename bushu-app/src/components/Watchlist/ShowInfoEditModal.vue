@@ -103,10 +103,7 @@
                   class="delete-button"
                   @click="deleteSeason(idx)"
                 >
-                  <b-icon
-                    icon="trash"
-                    variant="light"
-                  />
+                  <b-icon icon="trash" />
                 </div>
                 <div class="show-season-edit">
                   <b-container>
@@ -328,13 +325,15 @@ export default Vue.extend({
 }
 .delete-button {
   display: inline-block;
-  background-color: red;
+  border: 1px solid red;
+  color: red;
   border-radius: 5px;
   padding: 10px;
   cursor: pointer;
 }
 .delete-button:hover {
-  background-color: hsl(0, 100%, 40%);
+  color: white;
+  background-color: red;
 }
 .show-season-edit {
   display: flex;
