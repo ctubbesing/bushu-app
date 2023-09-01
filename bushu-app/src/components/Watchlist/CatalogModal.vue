@@ -6,10 +6,8 @@
       centered
       scrollable
     >
-      <!-- hide-footer -->
       <template v-slot:modal-footer="{ ok }">
         <div style="width: 100%; display: flex; justify-content: space-between">
-            <!-- size="sm" -->
           <b-button
             variant="secondary"
             @click="createNewEntry()"
@@ -108,22 +106,18 @@
         </b-collapse>
       </div>
     </b-modal>
-      <!-- v-if="editingShowIdx != -1" -->
     <show-info-edit-modal
       id="editModal"
       v-model="editingShowInfo"
       :isNewShow="editingShowId === ''"
       @save-changes="saveShowEntry"
     />
-      <!-- :originalShowId="" -->
-      <!-- @cancel="" -->
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
-import dropbox from '@/utils/dropbox';
 import tools from '@/utils/tools';
 import HoverIcon from '@/components/utils/HoverIcon.vue';
 import ShowInfoEditModal from '@/components/Watchlist/ShowInfoEditModal.vue';
@@ -143,8 +137,20 @@ export default Vue.extend({
       tools,
     };
   },
+  computed: {
+    isReady(): boolean {
+      return !this.$store.state.watchlist.isLoading
+    },
+  },
+  watch: {
+    isReady(isReady: boolean) {
+      if (isReady) {
+        this.loadData()
+      }
+    },
+  },
   created() {
-    this.catalog = this.$store.state.watchlist.catalog
+    this.loadData()
 
     this.$root.$on('bv::collapse::state', (showId: string, isShown: boolean) => {
       if (isShown) {
@@ -155,6 +161,11 @@ export default Vue.extend({
     })
   },
   methods: {
+    loadData() {
+      if (this.isReady) {
+        this.catalog = this.$store.state.watchlist.catalog
+      }
+    },
     toggleShow(showId: string) {
       this.$root.$emit('bv::toggle::collapse', showId)
     },

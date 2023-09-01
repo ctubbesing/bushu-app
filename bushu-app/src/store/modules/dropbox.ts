@@ -8,7 +8,10 @@ export default {
   getters: {
     db_isLoggedIn(state: any): boolean {
       return state.db_userInfo !== null
-    }
+    },
+    db_isReady(state: any): boolean {
+      return state.db_accessToken !== ''
+    },
   },
   mutations: {
     setAccessToken(state: any, accessToken: string) {

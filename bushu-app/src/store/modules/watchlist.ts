@@ -25,7 +25,7 @@ export default {
       
       context.commit('setIsLoading', false)
     },
-    async loadFromDropbox(context: any) {
+    async loadCatalogFromDropbox(context: any) {
       context.commit('setIsLoading', true)
 
       let catalogData: null | ShowInfo[] = await dropbox.getData(catalogPath)
