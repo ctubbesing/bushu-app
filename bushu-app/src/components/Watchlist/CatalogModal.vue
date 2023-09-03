@@ -44,6 +44,7 @@
             <thumbnail-image
               :link="show.imgLink"
               :colorSeed="show.id"
+              :height="90"
               style="margin-right: 10px"
             />
             <div class="show-details">

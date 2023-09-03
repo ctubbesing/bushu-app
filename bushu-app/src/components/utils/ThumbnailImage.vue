@@ -1,16 +1,10 @@
 <template>
-  <div class="width-adjusting-to-height">
-    <svg viewBox="0 0 2 3"></svg>
-    <div
-      class="content"
-      :style="'background-color: ' + emptyColor"
+  <div :style="sizeStyle + colorStyle">
+    <img
+      v-if="link"
+      :src="link"
+      :style="sizeStyle"
     >
-      <img
-        v-if="link"
-        :src="link"
-        class="content"
-      >
-    </div>
   </div>
 </template>
 
@@ -28,31 +22,23 @@ export default Vue.extend({
       required: false,
       default: '',
     },
+    height: {
+      type: Number,
+    },
   },
   computed: {
-    emptyColor(): string {
-      if (this.colorSeed.length >= 6) {
-        return '#' + this.colorSeed.slice(-6)
+    sizeStyle(): string {
+      if (this.height) {
+        return `height: ${this.height}px; width: ${this.height * 2 / 3}px;`
       }
-      return '#6c757d'
+      return ''
+    },
+    colorStyle(): string {
+      if (this.colorSeed.length >= 6) {
+        return `background-color: #${this.colorSeed.slice(-6)};`
+      }
+      return 'background-color: #6c757d;'
     },
   },
 })
 </script>
-
-<style scoped>
-.width-adjusting-to-height {
-  display: inline-block;
-  position: relative;
-}
-.width-adjusting-to-height > svg {
-  height: 100%;
-}
-.width-adjusting-to-height .content {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-</style>
