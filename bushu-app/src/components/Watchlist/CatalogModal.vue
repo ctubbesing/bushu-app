@@ -40,18 +40,25 @@
           class="show-info"
           @click="toggleShow(show.id)"
         >
-          <div class="show-details">
-            <div>
-              <h4>{{ show.title }}</h4>
-              <div
-                v-if="show.altName"
-                class="alt-name"
-              >
-                {{ show.altName }}
+          <div style="display: flex; width: 100%">
+            <thumbnail-image
+              :link="show.imgLink"
+              :colorSeed="show.id"
+              style="margin-right: 10px"
+            />
+            <div class="show-details">
+              <div>
+                <h4>{{ show.title }}</h4>
+                <div
+                  v-if="show.altName"
+                  class="alt-name"
+                >
+                  {{ show.altName }}
+                </div>
               </div>
-            </div>
-            <div>
-              {{ show.seasonCount ? (tools.pluralFormat(show.seasonCount, 'season') + ', ') : '' }}{{ getTotalEpisodeCount(show) }} total episodes
+              <div>
+                {{ show.seasonCount ? (tools.pluralFormat(show.seasonCount, 'season') + ', ') : '' }}{{ getTotalEpisodeCount(show) }} total episodes
+              </div>
             </div>
           </div>
           <div class="show-icons">
@@ -121,15 +128,17 @@
 <script lang="ts">
 import Vue from 'vue';
 import { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
-import tools from '@/utils/tools';
-import HoverIcon from '@/components/utils/HoverIcon.vue';
-import ShowInfoEditModal from '@/components/Watchlist/ShowInfoEditModal.vue';
+import tools from '@/utils/tools'
+import HoverIcon from '@/components/utils/HoverIcon.vue'
+import ShowInfoEditModal from '@/components/Watchlist/ShowInfoEditModal.vue'
+import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
 
 export default Vue.extend({
   name: 'CatalogModal',
   components: {
     showInfoEditModal: ShowInfoEditModal,
     hoverIcon: HoverIcon,
+    thumbnailImage: ThumbnailImage,
   },
   data() {
     return {

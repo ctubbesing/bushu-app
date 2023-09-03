@@ -6,6 +6,7 @@ export interface ShowInfo {
   doEpisodeCountOverall?: boolean
   seasonCount?: number
   seasons: ShowSeason[]
+  imgLink?: string
 }
 
 export interface ShowSeason {
