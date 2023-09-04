@@ -39,6 +39,7 @@ export default Vue.extend({
   padding: 10px;
   background-color: #fff9;
   border-radius: 8px;
+  max-width: 100%;
 }
 .header {
   height: 45px;
@@ -56,5 +57,6 @@ export default Vue.extend({
   background-color: #fff9;
   box-shadow: 0 0px 2px #888;
   border-radius: 5px;
+  min-width: 150px;
 }
 </style>

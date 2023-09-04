@@ -32,7 +32,10 @@
         </b-button>
       </div>
     </div>
-    <div v-else>
+    <div
+      v-else
+      class="body-section"
+    >
       <div class="widget-section">
         <h5>Level {{ userLevel }}</h5>
         <a href="https://www.wanikani.com/lesson" target="_blank">
@@ -45,6 +48,19 @@
             Reviews: {{ reviewCount }}
           </div>
         </a>
+      </div>
+      <div
+        v-if="todaysLessons.length > 0"
+        class="widget-section"
+      >
+        <h5>Today's Lessons</h5>
+        <div
+          v-for="(subject, idx) in todaysLessons"
+          :key="idx"
+          class="subject"
+        >
+          {{ subject.characters }}
+        </div>
       </div>
     </div>
     <b-modal
@@ -129,9 +145,12 @@ import axios from 'axios'
 import dropbox from '@/utils/dropbox'
 import BasicWidget from '@/components/BasicWidget.vue'
 import {
-  WKResource,
-  WKCollection,
+  Resource,
+  Collection,
   WKUserData,
+  SubjectData,
+  AssignmentResource,
+  SubjectResource,
 } from '@/types/wanikaniTypes'
 
 export default Vue.extend({
@@ -146,6 +165,7 @@ export default Vue.extend({
       userLevel: 0 as number,
       lessonCount: 0 as number,
       reviewCount: 0 as number,
+      todaysLessons: [] as SubjectData[],
       ktListStartLevel: 0 as number,
       ktListEndLevel: 0 as number,
       ktListObject: null as any,
@@ -192,6 +212,7 @@ export default Vue.extend({
         this.loading = true
         await this.getUserData()
         await this.getSummary()
+        await this.getTodaysLessons()
         this.isConnected = true
       } catch (e: any) {
         this.isConnected = false
@@ -240,6 +261,23 @@ export default Vue.extend({
       this.lessonCount = r.data.data.lessons[0].subject_ids.length
       this.reviewCount = r.data.data.reviews[0].subject_ids.length
     },
+    async getTodaysLessons() {
+      let todayMidnight = new Date()
+      todayMidnight.setHours(0, 0, 0, 0)
+      let todayMidnightUTC = todayMidnight.toISOString()
+      console.log('todayMidnightUTC: ' + todayMidnightUTC)
+
+      let assignmentsUrl = 'https://api.wanikani.com/v2/assignments' +
+                           `?updated_after=${todayMidnightUTC}` +
+                           '&srs_stages=1,2,3'
+      const todaysAssignmentsFilter = (a: AssignmentResource) => {
+        if (a.data.started_at) {
+          return new Date(a.data.started_at) >= todayMidnight
+        }
+        return false
+      }
+      this.todaysLessons = await this.getSubjectsByAssignmentsUrl(assignmentsUrl, todaysAssignmentsFilter)
+    },
     async saveTokenUpdate() {
       this.newAccessToken = this.modeledTokenString
       // update store and save changes to Dropbox
@@ -273,66 +311,94 @@ export default Vue.extend({
     // closeKTListModal() {
     //   this.$bvModal.hide('ktListModal')
     // },
-    // TODO: fix this because something's wrong it doesn't work any more
-    async buildKanjiTeacherList() {
-      let levelsList = [...Array(this.userLevel).keys()].map(n => n + 1) as number[]
-
+    async getPaginatedResourceData(url: string | null): Promise<Resource[]> {
+      let allResources: Resource[] = []
+      while (url !== null) {
+        let r = await axios.get(url, {
+          headers: {
+            'Authorization': ('Bearer ' + this.apiAccessToken)
+          },
+        })
+        let collection = r.data as Collection
+        url = collection.pages.next_url
+        allResources = allResources.concat(collection.data)
+      }
+      return allResources
+    },
+    async getSubjectsByAssignmentsUrl(assignmentsUrl: string, assignmentFilter: (a: AssignmentResource) => boolean = (a) => true): Promise<SubjectData[]> {
       // get subject ids from assignments
-      let subjectsList = [] as number[]
-      let url = 'https://api.wanikani.com/v2/assignments' +
-                '?subject_types=kanji' +
-                '&levels=' + levelsList.join() as null | string
-      while (url !== null) {
-        let r = await axios.get(url, {
-          headers: {
-            'Authorization': ('Bearer ' + this.apiAccessToken)
-          },
-        })
-        let assignments = r.data as WKCollection
-        url = assignments.pages.next_url
+      let assignmentResources = await this.getPaginatedResourceData(assignmentsUrl) as AssignmentResource[]
+      let subjectsList: number[] = assignmentResources.filter(assignmentFilter).map((r) => r.data.subject_id)
 
-        subjectsList = subjectsList.concat(
-          assignments.data.map((assignment: WKResource) => {
-            return assignment.data.subject_id as number
-          })
-        )
-      }
+      // get subjects by id
+      let subjectsUrl = 'https://api.wanikani.com/v2/subjects' +
+                        '?ids=' + subjectsList.join()
+      let subjectResources = await this.getPaginatedResourceData(subjectsUrl) as SubjectResource[]
 
-      // get kanji characters from subjects
-      let kanjiList = [] as string[]
-      url = 'https://api.wanikani.com/v2/subjects' +
-            '?ids=' + subjectsList.join() as null | string
-      while (url !== null) {
-        let r = await axios.get(url, {
-          headers: {
-            'Authorization': ('Bearer ' + this.apiAccessToken)
-          },
-        })
-        let subjects = r.data as WKCollection
-        url = subjects.pages.next_url
+      return subjectResources.map((r) => r.data)
+    },
+    // TODO: fix this because something's wrong it doesn't work any more
+    // async buildKanjiTeacherList() {
+    //   let levelsList = [...Array(this.userLevel).keys()].map(n => n + 1) as number[]
 
-        kanjiList = kanjiList.concat(
-          subjects.data.map((subject: WKResource) => {
-            return subject.data.characters!
-          })
-        )
-      }
+    //   // get subject ids from assignments
+    //   let url = 'https://api.wanikani.com/v2/assignments' +
+    //             '?subject_types=kanji' +
+    //             '&levels=' + levelsList.join()// as null | string
+      //// here do getSubjectsByAssignmentsUrl()
+
+      // let subjectsList = [] as number[]
+      // while (url !== null) {
+      //   let r = await axios.get(url, {
+      //     headers: {
+      //       'Authorization': ('Bearer ' + this.apiAccessToken)
+      //     },
+      //   })
+      //   let assignments = r.data as Collection
+      //   url = assignments.pages.next_url
+
+      //   subjectsList = subjectsList.concat(
+      //     assignments.data.map((assignment: Resource) => {
+      //       return assignment.data.subject_id as number
+      //     })
+      //   )
+      // }
+
+      // // get kanji characters from subjects
+      // let kanjiList = [] as string[]
+      // url = 'https://api.wanikani.com/v2/subjects' +
+      //       '?ids=' + subjectsList.join() as null | string
+      // while (url !== null) {
+      //   let r = await axios.get(url, {
+      //     headers: {
+      //       'Authorization': ('Bearer ' + this.apiAccessToken)
+      //     },
+      //   })
+      //   let subjects = r.data as Collection
+      //   url = subjects.pages.next_url
+
+      //   kanjiList = kanjiList.concat(
+      //     subjects.data.map((subject: Resource) => {
+      //       return subject.data.characters!
+      //     })
+      //   )
+      // }
 
       // build object
-      this.ktListObject = {
-        "learninglist": {
-          "own": kanjiList,
-          "list1": [],
-          "list2": [],
-          "list3": [],
-          "list4": [],
-          "list5": [],
-          "list6": [],
-          "list7": []
-        },
-        "version": "11.0"
-      }
-    },
+      // this.ktListObject = {
+      //   "learninglist": {
+      //     "own": kanjiList,
+      //     "list1": [],
+      //     "list2": [],
+      //     "list3": [],
+      //     "list4": [],
+      //     "list5": [],
+      //     "list6": [],
+      //     "list7": []
+      //   },
+      //   "version": "11.0"
+      // }
+    // },
   },
 })
 </script>
@@ -367,5 +433,19 @@ a:hover {
   color: #822;
   background-color: #faa;
   border-color: #a55;
+}
+.body-section {
+  display: flex;
+  align-items: stretch;
+}
+.subject {
+  display: inline-block;
+  background-color: #ccc;
+  padding: 5px;
+  margin: 5px;
+  box-shadow: inset 0 -3px 1px rgb(0 0 0 / 20%), inset 0 3px 1px rgb(0 0 0 / 0%);
+  border-radius: 5px;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 18px;
 }
 </style>
