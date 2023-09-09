@@ -29,7 +29,7 @@ export default Vue.extend({
   computed: {
     sizeStyle(): string {
       if (this.height) {
-        return `height: ${this.height}px; width: ${this.height * 2 / 3}px;`
+        return `height: ${this.height}px; width: ${this.height * 2 / 3}px; min-width: ${this.height * 2 / 3}px;`
       }
       return ''
     },

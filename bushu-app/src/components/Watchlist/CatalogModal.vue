@@ -94,25 +94,33 @@
               v-for="(season, sznIdx) in show.seasons"
               :key="idx + '-' + sznIdx"
             >
-              <div class="season-details">
-                <div>
+              <div style="display: flex; width: 100%">
+                <thumbnail-image
+                  v-if="show.seasons.some(s => s.imgLink)"
+                  :link="season.imgLink"
+                  :colorSeed="season.id"
+                  :height="80"
+                  style="margin-right: 10px"
+                />
+                <div class="season-details">
                   <h5>
                     {{ `Season ${season.seasonNumber}` + (season.name ? `: ${season.name}` : '') }}
                   </h5>
-                </div>
-                <div v-if="season.totalEpisodeCount">
-                  {{  tools.pluralFormat(season.totalEpisodeCount, 'episode') }}
-                </div>
-                <div>
-                  <span v-if="season.startDate || season.endDate">
-                    Aired {{ formatDate(season.startDate) }} - {{ formatDate(season.endDate) }}
-                  </span>
-                  <span
-                    v-if="season.airingYear && season.airingSeason"
-                    style="margin-left: 10px"
-                  >
-                    <b>{{ season.airingYear + ' ' + season.airingSeason }}</b>
-                  </span>
+                  <div style="display: flex; justify-content: space-between; align-items: flex-end">
+                    <div>
+                      <div v-if="season.totalEpisodeCount">
+                        {{  tools.pluralFormat(season.totalEpisodeCount, 'episode') }}
+                      </div>
+                      <div v-if="season.startDate || season.endDate">
+                        Aired {{ formatDate(season.startDate) }} - {{ formatDate(season.endDate) }}
+                      </div>
+                    </div>
+                    <div
+                      v-if="season.airingYear && season.airingSeason"
+                    >
+                      <b>{{ season.airingYear + ' ' + season.airingSeason }}</b>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -255,6 +263,13 @@ export default Vue.extend({
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
+}
+.season-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
 }
 .show-icons {
   display: flex;

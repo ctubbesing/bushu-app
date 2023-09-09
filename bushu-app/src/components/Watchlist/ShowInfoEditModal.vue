@@ -110,10 +110,7 @@
                     cols="*"
                     :style="showData.imgLink ? '' : 'visibility: hidden'"
                   >
-                    <div class="thumbnail-sample">
-                      <div>
-                        Image
-                      </div>
+                    <div class="thumbnail-sample season-color">
                       <thumbnail-image
                         :link="showData.imgLink"
                         :colorSeed="showData.id"
@@ -220,6 +217,28 @@
                         />
                       </b-col>
                     </b-form-row>
+                    <b-form-row>
+                      <b-col cols="3">
+                        <label :for="`form-szn-${idx}-img-link`">Image link:</label>
+                      </b-col>
+                      <b-col>
+                        <b-form-input
+                          :id="`form-szn-${idx}-img-link`"
+                          type="text"
+                          v-model="season.imgLink"
+                        />
+                      </b-col>
+                    </b-form-row>
+                    <div
+                      v-if="season.imgLink"
+                      class="thumbnail-sample show-color"
+                    >
+                      <thumbnail-image
+                        :link="season.imgLink"
+                        :colorSeed="season.id"
+                        :height="64"
+                      />
+                    </div>
                   </b-container>
                 </div>
               </div>
@@ -300,7 +319,8 @@ export default Vue.extend({
                                     szn.startDate !== this.originalData.seasons[idx].startDate ||
                                     szn.endDate !== this.originalData.seasons[idx].endDate ||
                                     szn.airingSeason !== this.originalData.seasons[idx].airingSeason ||
-                                    szn.airingYear !== this.originalData.seasons[idx].airingYear
+                                    szn.airingYear !== this.originalData.seasons[idx].airingYear ||
+                                    szn.imgLink !== this.originalData.seasons[idx].imgLink
                            })
       }
       return isShowDataChanged || isSznDataChanged
@@ -386,13 +406,20 @@ export default Vue.extend({
 .show-info {
   cursor: auto;
 }
+.show-color {
+  background-color: hsl(192, 71%, 85%);
+}
+.season-color {
+  background-color: hsl(192, 71%, 65%);
+}
 .thumbnail-sample {
+  display: inline-block;
+  padding: 5px;
+  margin: 5px 15px;
+  border-radius: 3px;
+  box-shadow: inset 0 -2px 1px #0003;
   text-align: center;
   font-size: 0.7rem;
   font-weight: bold;
-  background-color: hsl(192, 71%, 65%);
-  box-shadow: inset 0 -2px 1px #0003;
-  padding: 0 5px 5px;
-  margin: 5px 15px;
 }
 </style>

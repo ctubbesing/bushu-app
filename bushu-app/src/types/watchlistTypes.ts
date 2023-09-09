@@ -20,5 +20,5 @@ export interface ShowSeason {
   airingSeason?: string
   airingYear?: number
   infoLink?: string
-  imgPath?: string
+  imgLink?: string
 }
