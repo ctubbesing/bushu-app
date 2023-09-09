@@ -57,8 +57,11 @@
                   {{ show.altName }}
                 </div>
               </div>
-              <div>
-                {{ show.seasonCount ? (tools.pluralFormat(show.seasonCount, 'season') + ', ') : '' }}{{ getTotalEpisodeCount(show) }} total episodes
+              <div v-if="show.seasonCount">
+                {{  tools.pluralFormat(show.seasonCount, 'season') }}
+              </div>
+              <div v-else>
+                {{ getTotalEpisodeCount(show) }} total episodes
               </div>
             </div>
           </div>
@@ -239,6 +242,7 @@ export default Vue.extend({
   background-color: hsl(192, 71%, 85%);
   border-radius: 5px;
   cursor: pointer;
+  box-shadow: inset 0 -2px 1px #0003;
 }
 .show-season {
   min-height: 80px;

@@ -69,28 +69,59 @@
                 </b-form-row>
                 <b-form-row>
                   <b-col cols="4">
-                    <label for="form-anime">Anime?</label>
+                    <label for="form-img-link">Image link:</label>
                   </b-col>
-                  <b-col cols="*">
-                    <b-form-checkbox
-                      id="form-anime"
-                      v-model="showData.isAnime"
-                      switch
+                  <b-col>
+                    <b-form-input
+                      id="form-img-link"
+                      type="text"
+                      v-model="showData.imgLink"
                     />
                   </b-col>
                 </b-form-row>
-                <b-form-row v-if="showData.isAnime">
-                  <b-col cols="*">
-                    <label for="form-show-episode-count">Count total episodes?</label>
+                <b-row>
+                  <b-col>
+                    <b-form-row>
+                      <b-col cols="5">
+                        <label for="form-anime">Anime?</label>
+                      </b-col>
+                      <b-col cols="*">
+                        <b-form-checkbox
+                          id="form-anime"
+                          v-model="showData.isAnime"
+                          switch
+                        />
+                      </b-col>
+                    </b-form-row>
+                    <b-form-row v-if="showData.isAnime">
+                      <b-col cols="*">
+                        <label for="form-show-episode-count">Count total episodes?</label>
+                      </b-col>
+                      <b-col cols="*">
+                        <b-form-checkbox
+                          id="form-show-episode-count"
+                          v-model="showData.doEpisodeCountOverall"
+                          switch
+                        />
+                      </b-col>
+                    </b-form-row>
                   </b-col>
-                  <b-col cols="*">
-                    <b-form-checkbox
-                      id="form-show-episode-count"
-                      v-model="showData.doEpisodeCountOverall"
-                      switch
-                    />
+                  <b-col
+                    cols="*"
+                    :style="showData.imgLink ? '' : 'visibility: hidden'"
+                  >
+                    <div class="thumbnail-sample">
+                      <div>
+                        Image
+                      </div>
+                      <thumbnail-image
+                        :link="showData.imgLink"
+                        :colorSeed="showData.id"
+                        :height="64"
+                      />
+                    </div>
                   </b-col>
-                </b-form-row>
+                </b-row>
               </b-container>
             </div>
             <div class="seasons-section">
@@ -214,9 +245,13 @@
 import Vue, { PropType } from 'vue'
 import tools from '@/utils/tools';
 import { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
+import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
 
 export default Vue.extend({
   name: 'ShowInfoEditModal',
+  components: {
+    thumbnailImage: ThumbnailImage,
+  },
   props: {
     value: {
       required: true,
@@ -249,6 +284,7 @@ export default Vue.extend({
       let isShowDataChanged = this.showData.id !== this.originalData.id ||
                               this.showData.title !== this.originalData.title ||
                               this.showData.altName !== this.originalData.altName ||
+                              this.showData.imgLink !== this.originalData.imgLink ||
                               this.showData.isAnime !== this.originalData.isAnime ||
                               this.showData.doEpisodeCountOverall !== this.originalData.doEpisodeCountOverall ||
                               this.showData.seasonCount !== this.originalData.seasonCount
@@ -345,8 +381,18 @@ export default Vue.extend({
   width: 90%;
   background-color: hsl(192, 71%, 65%);
   font-size: 0.8em;
+  box-shadow: inset 0 -2px 1px #0003;
 }
 .show-info {
   cursor: auto;
+}
+.thumbnail-sample {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  background-color: hsl(192, 71%, 65%);
+  box-shadow: inset 0 -2px 1px #0003;
+  padding: 0 5px 5px;
+  margin: 5px 15px;
 }
 </style>
