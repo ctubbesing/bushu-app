@@ -39,7 +39,7 @@ export default Vue.extend({
   padding: 10px;
   background-color: #fff9;
   border-radius: 8px;
-  max-width: 100%;
+  max-width: 500px;
 }
 .header {
   height: 45px;
@@ -51,6 +51,7 @@ export default Vue.extend({
   margin-top: 5px;
 }
 .widget-section {
+  flex-grow: 1;
   display: inline-block;
   margin: 5px;
   padding: 5px;

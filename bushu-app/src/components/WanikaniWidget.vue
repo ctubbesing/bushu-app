@@ -39,12 +39,12 @@
       <div class="widget-section">
         <h5>Level {{ userLevel }}</h5>
         <a href="https://www.wanikani.com/lesson" target="_blank">
-          <div class="lessons-reviews" style="background-color: #ff00aa">
+          <div class="clickable-item kanji-color">
             Lessons: {{ lessonCount }}
           </div>
         </a>
         <a href="https://www.wanikani.com/review" target="_blank">
-          <div class="lessons-reviews" style="background-color: #00aaff">
+          <div class="clickable-item radical-color">
             Reviews: {{ reviewCount }}
           </div>
         </a>
@@ -54,12 +54,28 @@
         class="widget-section"
       >
         <h5>Today's Lessons</h5>
-        <div
-          v-for="(subject, idx) in todaysLessons"
-          :key="idx"
-          class="subject"
-        >
-          {{ subject.characters }}
+        <div style="margin: auto; max-width: 300px">
+          <a
+            v-for="(subject, idx) in todaysLessons"
+            :key="idx"
+            :href="subject.data.document_url"
+            target="_blank"
+          >
+            <div
+              :class="[
+                'clickable-item',
+                'today-lesson',
+                {
+                  'radical-color': (subject.object === 'radical'),
+                  'kanji-color': (subject.object === 'kanji'),
+                  'vocab-color': (subject.object === 'vocabulary' || subject.object === 'kana_vocabulary'),
+                }
+              ]"
+              :title="getSubjectMeaning(subject)"
+            >
+              {{ subject.data.characters }}
+            </div>
+          </a>
         </div>
       </div>
     </div>
@@ -148,7 +164,6 @@ import {
   Resource,
   Collection,
   WKUserData,
-  SubjectData,
   AssignmentResource,
   SubjectResource,
 } from '@/types/wanikaniTypes'
@@ -165,7 +180,7 @@ export default Vue.extend({
       userLevel: 0 as number,
       lessonCount: 0 as number,
       reviewCount: 0 as number,
-      todaysLessons: [] as SubjectData[],
+      todaysLessons: [] as SubjectResource[],
       ktListStartLevel: 0 as number,
       ktListEndLevel: 0 as number,
       ktListObject: null as any,
@@ -206,6 +221,9 @@ export default Vue.extend({
     },
     openReviews() {
       window.open('https://www.wanikani.com/review')
+    },
+    getSubjectMeaning(subject: SubjectResource): string {
+      return subject.data.meanings[0].meaning
     },
     async loadData() {
       try {
@@ -265,7 +283,6 @@ export default Vue.extend({
       let todayMidnight = new Date()
       todayMidnight.setHours(0, 0, 0, 0)
       let todayMidnightUTC = todayMidnight.toISOString()
-      console.log('todayMidnightUTC: ' + todayMidnightUTC)
 
       let assignmentsUrl = 'https://api.wanikani.com/v2/assignments' +
                            `?updated_after=${todayMidnightUTC}` +
@@ -325,7 +342,7 @@ export default Vue.extend({
       }
       return allResources
     },
-    async getSubjectsByAssignmentsUrl(assignmentsUrl: string, assignmentFilter: (a: AssignmentResource) => boolean = (a) => true): Promise<SubjectData[]> {
+    async getSubjectsByAssignmentsUrl(assignmentsUrl: string, assignmentFilter: (a: AssignmentResource) => boolean = (a) => true): Promise<SubjectResource[]> {
       // get subject ids from assignments
       let assignmentResources = await this.getPaginatedResourceData(assignmentsUrl) as AssignmentResource[]
       let subjectsList: number[] = assignmentResources.filter(assignmentFilter).map((r) => r.data.subject_id)
@@ -335,7 +352,7 @@ export default Vue.extend({
                         '?ids=' + subjectsList.join()
       let subjectResources = await this.getPaginatedResourceData(subjectsUrl) as SubjectResource[]
 
-      return subjectResources.map((r) => r.data)
+      return subjectResources
     },
     // TODO: fix this because something's wrong it doesn't work any more
     // async buildKanjiTeacherList() {
@@ -404,16 +421,33 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-.lessons-reviews {
-  margin: 3px;
-  padding: 5px;
+.clickable-item {
+  border-radius: 5px;
   box-shadow: inset 0 -3px 1px rgb(0 0 0 / 20%), inset 0 3px 1px rgb(0 0 0 / 0%);
   color: #fff;
-  border-radius: 5px;
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  padding: 5px;
+  margin: 3px;
   font-size: 18px;
-  font-weight: bold;
   cursor: pointer;
+  font-weight: bold;
+  user-select: none;
+}
+.clickable-item:active {
+  box-shadow: inset 0 3px 1px rgb(0 0 0 / 20%), inset 0 3px 1px rgb(0 0 0 / 0%);
+}
+.today-lesson {
+  display: inline-block;
+  font-weight: normal;
+}
+.radical-color {
+  background-color: #0af;
+}
+.kanji-color {
+  background-color: #f0a;
+}
+.vocab-color {
+  background-color: #a0f;
 }
 a:hover {
   text-decoration: none;
@@ -437,15 +471,6 @@ a:hover {
 .body-section {
   display: flex;
   align-items: stretch;
-}
-.subject {
-  display: inline-block;
-  background-color: #ccc;
-  padding: 5px;
-  margin: 5px;
-  box-shadow: inset 0 -3px 1px rgb(0 0 0 / 20%), inset 0 3px 1px rgb(0 0 0 / 0%);
-  border-radius: 5px;
-  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 18px;
+  flex-wrap: wrap;
 }
 </style>

@@ -42,7 +42,7 @@ export interface WKUserData {
   preferences: any
 }
 
-export interface AssignmentData {
+interface AssignmentData {
   available_at: string | null
   burned_at: string | null
   created_at: string
@@ -56,7 +56,7 @@ export interface AssignmentData {
   unlocked_at: string | null
 }
 
-export interface SubjectData {
+interface SubjectData {
   auxilary_meanings: SubjectAuxilaryMeaning[]
   characters: string | null
   created_at: string
