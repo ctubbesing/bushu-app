@@ -42,7 +42,7 @@
         >
           <div style="display: flex; width: 100%">
             <thumbnail-image
-              :link="show.imgLink"
+              :link="getShowImageLink(show)"
               :colorSeed="show.id"
               :height="90"
               style="margin-right: 10px"
@@ -97,7 +97,8 @@
               <div style="display: flex; width: 100%">
                 <thumbnail-image
                   v-if="show.seasons.some(s => s.imgLink)"
-                  :link="season.imgLink"
+                  :link="getSeasonImageLink(show, sznIdx)"
+                  :doFaded="!season.imgLink"
                   :colorSeed="season.id"
                   :height="80"
                   style="margin-right: 10px"
@@ -197,6 +198,20 @@ export default Vue.extend({
       return show.seasons.reduce((sum: number, s: ShowSeason) => {
         return sum + (s.totalEpisodeCount ? s.totalEpisodeCount : 0)
       }, 0)
+    },
+    getShowImageLink(show: ShowInfo): string {
+      if (show.imgLink) {
+        return show.imgLink
+      }
+      let seasons: ShowSeason[] = tools.deepClone(show.seasons)
+      let latestSznImgLinkIdx = seasons.reverse().findIndex((s: ShowSeason) => s.imgLink)
+      return latestSznImgLinkIdx === -1 ? '' : seasons[latestSznImgLinkIdx].imgLink!
+    },
+    getSeasonImageLink(show: ShowInfo, sznIdx: number): string {
+      if (show.seasons[sznIdx].imgLink) {
+        return show.seasons[sznIdx].imgLink!
+      }
+      return this.getShowImageLink(show)
     },
     formatDate(dateStr: string | null): string {
       if (!dateStr) {

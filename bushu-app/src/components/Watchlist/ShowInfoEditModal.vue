@@ -143,6 +143,7 @@
                         <b-form-input
                           :id="`form-szn-${idx}-number`"
                           type="number"
+                          step="0.5"
                           v-model.number="season.seasonNumber"
                           required
                         />

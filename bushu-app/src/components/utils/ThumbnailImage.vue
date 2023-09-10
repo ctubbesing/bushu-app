@@ -3,7 +3,7 @@
     <img
       v-if="link"
       :src="link"
-      :style="sizeStyle"
+      :style="sizeStyle + (doFaded ? 'opacity: 0.6;' : '')"
     >
   </div>
 </template>
@@ -24,6 +24,11 @@ export default Vue.extend({
     },
     height: {
       type: Number,
+    },
+    doFaded: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   computed: {
