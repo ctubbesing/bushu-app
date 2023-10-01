@@ -51,7 +51,7 @@
                     <b-form-input
                       id="form-alt-title"
                       type="text"
-                      v-model="showData.altName"
+                      v-model="showData.altTitle"
                     />
                   </b-col>
                 </b-form-row>
@@ -303,7 +303,7 @@ export default Vue.extend({
     isChanged(): boolean {
       let isShowDataChanged = this.showData.id !== this.originalData.id ||
                               this.showData.title !== this.originalData.title ||
-                              this.showData.altName !== this.originalData.altName ||
+                              this.showData.altTitle !== this.originalData.altTitle ||
                               this.showData.imgLink !== this.originalData.imgLink ||
                               this.showData.isAnime !== this.originalData.isAnime ||
                               this.showData.doEpisodeCountOverall !== this.originalData.doEpisodeCountOverall ||

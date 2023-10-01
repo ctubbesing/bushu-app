@@ -51,10 +51,10 @@
               <div>
                 <h4>{{ show.title }}</h4>
                 <div
-                  v-if="show.altName"
-                  class="alt-name"
+                  v-if="show.altTitle"
+                  class="alt-title"
                 >
-                  {{ show.altName }}
+                  {{ show.altTitle }}
                 </div>
               </div>
               <div v-if="show.seasonCount">
@@ -299,7 +299,7 @@ export default Vue.extend({
 .show-info h4 {
   margin-bottom: 4px;
 }
-.alt-name {
+.alt-title {
   font-size: 0.8em;
 }
 .seasons-section {
