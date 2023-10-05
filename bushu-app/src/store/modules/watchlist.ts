@@ -1,7 +1,5 @@
-import { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
-import dropbox from '@/utils/dropbox'
-
-const catalogPath = '/Watchlist/catalog.json'
+import { ShowInfo } from '@/types/watchlistTypes'
+import watchlistService from '@/utils/services/WatchlistService'
 
 export default {
   state: {
@@ -20,7 +18,7 @@ export default {
     async updateCatalog(context: any, newCatalogData: ShowInfo[]) {
       context.commit('setIsLoading', true)
 
-      await dropbox.saveData(catalogPath, newCatalogData)
+      await watchlistService.SaveCatalog(newCatalogData)
       context.commit('setCatalog', newCatalogData)
       
       context.commit('setIsLoading', false)
@@ -28,10 +26,7 @@ export default {
     async loadCatalogFromDropbox(context: any) {
       context.commit('setIsLoading', true)
 
-      let catalogData: null | ShowInfo[] = await dropbox.getData(catalogPath)
-      if (catalogData === null) {
-        catalogData = []
-      }
+      const catalogData: ShowInfo[] = await watchlistService.GetCatalog()
       context.commit('setCatalog', catalogData)
 
       context.commit('setIsLoading', false)
