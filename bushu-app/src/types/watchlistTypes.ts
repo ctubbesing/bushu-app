@@ -22,3 +22,21 @@ export interface ShowSeason {
   infoLink?: string
   imgLink?: string
 }
+
+export interface SeasonView {
+  id: string
+  seasonInfo: ShowSeason
+  watchedEpisodes: number
+  currentEpisodeCount?: number
+  // isCompleted: boolean
+  // beganDate: string
+  // completedDate: string
+}
+
+export interface WatchlistData {
+  main: SeasonView[]
+  live: SeasonView[]
+  queue: SeasonView[]
+  upcoming: ShowSeason[]
+  backlog: ShowInfo[]
+}
