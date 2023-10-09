@@ -5,6 +5,7 @@ import {
   SeasonView,
 } from '@/types/watchlistTypes'
 import dropbox from '@/utils/dropbox'
+import tools from '../tools'
 
 interface DataStore<T> {
   [ id: string ]: T
@@ -41,6 +42,7 @@ const seasonViewsPath = '/Watchlist/seasonViews.json'
 
 let ShowInfoCache: DataStore<RawShowInfo> = {}
 let ShowSeasonCache: DataStore<ShowSeason> = {}
+let SeasonViewCache: DataStore<RawSeasonView> = {}
 
 async function LoadShowInfo(): Promise<DataStore<RawShowInfo>> {
   if (Object.keys(ShowInfoCache).length === 0) {
@@ -64,6 +66,17 @@ async function LoadShowSeasons(): Promise<DataStore<ShowSeason>> {
   return ShowSeasonCache
 }
 
+async function LoadSeasonViews(): Promise<DataStore<RawSeasonView>> {
+  if (Object.keys(SeasonViewCache).length === 0) {
+    let seasonViews: DataStore<RawSeasonView> | null = await dropbox.getData(seasonViewsPath)
+    if (seasonViews === null) {
+      seasonViews = {}
+    }
+    SeasonViewCache = seasonViews
+  }
+  return SeasonViewCache
+}
+
 async function LoadWatchlistData(): Promise<RawWatchlistData> {
   let watchlistData: RawWatchlistData | null = await dropbox.getData(watchlistDataPath)
   if (watchlistData === null) {
@@ -76,14 +89,6 @@ async function LoadWatchlistData(): Promise<RawWatchlistData> {
     }
   }
   return watchlistData
-}
-
-async function LoadSeasonViews(): Promise<DataStore<RawSeasonView>> {
-  let seasonViews: DataStore<RawSeasonView> | null = await dropbox.getData(seasonViewsPath)
-  if (seasonViews === null) {
-    seasonViews = {}
-  }
-  return seasonViews
 }
 
 async function BuildShowInfo(ids: string[]): Promise<DataStore<ShowInfo>> {
@@ -177,7 +182,7 @@ export default {
     ShowSeasonCache = showSeasonData
   },
   async GetWatchlistData(): Promise<WatchlistData> {
-    const rawWLData = await LoadWatchlistData()
+    const rawWLData: RawWatchlistData = await LoadWatchlistData()
     const allSeasonViewIds = [
       ...rawWLData.mainSeasonViewIds,
       ...rawWLData.liveSeasonViewIds,
@@ -196,5 +201,38 @@ export default {
     }
 
     return watchlist
+  },
+  async SaveWatchlistData(watchlist: WatchlistData) {
+    const allSeasonViews: SeasonView[] = [
+      ...watchlist.main,
+      ...watchlist.live,
+      ...watchlist.queue,
+    ]
+    await this.SaveSeasonViews(allSeasonViews)
+
+    const rawData: RawWatchlistData = {
+      mainSeasonViewIds: watchlist.main.map((view: SeasonView) => view.id),
+      liveSeasonViewIds: watchlist.live.map((view: SeasonView) => view.id),
+      queueSeasonViewIds: watchlist.queue.map((view: SeasonView) => view.id),
+      upcomingShowSeasonIds: watchlist.upcoming.map((season: ShowSeason) => season.id),
+      backlogShowInfoIds: watchlist.backlog.map((show: ShowInfo) => show.id),
+    }
+
+    await dropbox.saveData(watchlistDataPath, rawData)
+  },
+  async SaveSeasonViews(seasonViews: SeasonView[]) {
+    const allViews: DataStore<RawSeasonView> = await LoadSeasonViews()
+    const newViews: DataStore<RawSeasonView> = tools.deepClone(allViews)
+    seasonViews.forEach((view: SeasonView) => {
+      newViews[view.id] = {
+        id: view.id,
+        showSeasonId: view.seasonInfo.id,
+        watchedEpisodes: view.watchedEpisodes,
+        currentEpisodeCount: view.currentEpisodeCount,
+      }
+    })
+
+    SeasonViewCache = newViews
+    await dropbox.saveData(seasonViewsPath, newViews)
   },
 }
