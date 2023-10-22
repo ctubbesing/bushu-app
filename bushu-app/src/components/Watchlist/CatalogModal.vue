@@ -269,12 +269,7 @@ export default Vue.extend({
       }, 0)
     },
     getShowImageLink(show: ShowInfo): string {
-      if (show.imgLink) {
-        return show.imgLink
-      }
-      let seasons: ShowSeason[] = tools.deepClone(show.seasons)
-      let latestSznImgLinkIdx = seasons.reverse().findIndex((s: ShowSeason) => s.imgLink)
-      return latestSznImgLinkIdx === -1 ? '' : seasons[latestSznImgLinkIdx].imgLink!
+      return this.$store.getters.getShowImageLink(show)
     },
     getSeasonImageLink(show: ShowInfo, sznIdx: number): string {
       if (show.seasons[sznIdx].imgLink) {

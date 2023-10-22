@@ -3,7 +3,7 @@
     <div id="item-details">
       <div id="info-section">
         <thumbnail-image
-          :link="showInfo ? showInfo.imgLink : ''"
+          :link="imageLink"
           :height="100"
         />
         <div>
@@ -62,6 +62,20 @@ export default Vue.extend({
     showInfo: {
       type: Object as PropType<ShowInfo>,
       required: false,
+    },
+  },
+  computed: {
+    imageLink(): string {
+      if (this.seasonView || this.showSeason) {
+        const showSeasonData = this.seasonView ? this.seasonView.seasonInfo : this.showSeason
+        if (showSeasonData.imgLink) {
+          return showSeasonData.imgLink
+        }
+        return this.$store.getters.getImageLink(showSeasonData.showId, showSeasonData.id)
+      } else if (this.showInfo) {
+        return this.$store.getters.getShowImageLink(this.showInfo)
+      }
+      return ''
     },
   },
 });
