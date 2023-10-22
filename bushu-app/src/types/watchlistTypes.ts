@@ -29,8 +29,10 @@ export interface SeasonView {
   watchedEpisodes: number
   currentEpisodeCount?: number
   // isCompleted: boolean
-  // beganDate: string
-  // completedDate: string
+  beganDate?: string
+  completedDate?: string
+  isDropped: boolean
+  // notes: string[]
 }
 
 export interface WatchlistData {

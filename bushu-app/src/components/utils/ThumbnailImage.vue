@@ -1,9 +1,8 @@
 <template>
   <div :style="sizeStyle + colorStyle">
     <img
-      v-if="link"
       :src="link"
-      :style="sizeStyle + (doFaded ? 'opacity: 0.6;' : '')"
+      :style="sizeStyle + (doFaded ? 'opacity: 0.6;' : '') + (link ? '' : 'visibility: hidden;')"
     >
   </div>
 </template>
