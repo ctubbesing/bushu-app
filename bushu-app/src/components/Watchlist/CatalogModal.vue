@@ -2,9 +2,10 @@
   <div>
     <b-modal
       v-bind="$attrs"
-      title="Catalog"
+      :title="selectMode ? ('Select a ' + selectMode + ':') : 'Catalog'"
       centered
       scrollable
+      @hidden="onModalClose()"
     >
       <template v-slot:modal-footer="{ ok }">
         <div style="width: 100%; display: flex; justify-content: space-between">
@@ -20,11 +21,20 @@
             />
           </b-button>
           <b-button
+            v-if="selectionTargetList"
+            size="sm"
+            variant="outline-primary"
+            :disabled="!selectedItemId"
+            @click="chooseItem()"
+          >
+            Select {{ selectMode | toTitleCase }}
+          </b-button>
+          <b-button
             size="sm"
             variant="outline-success"
             @click="ok()"
           >
-            Close
+            {{ selectionTargetList ? 'Cancel' : 'Close' }}
           </b-button>
         </div>
       </template>
@@ -37,8 +47,11 @@
         :key="idx"
       >
         <div
-          class="show-info"
-          @click="toggleShow(show.id)"
+          :class="[
+            'show-info',
+            { 'selected-item': show.id === selectedItemId }
+          ]"
+          @click="selectShow(show.id)"
         >
           <div style="display: flex; width: 100%">
             <thumbnail-image
@@ -77,6 +90,7 @@
               />
             </div>
             <hover-icon
+              v-if="selectMode !== 'show'"
               :icon="'caret-right' + ((expandedShowId === show.id) ? '-fill' : '')"
               scale="1.75"
               variant="secondary"
@@ -90,9 +104,14 @@
         >
           <div class="seasons-section">
             <div
-              class="show-info show-season"
               v-for="(season, sznIdx) in show.seasons"
               :key="idx + '-' + sznIdx"
+              :class="[
+                'show-info',
+                'show-season',
+                { 'selected-item': season.id === selectedItemId }
+              ]"
+              @click="selectSeason(season.id)"
             >
               <div style="display: flex; width: 100%">
                 <thumbnail-image
@@ -156,18 +175,33 @@ export default Vue.extend({
     hoverIcon: HoverIcon,
     thumbnailImage: ThumbnailImage,
   },
+  props: {
+    selectionTargetList: {
+      type: String,
+      required: false,
+    },
+  },
   data() {
     return {
       catalog: [] as ShowInfo[],
       expandedShowId: '' as string,
       editingShowInfo: {} as ShowInfo,
       editingShowId: '' as string,
+      selectedItemId: '' as string,
       tools,
     };
   },
   computed: {
     isReady(): boolean {
       return !this.$store.state.watchlist.isLoading
+    },
+    selectMode(): string | null {
+      if (this.selectionTargetList == undefined) {
+        return null
+      } else if (this.selectionTargetList === 'backlog') {
+        return 'show'
+      }
+      return 'season'
     },
   },
   watch: {
@@ -196,6 +230,38 @@ export default Vue.extend({
     },
     toggleShow(showId: string) {
       this.$root.$emit('bv::toggle::collapse', showId)
+    },
+    selectShow(showId: string) {
+      if (this.selectMode === 'show') {
+        this.selectedItemId = (this.selectedItemId === showId) ? '' : showId
+      } else {
+        this.toggleShow(showId)
+      }
+    },
+    selectSeason(seasonId: string) {
+      if (this.selectMode === 'season') {
+        this.selectedItemId = (this.selectedItemId === seasonId) ? '' : seasonId
+      }
+    },
+    chooseItem() {
+      if (this.selectMode === 'show') {
+        const selectedShow = this.catalog.find((show: ShowInfo) => show.id === this.selectedItemId)
+        if (selectedShow) {
+          this.$emit('item-selected', selectedShow, this.selectionTargetList)
+        }
+      } else if (this.selectMode === 'season') {
+        for (let i = 0; i < this.catalog.length; i++) {
+          let show = this.catalog[i]
+          for (let j = 0; j < show.seasons.length; j++) {
+            if (show.seasons[j].id === this.selectedItemId) {
+              const selectedSeason = show.seasons[j]
+              this.$emit('item-selected', selectedSeason, this.selectionTargetList)
+              return
+            }
+          }
+        }
+      }
+      
     },
     getTotalEpisodeCount(show: ShowInfo): number {
       return show.seasons.reduce((sum: number, s: ShowSeason) => {
@@ -254,6 +320,10 @@ export default Vue.extend({
     closeEditModal() {
       this.$bvModal.hide('editModal')
     },
+    onModalClose() {
+      this.selectedItemId = ''
+      this.$emit('hidden')
+    },
   },
 });
 </script>
@@ -309,5 +379,11 @@ export default Vue.extend({
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+}
+.selected-item {
+  background-color: #007bff;
+  color: #fff;
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
 }
 </style>
