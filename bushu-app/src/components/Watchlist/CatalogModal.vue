@@ -132,9 +132,9 @@
                         {{  tools.pluralFormat(season.totalEpisodeCount, 'episode') }}
                       </div>
                       <div v-if="season.startDate || season.endDate">
-                        Aired {{ formatDate(season.startDate) }}
+                        Aired {{ season.startDate | formatDate }}
                         <span v-if="season.startDate !== season.endDate">
-                          - {{ formatDate(season.endDate) }}
+                          - {{ season.endDate | formatDate }}
                         </span>
                       </div>
                     </div>
@@ -276,12 +276,6 @@ export default Vue.extend({
         return show.seasons[sznIdx].imgLink!
       }
       return this.getShowImageLink(show)
-    },
-    formatDate(dateStr: string | null): string {
-      if (!dateStr) {
-        return '?'
-      }
-      return (new Date(dateStr)).toLocaleDateString("en-US", { timeZone: 'UTC' })
     },
     createNewEntry() {
       this.editingShowId = ''
