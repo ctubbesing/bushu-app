@@ -5,26 +5,43 @@
         <thumbnail-image
           :link="imageLink"
           :height="100"
+          style="margin-right: 5px"
         />
         <div>
-          {{ parentList }} <br>
-          <span v-if="parentList === 'upcoming'">
-            {{ showSeason.seasonNumber }} <br>
-            {{ showSeason.name }} <br>
-          </span>
-          <span v-else-if="parentList === 'backlog'">
-            {{ showInfo.title }} <br>
-            {{ showInfo.name }} <br>
-          </span>
-          <span v-else>
-            {{ seasonView.seasonInfo.seasonNumber }} <br>
-            {{ seasonView.seasonInfo.name }} <br>
-          </span>
+          <div id="item-name">
+            <span>{{ loadedShowInfo.title }}</span>
+            <template v-if="parentList !== 'backlog'">
+              <span v-if="loadedShowSeason.name">
+                {{ loadedShowSeason.name }}
+              </span>
+              <span v-else>
+                Season {{ loadedShowSeason.seasonNumber }}
+              </span>
+            </template>
+          </div>
+          <div
+            v-if="seasonView"
+            id="viewed-dates"
+          >
+            <div v-if="seasonView.beganDate">
+              Started {{ seasonView.beganDate | formatDate }}
+            </div>
+            <div v-if="seasonView.completedDate">
+              Completed {{ seasonView.completedDate | formatDate }}
+            </div>
+          </div>
         </div>
       </div>
-      <div id="progress-section">
+      <div
+        v-if="seasonView"
+        id="progress-section"
+      >
         <div>
-          Progress: X / XX
+          Progress:
+          <span>
+            <span>{{ seasonView.watchedEpisodes ? seasonView.watchedEpisodes : '-' }}</span>
+            <span> / {{ loadedShowSeason.totalEpisodeCount ? loadedShowSeason.totalEpisodeCount : '?' }}</span>
+          </span>
         </div>
       </div>
     </div>
@@ -65,6 +82,22 @@ export default Vue.extend({
     },
   },
   computed: {
+    loadedShowInfo(): ShowInfo {
+      if (this.showInfo) {
+        return this.showInfo
+      }
+      const showSeasonData = this.seasonView ? this.seasonView.seasonInfo : this.showSeason
+      return this.$store.getters.getShowInfoById(showSeasonData.showId)
+    },
+    loadedShowSeason(): ShowSeason | null {
+      if (this.showSeason) {
+        return this.showSeason
+      }
+      if (this.seasonView) {
+        return this.seasonView.seasonInfo
+      }
+      return null
+    },
     imageLink(): string {
       if (this.seasonView || this.showSeason) {
         const showSeasonData = this.seasonView ? this.seasonView.seasonInfo : this.showSeason
@@ -88,6 +121,7 @@ export default Vue.extend({
   border-radius: 8px;
   background-color: #0003;
   overflow: hidden;
+  margin-bottom: 5px;
 }
 #item-details {
   flex: 11;
@@ -95,11 +129,25 @@ export default Vue.extend({
 }
 #info-section {
   display: flex;
-  padding: 5px;
+  padding: 8px 3px 3px 8px;
   background-color: #dfea;
 }
+#item-name > span:first-child {
+  font-size: 1.25em;
+  font-weight: bold;
+}
+#item-name > span:nth-child(2) {
+  font-size: 0.9em;
+}
+#viewed-dates {
+  font-size: 0.8em;
+}
 #progress-section {
-  background-color: #d48a;
+  color: #fffd;
+  font-size: 0.8em;
+  font-weight: bold;
+  padding-left: 8px;
+  background-color: hsl(192, 80%, 40%);
 }
 #side-info {
   flex: 1;
