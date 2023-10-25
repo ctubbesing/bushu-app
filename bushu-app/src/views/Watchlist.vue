@@ -7,7 +7,7 @@
       <div id="active-sections-container">
         <div
           id="currently-watching-section"
-          class="watchlist-section"
+          class="temp-currently-watching-section"
         >
           Currently Watching <br>
         </div>
@@ -173,7 +173,7 @@ export default Vue.extend({
   flex-grow: 2;
   display: flex;
 }
-.watchlist-section {
+.temp-currently-watching-section {
   flex-grow: 1;
   margin: 10px;
   border-radius: 10px;
@@ -192,5 +192,23 @@ export default Vue.extend({
 #upcoming-list {}
 #backlog-list {
   flex-grow: 0.6;
+}
+
+@media (max-width: 991.99px) {
+  #all-sections-container {
+    display: block;
+    height: auto;
+  }
+  #active-sections-container {
+    display: block;
+    width: 100%;
+  }
+  #main-live-container {
+    display: block;
+  }
+  #inactive-sections-container {
+    display: block;
+    width: 100%;
+  }
 }
 </style>

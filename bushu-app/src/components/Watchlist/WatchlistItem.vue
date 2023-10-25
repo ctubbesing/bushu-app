@@ -35,6 +35,7 @@
       <div
         v-if="seasonView"
         id="progress-section"
+        :style="getProgressBar(seasonView)"
       >
         <div>
           Progress:
@@ -111,6 +112,12 @@ export default Vue.extend({
       return ''
     },
   },
+  methods: {
+    getProgressBar(view: SeasonView): string {
+      let progressPct = view.seasonInfo.totalEpisodeCount ? (view.watchedEpisodes / view.seasonInfo.totalEpisodeCount) * 100 : 50
+      return `background-image: linear-gradient(to right, hsl(222, 71%, 60%) ${progressPct}%, hsl(222, 71%, 75%) ${progressPct}%);`
+    },
+  },
 });
 </script>
 
@@ -119,18 +126,16 @@ export default Vue.extend({
   display: flex;
   width: 100%;
   border-radius: 8px;
-  background-color: #0003;
   overflow: hidden;
   margin-bottom: 5px;
 }
 #item-details {
   flex: 11;
-  background-color: #34f;
+  background-color: #fff8;
 }
 #info-section {
   display: flex;
   padding: 8px 3px 3px 8px;
-  background-color: #dfea;
 }
 #item-name > span:first-child {
   font-size: 1.25em;
@@ -147,9 +152,9 @@ export default Vue.extend({
   font-size: 0.8em;
   font-weight: bold;
   padding-left: 8px;
-  background-color: hsl(192, 80%, 40%);
 }
 #side-info {
   flex: 1;
+  background-color: #0002;
 }
 </style>

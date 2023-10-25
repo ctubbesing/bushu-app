@@ -79,7 +79,7 @@ export default Vue.extend({
   margin: 10px;
   border-radius: 10px;
   text-align: left;
-  background-color: #defb;
+  background-color: #fff5;
   overflow: hidden;
 }
 #header {
