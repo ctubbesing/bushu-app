@@ -39,7 +39,11 @@
       >
         <div>
           Progress:
-          <span>
+          <span v-if="loadedShowInfo.doEpisodeCountOverall">
+            <span>{{ overallWatchedEpisodeCount ? overallWatchedEpisodeCount : '-' }}</span>
+            <span> / {{ overallTotalEpisodeCount ? overallTotalEpisodeCount : '?' }}</span>
+          </span>
+          <span v-else>
             <span>{{ seasonView.watchedEpisodes ? seasonView.watchedEpisodes : '-' }}</span>
             <span> / {{ loadedShowSeason.totalEpisodeCount ? loadedShowSeason.totalEpisodeCount : '?' }}</span>
           </span>
@@ -111,10 +115,37 @@ export default Vue.extend({
       }
       return ''
     },
+    overallWatchedEpisodeCount(): number {
+      if (this.seasonView) {
+        const currentSznNumber = this.seasonView.seasonInfo.seasonNumber
+        return this.seasonView.watchedEpisodes + this.loadedShowInfo.seasons.reduce((total: number, szn: ShowSeason) => {
+          return total + ((currentSznNumber > szn.seasonNumber && szn.totalEpisodeCount) ? szn.totalEpisodeCount : 0)
+        }, 0)
+      }
+      return 0
+    },
+    overallTotalEpisodeCount(): number {
+      if (this.seasonView) {
+        return this.loadedShowInfo.seasons.reduce((total: number, szn: ShowSeason) => {
+          return total + (szn.totalEpisodeCount ? szn.totalEpisodeCount : 0)
+        }, 0)
+      }
+      return 0
+    },
   },
   methods: {
+    getViewProgress(view: SeasonView): number[] {
+      let amtWatched = view.watchedEpisodes
+      let amtTotal = view.seasonInfo.totalEpisodeCount ? view.seasonInfo.totalEpisodeCount : 0
+      return [ amtWatched, amtTotal ]
+    },
     getProgressBar(view: SeasonView): string {
-      let progressPct = view.seasonInfo.totalEpisodeCount ? (view.watchedEpisodes / view.seasonInfo.totalEpisodeCount) * 100 : 50
+      let progressPct = 0
+      if (this.loadedShowInfo.doEpisodeCountOverall) {
+        progressPct = this.overallTotalEpisodeCount ? 100 * this.overallWatchedEpisodeCount / this.overallTotalEpisodeCount : 0
+      } else {
+        progressPct = view.seasonInfo.totalEpisodeCount ? (view.watchedEpisodes / view.seasonInfo.totalEpisodeCount) * 100 : 50
+      }
       return `background-image: linear-gradient(to right, hsl(222, 71%, 60%) ${progressPct}%, hsl(222, 71%, 75%) ${progressPct}%);`
     },
   },
