@@ -332,9 +332,14 @@ export default Vue.extend({
       this.showData.seasons.splice(idx, 1)
     },
     addSeason() {
+      let previousSznNumber = 0
+      if (this.showData.seasons.length > 0) {
+        previousSznNumber = this.showData.seasons[this.showData.seasons.length - 1].seasonNumber
+      }
       this.showData.seasons.push({
         id: tools.getGUID(),
         showId: this.showData.id,
+        seasonNumber: Math.floor(previousSznNumber + 1)
       })
     },
     loadValue() {

@@ -12,7 +12,7 @@ export interface ShowInfo {
 export interface ShowSeason {
   id: string
   showId: string
-  seasonNumber?: number
+  seasonNumber: number
   name?: string
   totalEpisodeCount?: number | null
   startDate?: string

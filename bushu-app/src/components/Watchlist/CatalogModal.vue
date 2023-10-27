@@ -300,7 +300,11 @@ export default Vue.extend({
         // update existing entry
         this.catalog[updatedShowIdx] = this.editingShowInfo
       }
-      this.catalog.sort((a, b) => a.title.localeCompare(b.title))
+      this.catalog.sort((a, b) => {
+        const titleA = a.title.toLowerCase().split(/^the /).reverse()[0]
+        const titleB = b.title.toLowerCase().split(/^the /).reverse()[0]
+        return titleA.localeCompare(titleB)
+      })
       await this.$store.dispatch('updateCatalog', this.catalog)
     },
     openEditModal() {
