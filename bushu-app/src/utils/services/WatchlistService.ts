@@ -47,6 +47,9 @@ let ShowInfoCache: DataStore<RawShowInfo> = {}
 let ShowSeasonCache: DataStore<ShowSeason> = {}
 let SeasonViewCache: DataStore<RawSeasonView> = {}
 
+let DebouncedSeasonViewUpdates: DataStore<SeasonView> = {}
+let DebounceTimeoutId: number | undefined = undefined
+
 async function LoadShowInfo(): Promise<DataStore<RawShowInfo>> {
   if (Object.keys(ShowInfoCache).length === 0) {
     let showInfo: DataStore<RawShowInfo> | null = await dropbox.getData(showInfoPath)
@@ -156,7 +159,11 @@ export default {
         imgLink: rawInfo.imgLink,
       }
     })
-    catalog.sort((a, b) => a.title.localeCompare(b.title))
+    catalog.sort((a, b) => {
+      const titleA = a.title.toLowerCase().split(/^the /).reverse()[0]
+      const titleB = b.title.toLowerCase().split(/^the /).reverse()[0]
+      return titleA.localeCompare(titleB)
+    })
 
     return catalog
   },
@@ -243,5 +250,15 @@ export default {
 
     SeasonViewCache = newViews
     await dropbox.saveData(seasonViewsPath, newViews)
+  },
+  async SaveSeasonViewDebounced(view: SeasonView) {
+    const debounceSeconds = 3
+    DebouncedSeasonViewUpdates[view.id] = view
+    window.clearTimeout(DebounceTimeoutId)
+    DebounceTimeoutId = window.setTimeout(() => {
+      const newSeasonViews: SeasonView[] = Object.values(DebouncedSeasonViewUpdates)
+      this.SaveSeasonViews(newSeasonViews)
+      DebouncedSeasonViewUpdates = {}
+    }, debounceSeconds * 1000)
   },
 }

@@ -20,22 +20,22 @@
             </template>
           </div>
           <div
-            v-if="seasonView"
+            v-if="seasonViewData"
             id="viewed-dates"
           >
-            <div v-if="seasonView.beganDate">
-              Started {{ seasonView.beganDate | formatDate }}
+            <div v-if="seasonViewData.beganDate">
+              Started {{ seasonViewData.beganDate | formatDate }}
             </div>
-            <div v-if="seasonView.completedDate">
-              Completed {{ seasonView.completedDate | formatDate }}
+            <div v-if="seasonViewData.completedDate">
+              Completed {{ seasonViewData.completedDate | formatDate }}
             </div>
           </div>
         </div>
       </div>
       <div
-        v-if="seasonView"
+        v-if="seasonViewData"
         id="progress-section"
-        :style="getProgressBar(seasonView)"
+        :style="getProgressBar(seasonViewData)"
       >
         <div>
           Progress:
@@ -44,10 +44,22 @@
             <span> / {{ overallTotalEpisodeCount ? overallTotalEpisodeCount : '?' }}</span>
           </span>
           <span v-else>
-            <span>{{ seasonView.watchedEpisodes ? seasonView.watchedEpisodes : '-' }}</span>
+            <span>{{ seasonViewData.watchedEpisodes ? seasonViewData.watchedEpisodes : '-' }}</span>
             <span> / {{ loadedShowSeason.totalEpisodeCount ? loadedShowSeason.totalEpisodeCount : '?' }}</span>
           </span>
         </div>
+        <b-button
+          id="increment-button"
+          variant="outline-secondary"
+          pill
+          @click="incrementProgress()"
+        >
+          <b-icon
+            icon="plus"
+            variant="light"
+            font-scale="1"
+          />
+        </b-button>
       </div>
     </div>
     <div id="side-info"></div>
@@ -62,6 +74,7 @@ import {
   ShowSeason,
 } from '@/types/watchlistTypes'
 import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
+import watchlistService from '@/utils/services/WatchlistService';
 
 export default Vue.extend({
   name: 'WatchlistItem',
@@ -86,26 +99,31 @@ export default Vue.extend({
       required: false,
     },
   },
+  data() {
+    return {
+      seasonViewData: null as SeasonView | null,
+    }
+  },
   computed: {
     loadedShowInfo(): ShowInfo {
       if (this.showInfo) {
         return this.showInfo
       }
-      const showSeasonData = this.seasonView ? this.seasonView.seasonInfo : this.showSeason
+      const showSeasonData = this.seasonViewData ? this.seasonViewData.seasonInfo : this.showSeason
       return this.$store.getters.getShowInfoById(showSeasonData.showId)
     },
     loadedShowSeason(): ShowSeason | null {
       if (this.showSeason) {
         return this.showSeason
       }
-      if (this.seasonView) {
-        return this.seasonView.seasonInfo
+      if (this.seasonViewData) {
+        return this.seasonViewData.seasonInfo
       }
       return null
     },
     imageLink(): string {
-      if (this.seasonView || this.showSeason) {
-        const showSeasonData = this.seasonView ? this.seasonView.seasonInfo : this.showSeason
+      if (this.seasonViewData || this.showSeason) {
+        const showSeasonData = this.seasonViewData ? this.seasonViewData.seasonInfo : this.showSeason
         if (showSeasonData.imgLink) {
           return showSeasonData.imgLink
         }
@@ -116,21 +134,31 @@ export default Vue.extend({
       return ''
     },
     overallWatchedEpisodeCount(): number {
-      if (this.seasonView) {
-        const currentSznNumber = this.seasonView.seasonInfo.seasonNumber
-        return this.seasonView.watchedEpisodes + this.loadedShowInfo.seasons.reduce((total: number, szn: ShowSeason) => {
+      if (this.seasonViewData) {
+        const currentSznNumber = this.seasonViewData.seasonInfo.seasonNumber
+        return this.seasonViewData.watchedEpisodes + this.loadedShowInfo.seasons.reduce((total: number, szn: ShowSeason) => {
           return total + ((currentSznNumber > szn.seasonNumber && szn.totalEpisodeCount) ? szn.totalEpisodeCount : 0)
         }, 0)
       }
       return 0
     },
     overallTotalEpisodeCount(): number {
-      if (this.seasonView) {
+      if (this.seasonViewData) {
         return this.loadedShowInfo.seasons.reduce((total: number, szn: ShowSeason) => {
           return total + (szn.totalEpisodeCount ? szn.totalEpisodeCount : 0)
         }, 0)
       }
       return 0
+    },
+  },
+  created() {
+    if (this.seasonView) {
+      this.seasonViewData = this.seasonView
+    }
+  },
+  watch: {
+    seasonView() {
+      this.seasonViewData = this.seasonView
     },
   },
   methods: {
@@ -147,6 +175,15 @@ export default Vue.extend({
         progressPct = view.seasonInfo.totalEpisodeCount ? (view.watchedEpisodes / view.seasonInfo.totalEpisodeCount) * 100 : 50
       }
       return `background-image: linear-gradient(to right, hsl(222, 71%, 60%) ${progressPct}%, hsl(222, 71%, 75%) ${progressPct}%);`
+    },
+    incrementProgress() {
+      if (this.seasonViewData) {
+        const totalEps = this.seasonViewData.seasonInfo.totalEpisodeCount
+        if (totalEps == null || this.seasonViewData.watchedEpisodes < totalEps) {
+          this.seasonViewData.watchedEpisodes++
+          watchlistService.SaveSeasonViewDebounced(this.seasonViewData)
+        }
+      }
     },
   },
 });
@@ -179,6 +216,9 @@ export default Vue.extend({
   font-size: 0.8em;
 }
 #progress-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   color: #fffd;
   font-size: 0.8em;
   font-weight: bold;
@@ -187,5 +227,12 @@ export default Vue.extend({
 #side-info {
   flex: 1;
   background-color: #0002;
+}
+#increment-button {
+  margin-right: 10px;
+  padding: 2px;
+  border: none;
+  height: 26px;
+  width: 26px;
 }
 </style>
