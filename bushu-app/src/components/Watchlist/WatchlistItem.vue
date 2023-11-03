@@ -38,14 +38,19 @@
         :style="getProgressBar(seasonViewData)"
       >
         <div>
-          Progress:
-          <span v-if="loadedShowInfo.doEpisodeCountOverall">
-            <span>{{ overallWatchedEpisodeCount ? overallWatchedEpisodeCount : '-' }}</span>
-            <span> / {{ overallTotalEpisodeCount ? overallTotalEpisodeCount : '?' }}</span>
+          <span @click="toggleEpisodeCountUnits">
+            Progress:
           </span>
-          <span v-else>
-            <span>{{ seasonViewData.watchedEpisodes ? seasonViewData.watchedEpisodes : '-' }}</span>
-            <span> / {{ loadedShowSeason.totalEpisodeCount ? loadedShowSeason.totalEpisodeCount : '?' }}</span>
+          <span>
+            <span>{{ displayedWatchedEpisodeCount ? displayedWatchedEpisodeCount : '-' }}</span>
+            <span> / {{ displayedTotalEpisodeCount ? displayedTotalEpisodeCount : '?' }}</span>
+          </span>
+          <span
+            v-if="doEpisodeCountUnitsLabel"
+            class="episode-count-units"
+            :key="doEpisodeCountOverall"
+          >
+            ({{ doEpisodeCountOverall ? 'Overall' : 'This season' }})
           </span>
         </div>
         <b-button
@@ -102,6 +107,8 @@ export default Vue.extend({
   data() {
     return {
       seasonViewData: null as SeasonView | null,
+      doEpisodeCountOverall: false as boolean,
+      doEpisodeCountUnitsLabel: false as boolean,
     }
   },
   computed: {
@@ -150,11 +157,26 @@ export default Vue.extend({
       }
       return 0
     },
+    displayedWatchedEpisodeCount(): number {
+      if (this.doEpisodeCountOverall) {
+        return this.overallWatchedEpisodeCount
+      } else {
+        return this.seasonViewData ? this.seasonViewData.watchedEpisodes : 0
+      }
+    },
+    displayedTotalEpisodeCount(): number {
+      if (this.doEpisodeCountOverall) {
+        return this.overallTotalEpisodeCount
+      } else {
+        return (this.loadedShowSeason && this.loadedShowSeason.totalEpisodeCount) ? this.loadedShowSeason.totalEpisodeCount : 0
+      }
+    },
   },
   created() {
     if (this.seasonView) {
       this.seasonViewData = this.seasonView
     }
+    this.doEpisodeCountOverall = this.loadedShowInfo.doEpisodeCountOverall || false
   },
   watch: {
     seasonView() {
@@ -169,11 +191,7 @@ export default Vue.extend({
     },
     getProgressBar(view: SeasonView): string {
       let progressPct = 0
-      if (this.loadedShowInfo.doEpisodeCountOverall) {
-        progressPct = this.overallTotalEpisodeCount ? 100 * this.overallWatchedEpisodeCount / this.overallTotalEpisodeCount : 0
-      } else {
-        progressPct = view.seasonInfo.totalEpisodeCount ? (view.watchedEpisodes / view.seasonInfo.totalEpisodeCount) * 100 : 50
-      }
+      progressPct = this.displayedTotalEpisodeCount ? (100 * this.displayedWatchedEpisodeCount / this.displayedTotalEpisodeCount) : 50
       return `background-image: linear-gradient(to right, hsl(222, 71%, 60%) ${progressPct}%, hsl(222, 71%, 75%) ${progressPct}%);`
     },
     incrementProgress() {
@@ -184,6 +202,10 @@ export default Vue.extend({
           watchlistService.SaveSeasonViewDebounced(this.seasonViewData)
         }
       }
+    },
+    toggleEpisodeCountUnits() {
+      this.doEpisodeCountUnitsLabel = true
+      this.doEpisodeCountOverall = !this.doEpisodeCountOverall
     },
   },
 });
@@ -223,6 +245,20 @@ export default Vue.extend({
   font-size: 0.8em;
   font-weight: bold;
   padding-left: 8px;
+  user-select: none;
+}
+#progress-section > div > span:first-child {
+  cursor: pointer;
+}
+#progress-section .episode-count-units {
+  margin-left: 5px;
+  font-weight: normal;
+  font-size: 0.8em;
+  animation: 0.5s linear 2s fadeOut forwards;
+}
+@keyframes fadeOut {
+  from {opacity: 1;}
+  to {opacity: 0;}
 }
 #side-info {
   flex: 1;
