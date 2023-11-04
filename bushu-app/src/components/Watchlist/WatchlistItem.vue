@@ -76,18 +76,13 @@
             ({{ doEpisodeCountOverall ? 'Overall' : 'This season' }})
           </span>
         </div>
-        <b-button
+        <hover-icon
           id="increment-button"
-          variant="outline-secondary"
-          pill
+          icon="plus-circle"
+          scale="1.3"
+          variant="light"
           @click="incrementProgress()"
-        >
-          <b-icon
-            icon="plus"
-            variant="light"
-            font-scale="1"
-          />
-        </b-button>
+        />
       </div>
     </div>
     <div id="side-info"></div>
@@ -102,12 +97,14 @@ import {
   ShowSeason,
 } from '@/types/watchlistTypes'
 import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
+import HoverIcon from '@/components/utils/HoverIcon.vue'
 import watchlistService from '@/utils/services/WatchlistService';
 
 export default Vue.extend({
   name: 'WatchlistItem',
   components: {
     thumbnailImage: ThumbnailImage,
+    hoverIcon: HoverIcon,
   },
   props: {
     parentList: {
@@ -324,10 +321,8 @@ export default Vue.extend({
   background-color: #0002;
 }
 #increment-button {
-  margin-right: 10px;
-  padding: 2px;
-  border: none;
-  height: 26px;
-  width: 26px;
+  margin: 3px 10px;
+  height: 20px;
+  width: 20px;
 }
 </style>
