@@ -61,6 +61,8 @@
                 :state="isEditedProgressValid ? null : false"
                 size="sm"
                 style="width: 75px; font-size: 0.8em"
+                inputmode="numeric"
+                pattern="[0-9]*"
                 autofocus
                 @blur="saveManualProgressEdit"
                 @keyup.enter="saveManualProgressEdit"

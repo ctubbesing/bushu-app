@@ -67,7 +67,6 @@ export default Vue.extend({
 <style>
 body {
   background-color: #9de !important;
-  touch-action: manipulation;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
