@@ -21,8 +21,8 @@
           <!-- <b-nav-item to="/about">About</b-nav-item> -->
           <b-nav-item-dropdown text="Apps">
             <b-dropdown-item to="/watchlist">Watchlist</b-dropdown-item>
+            <b-dropdown-item to="/raytracer">Ray Tracer</b-dropdown-item>
           </b-nav-item-dropdown>
-          <b-nav-item to="/raytracer">Ray Tracer</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <dropbox-sign-in />
