@@ -23,6 +23,7 @@
         :season-view="isSeasonView ? item : undefined"
         :show-season="isShowSeason ? item : undefined"
         :show-info="isShowInfo ? item : undefined"
+        @mark-completed="$emit('mark-item-completed', item.id, listType)"
       />
     </div>
   </div>

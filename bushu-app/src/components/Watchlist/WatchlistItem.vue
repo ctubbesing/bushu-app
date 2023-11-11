@@ -33,7 +33,7 @@
         </div>
       </div>
       <div
-        v-if="editedSeasonView"
+        v-if="doProgressBar && editedSeasonView && !isReadOnly"
         id="progress-section"
         :style="getProgressBar(editedSeasonView)"
       >
@@ -86,8 +86,38 @@
           @click="incrementProgress()"
         />
       </div>
+      <div
+        v-if="isSeasonProgressComplete && !isReadOnly"
+        id="mark-completed-container"
+      >
+        <div
+          id="mark-completed-button"
+          @click="markSeasonCompleted"
+        >
+          Mark season completed
+        </div>
+      </div>
     </div>
-    <div id="side-info"></div>
+    <div
+      v-if="!isReadOnly"
+      id="side-info"
+    >
+      <b-dropdown
+        right
+        no-caret
+        toggle-class="text-decoration-none"
+        variant="transparent"
+        size="sm"
+      >
+        <template #button-content>
+          <b-icon icon="three-dots-vertical" />
+        </template>
+        <slot name="dropdown-items">
+          <b-dropdown-item>Test item 1</b-dropdown-item>
+          <b-dropdown-item>Test item 2</b-dropdown-item>
+        </slot>
+      </b-dropdown>
+    </div>
   </div>
 </template>
 
@@ -111,7 +141,8 @@ export default Vue.extend({
   props: {
     parentList: {
       type: String,
-      required: true,
+      required: false,
+      default: 'queue',
     },
     seasonView: {
       type: Object as PropType<SeasonView>,
@@ -124,6 +155,11 @@ export default Vue.extend({
     showInfo: {
       type: Object as PropType<ShowInfo>,
       required: false,
+    },
+    isReadOnly: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -163,6 +199,9 @@ export default Vue.extend({
         return this.$store.getters.getShowImageLink(this.showInfo)
       }
       return ''
+    },
+    doProgressBar(): boolean {
+      return this.parentList === 'main' || this.parentList === 'live'
     },
     previousSeasonsEpisodeCount(): number {
       if (this.loadedShowSeason) {
@@ -215,6 +254,12 @@ export default Vue.extend({
       return this.editedProgress >= this.minValidProgress &&
              this.editedProgress <= this.maxValidProgress
     },
+    isSeasonProgressComplete(): boolean {
+      if (this.loadedShowSeason?.totalEpisodeCount) {
+        return this.loadedShowSeason.totalEpisodeCount === this.editedSeasonView?.watchedEpisodes
+      }
+      return false
+    },
   },
   created() {
     if (this.seasonView) {
@@ -265,6 +310,9 @@ export default Vue.extend({
         this.doManualProgressEdit = false
       }
     },
+    markSeasonCompleted() {
+      this.$emit('mark-completed')
+    },
   },
 });
 </script>
@@ -284,6 +332,9 @@ export default Vue.extend({
 #info-section {
   display: flex;
   padding: 8px 3px 3px 8px;
+}
+#info-section:last-child {
+  padding-bottom: 8px;
 }
 #item-name > span:first-child {
   font-size: 1.25em;
@@ -320,11 +371,34 @@ export default Vue.extend({
 }
 #side-info {
   flex: 1;
+  padding: 8px 0;
   background-color: #0002;
 }
 #increment-button {
   margin: 3px 10px;
   height: 20px;
   width: 20px;
+}
+#mark-completed-container {
+  display: flex;
+  justify-content: center;
+  padding: 3px;
+}
+#mark-completed-button {
+  padding: 2px 4px;
+  margin: auto 3px;
+  border-radius: 4px;
+  background-color: hsl(222, 71%, 60%);
+  color: #fffd;
+  font-size: 1.3em;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+#mark-completed-button:hover {
+  background-color: hsl(222, 71%, 70%);
+}
+#mark-completed-button:active {
+  background-color: hsl(222, 71%, 65%);
 }
 </style>

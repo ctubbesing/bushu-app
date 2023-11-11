@@ -16,6 +16,7 @@
             :list-type="'main'"
             :items="watchlist.main"
             @add-item="selectCatalogEntry('main')"
+            @mark-item-completed="showMarkCompletedOptions"
           />
           <watchlist-section
             :list-type="'live'"
@@ -57,6 +58,48 @@
       @item-selected="addCatalogItemToList"
       @hidden="onCatalogClose()"
     />
+    <b-modal
+      id="markCompletedModal"
+      title="Mark Season Completed"
+      size="md"
+      centered
+      ok-title="Confirm"
+      @ok="markSeasonCompleted"
+    >
+      <watchlist-item
+        parent-list="main"
+        :season-view="markingCompletedSeasonView"
+        :is-read-only="true"
+      />
+      <ul id="mark-completed-options">
+        <li
+          v-if="markingCompletedNextShowSeason"
+          :class="{ 'selected': doNextSeasonToQueue }"
+          @click.prevent="doNextSeasonToQueue = !doNextSeasonToQueue"
+        >
+          <b-form-checkbox v-model="doNextSeasonToQueue">
+            Add next season to Queue:
+          </b-form-checkbox>
+          <watchlist-item
+            :show-season="markingCompletedNextShowSeason"
+            :is-read-only="true"
+          />
+        </li>
+        <li
+          v-if="markingCompletedNextQueueItem"
+          :class="{ 'selected': doPopQueueToMain }"
+          @click.prevent="doPopQueueToMain = !doPopQueueToMain"
+        >
+          <b-form-checkbox v-model="doPopQueueToMain">
+            Move next item from Queue to Main:
+          </b-form-checkbox>
+          <watchlist-item
+            :season-view="markingCompletedNextQueueItem"
+            :is-read-only="true"
+          />
+        </li>
+      </ul>
+    </b-modal>
   </div>
 </template>
 
@@ -64,6 +107,7 @@
 import watchlistService from '@/utils/services/WatchlistService'
 import CatalogModal from '@/components/Watchlist/CatalogModal.vue'
 import WatchlistSection from '@/components/Watchlist/WatchlistSection.vue'
+import WatchlistItem from '@/components/Watchlist/WatchlistItem.vue'
 import {
   SeasonView,
   ShowInfo,
@@ -78,12 +122,18 @@ export default Vue.extend({
   components: {
     catalogModal: CatalogModal,
     watchlistSection: WatchlistSection,
+    watchlistItem: WatchlistItem,
   },
   data() {
     return {
       watchlist: null as WatchlistData | null,
       isLoading: false as boolean,
       targetListName: null as string | null,
+      markingCompletedSeasonView: null as SeasonView | null,
+      markingCompletedNextShowSeason: null as ShowSeason | null,
+      markingCompletedNextQueueItem: null as SeasonView | null,
+      doNextSeasonToQueue: true as boolean,
+      doPopQueueToMain: true as boolean,
     };
   },
   computed: {
@@ -106,7 +156,6 @@ export default Vue.extend({
       if (this.isReady) {
         await this.$store.dispatch('loadCatalogFromDropbox')
 
-        const catalog: ShowInfo[] = this.$store.state.watchlist.catalog
         await this.loadWatchlist()
       }
     },
@@ -142,6 +191,77 @@ export default Vue.extend({
       }
       this.closeCatalog()
       await this.saveWatchlist()
+    },
+    showMarkCompletedOptions(seasonViewId: string, sourceList: string) {
+      console.log('- showMarkCompletedOptions')
+      if (this.watchlist) {
+        if (sourceList === 'main') {
+          let seasonViewIdx = this.watchlist.main.findIndex((view: SeasonView) => view.id === seasonViewId)
+          if (seasonViewIdx !== -1) {
+            this.doNextSeasonToQueue = false
+            this.doPopQueueToMain = false
+            this.markingCompletedSeasonView = this.watchlist.main[seasonViewIdx]
+
+            // find next season of show, if any
+            this.markingCompletedNextShowSeason = null
+            const seasonInfo = this.markingCompletedSeasonView.seasonInfo
+            const seasonShowInfo: ShowInfo = this.$store.getters.getShowInfoById(seasonInfo.showId)
+            let seasonIdx = seasonShowInfo.seasons.findIndex((season: ShowSeason) => season.id === seasonInfo.id)
+            if (seasonIdx < seasonShowInfo.seasons.length - 1) {
+              this.markingCompletedNextShowSeason = seasonShowInfo.seasons[seasonIdx + 1]
+              this.doNextSeasonToQueue = true
+            }
+
+            // find next item in Queue, if any
+            this.markingCompletedNextQueueItem = null
+            if (this.watchlist.queue.length > 0) {
+              this.markingCompletedNextQueueItem = this.watchlist.queue[0]
+              this.doPopQueueToMain = true
+            }
+
+            this.$bvModal.show('markCompletedModal')
+          }
+        } else if (sourceList === 'live') {
+          // TODO
+        }
+      }
+    },
+    async markSeasonCompleted() {
+      console.log('marking completed...')
+      if (this.watchlist && this.markingCompletedSeasonView) {
+        // set date completed, save, & remove from main
+        // TODO: eventually should move completed SVs to new save file but for now this works fine
+        this.markingCompletedSeasonView.completedDate = (new Date()).toISOString()
+        console.log('completed date: ' + this.markingCompletedSeasonView.completedDate)
+        await watchlistService.SaveSeasonViews([ this.markingCompletedSeasonView ])
+
+        const completedViewId = this.markingCompletedSeasonView.id
+        const completedViewIdx = this.watchlist.main.findIndex((view: SeasonView) => view.id === completedViewId)
+        if (completedViewIdx !== -1) {
+          this.watchlist.main.splice(completedViewIdx, 1)
+        }
+
+        if (this.doNextSeasonToQueue) {
+          if (this.markingCompletedNextShowSeason) {
+            const newSeasonView: SeasonView = {
+              id: tools.getGUID(),
+              seasonInfo: this.markingCompletedNextShowSeason,
+              watchedEpisodes: 0,
+              isDropped: false,
+            }
+            this.watchlist.queue.push(newSeasonView)
+          }
+        }
+
+        if (this.doPopQueueToMain) {
+          if (this.markingCompletedNextQueueItem) {
+            this.watchlist.main.push(this.markingCompletedNextQueueItem)
+            this.watchlist.queue.splice(0, 1)
+          }
+        }
+
+        await this.saveWatchlist()
+      }
     },
     openCatalog() {
       this.$bvModal.show('catalogModal')
@@ -192,6 +312,27 @@ export default Vue.extend({
 #upcoming-list {}
 #backlog-list {
   flex-grow: 0.6;
+}
+#mark-completed-options {
+  padding: 0;
+  margin: 0;
+}
+#mark-completed-options * {
+  cursor: pointer;
+}
+#mark-completed-options > li {
+  padding: 5px;
+  margin: 5px 0;
+  border: 1px solid #aaa;
+  list-style: none;
+  border-radius: 3px;
+  list-style-position: inside;
+  cursor: pointer;
+}
+#mark-completed-options > li.selected {
+  border: 1px solid #007bff;
+  color: #007bff;
+  background-color: hsl(211, 80%, 90%);
 }
 
 @media (max-width: 991.99px) {
