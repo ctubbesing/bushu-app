@@ -22,6 +22,7 @@
             :list-type="'live'"
             :items="watchlist.live"
             @add-item="selectCatalogEntry('live')"
+            @mark-item-completed="showMarkCompletedOptions"
           />
         </div>
       </div>
@@ -60,7 +61,7 @@
     />
     <b-modal
       id="markCompletedModal"
-      title="Mark Season Completed"
+      title="Marking Season Completed"
       size="md"
       centered
       ok-title="Confirm"
@@ -132,6 +133,7 @@ export default Vue.extend({
       markingCompletedSeasonView: null as SeasonView | null,
       markingCompletedNextShowSeason: null as ShowSeason | null,
       markingCompletedNextQueueItem: null as SeasonView | null,
+      markingCompletedSourceList: '' as string,
       doNextSeasonToQueue: true as boolean,
       doPopQueueToMain: true as boolean,
     };
@@ -193,7 +195,7 @@ export default Vue.extend({
       await this.saveWatchlist()
     },
     showMarkCompletedOptions(seasonViewId: string, sourceList: string) {
-      console.log('- showMarkCompletedOptions')
+      this.markingCompletedSourceList = sourceList
       if (this.watchlist) {
         if (sourceList === 'main') {
           let seasonViewIdx = this.watchlist.main.findIndex((view: SeasonView) => view.id === seasonViewId)
@@ -222,23 +224,33 @@ export default Vue.extend({
             this.$bvModal.show('markCompletedModal')
           }
         } else if (sourceList === 'live') {
-          // TODO
+          let seasonViewIdx = this.watchlist.live.findIndex((view: SeasonView) => view.id === seasonViewId)
+          if (seasonViewIdx !== -1) {
+            this.doNextSeasonToQueue = false
+            this.doPopQueueToMain = false
+            this.markingCompletedNextShowSeason = null
+            this.markingCompletedNextQueueItem = null
+
+            this.markingCompletedSeasonView = this.watchlist.live[seasonViewIdx]
+
+            this.$bvModal.show('markCompletedModal')
+          }
         }
       }
     },
     async markSeasonCompleted() {
-      console.log('marking completed...')
       if (this.watchlist && this.markingCompletedSeasonView) {
-        // set date completed, save, & remove from main
+        // set date completed, save, & remove from source list
         // TODO: eventually should move completed SVs to new save file but for now this works fine
         this.markingCompletedSeasonView.completedDate = (new Date()).toISOString()
-        console.log('completed date: ' + this.markingCompletedSeasonView.completedDate)
         await watchlistService.SaveSeasonViews([ this.markingCompletedSeasonView ])
 
-        const completedViewId = this.markingCompletedSeasonView.id
-        const completedViewIdx = this.watchlist.main.findIndex((view: SeasonView) => view.id === completedViewId)
-        if (completedViewIdx !== -1) {
-          this.watchlist.main.splice(completedViewIdx, 1)
+        if (this.markingCompletedSourceList === 'main' || this.markingCompletedSourceList === 'live') {
+          const completedViewId = this.markingCompletedSeasonView.id
+          const completedViewIdx = this.watchlist[this.markingCompletedSourceList].findIndex((view: SeasonView) => view.id === completedViewId)
+          if (completedViewIdx !== -1) {
+            this.watchlist[this.markingCompletedSourceList].splice(completedViewIdx, 1)
+          }
         }
 
         if (this.doNextSeasonToQueue) {
@@ -261,6 +273,7 @@ export default Vue.extend({
         }
 
         await this.saveWatchlist()
+        this.markingCompletedSeasonView = null
       }
     },
     openCatalog() {
