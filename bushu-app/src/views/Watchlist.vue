@@ -46,12 +46,6 @@
     </div>
     <div>
       <b-button @click="openCatalog()">View Catalog</b-button>
-      <b-button
-        @click="saveWatchlist()"
-        :disabled="isLoading"
-      >
-        Save
-      </b-button>
     </div>
     <catalog-modal
       id="catalogModal"

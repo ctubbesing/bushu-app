@@ -37,7 +37,7 @@
         id="progress-section"
         :style="getProgressBar(editedSeasonView)"
       >
-        <div>
+        <div v-if="editedSeasonView.beganDate">
           <span @click="toggleEpisodeCountUnits">
             Progress:
           </span>
@@ -79,12 +79,24 @@
           </span>
         </div>
         <hover-icon
+          v-if="editedSeasonView.beganDate"
           id="increment-button"
           icon="plus-circle"
           scale="1.3"
           variant="light"
           @click="incrementProgress()"
         />
+        <div
+          v-else
+          style="width: 100%; text-align: center"
+        >
+          <div
+            id="begin-watching-button"
+            @click="beginSeason"
+          >
+            Begin watching
+          </div>
+        </div>
       </div>
       <div
         v-if="isSeasonProgressComplete && !isReadOnly"
@@ -130,7 +142,8 @@ import {
 } from '@/types/watchlistTypes'
 import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
 import HoverIcon from '@/components/utils/HoverIcon.vue'
-import watchlistService from '@/utils/services/WatchlistService';
+import watchlistService from '@/utils/services/WatchlistService'
+import tools from '@/utils/tools'
 
 export default Vue.extend({
   name: 'WatchlistItem',
@@ -288,7 +301,7 @@ export default Vue.extend({
         const totalEps = this.editedSeasonView.seasonInfo.totalEpisodeCount
         if (totalEps == null || this.editedSeasonView.watchedEpisodes < totalEps) {
           this.editedSeasonView.watchedEpisodes++
-          watchlistService.SaveSeasonViewDebounced(this.editedSeasonView)
+          this.saveChanges()
         }
       }
     },
@@ -305,13 +318,24 @@ export default Vue.extend({
         if (this.isEditedProgressValid && this.editedProgress !== this.displayedEpisodeProgress) {
           const seasonProgress = this.doEpisodeCountOverall ? (this.editedProgress - this.previousSeasonsEpisodeCount) : this.editedProgress
           this.editedSeasonView.watchedEpisodes = seasonProgress
-          watchlistService.SaveSeasonViewDebounced(this.editedSeasonView)
+          this.saveChanges()
         }
         this.doManualProgressEdit = false
       }
     },
+    beginSeason() {
+      if (this.editedSeasonView && !this.editedSeasonView.beganDate) {
+        this.editedSeasonView.beganDate = tools.getTimestamp()
+        this.saveChanges()
+      }
+    },
     markSeasonCompleted() {
       this.$emit('mark-completed')
+    },
+    saveChanges() {
+      if (this.editedSeasonView) {
+        watchlistService.SaveSeasonViewDebounced(this.editedSeasonView)
+      }
     },
   },
 });
@@ -395,10 +419,22 @@ export default Vue.extend({
   cursor: pointer;
   user-select: none;
 }
-#mark-completed-button:hover {
+#begin-watching-button {
+  display: inline-block;
+  padding: 2px 4px;
+  margin: 2px 3px;
+  border-radius: 4px;
+  background-color: hsl(222, 71%, 60%);
+  color: #fffd;
+  font-size: 1.3em;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+#mark-completed-button:hover, #begin-watching-button:hover {
   background-color: hsl(222, 71%, 70%);
 }
-#mark-completed-button:active {
+#mark-completed-button:active, #begin-watching-button:active {
   background-color: hsl(222, 71%, 65%);
 }
 </style>
