@@ -1,3 +1,5 @@
+import tools from '@/utils/tools'
+
 export default {
   filters: {
     toTitleCase(str: string): string {
@@ -12,7 +14,7 @@ export default {
       if (!dateStr) {
         return '?'
       }
-      return (new Date(dateStr)).toLocaleDateString("en-US", { timeZone: 'UTC' })
+      return tools.getFormattedDate(dateStr)
     },
   }
 }

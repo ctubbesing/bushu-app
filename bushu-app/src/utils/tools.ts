@@ -47,5 +47,11 @@ export default {
       const cInt = parseInt(c)
       return (cInt ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> cInt / 4).toString(16)
     });
-  }
+  },
+  getTimestamp(): string {
+    return (new Date()).toISOString()
+  },
+  getFormattedDate(timestamp: string): string {
+    return (new Date(timestamp)).toLocaleDateString()
+  },
 }
