@@ -284,41 +284,12 @@ export default Vue.extend({
 </script>
 
 <style>
-#all-sections-container {
-  display: flex;
-  height: 90vh;
-}
-#active-sections-container {
-  display: flex;
-  flex-direction: column;
-  width: 70%;
-}
-#currently-watching-section {
-  flex-grow: 5;
-}
-#main-live-container {
-  flex-grow: 2;
-  display: flex;
-}
 .temp-currently-watching-section {
-  flex-grow: 1;
   margin: 10px;
   border-radius: 10px;
   padding: 10px;
   text-align: left;
   background-color: #defb;
-}
-#main-list {}
-#live-list {}
-#inactive-sections-container {
-  display: flex;
-  flex-direction: column;
-  width: 30%;
-}
-#queue-list {}
-#upcoming-list {}
-#backlog-list {
-  flex-grow: 0.6;
 }
 #mark-completed-options {
   padding: 0;
@@ -342,21 +313,37 @@ export default Vue.extend({
   background-color: hsl(211, 80%, 90%);
 }
 
-@media (max-width: 991.99px) {
+@media (min-width: 992px) {
   #all-sections-container {
-    display: block;
-    height: auto;
+    display: flex;
+    height: 90vh;
   }
   #active-sections-container {
-    display: block;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+  }
+  #currently-watching-section {
+    flex-grow: 5;
   }
   #main-live-container {
-    display: block;
+    flex-grow: 2;
+    display: flex;
   }
+  .temp-currently-watching-section {
+    flex-grow: 1;
+  }
+  /* #main-list {} */
+  /* #live-list {} */
   #inactive-sections-container {
-    display: block;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+  }
+  /* #queue-list {} */
+  /* #upcoming-list {} */
+  #backlog-list {
+    flex-grow: 0.6;
   }
 }
 </style>
