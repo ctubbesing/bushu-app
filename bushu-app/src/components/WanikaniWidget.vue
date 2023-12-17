@@ -157,7 +157,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import dropbox from '@/utils/dropbox'
 import BasicWidget from '@/components/BasicWidget.vue'
 import {
@@ -166,6 +166,7 @@ import {
   WKUserData,
   AssignmentResource,
   SubjectResource,
+  KTListCollection,
 } from '@/types/wanikaniTypes'
 
 export default Vue.extend({
@@ -183,7 +184,7 @@ export default Vue.extend({
       todaysLessons: [] as SubjectResource[],
       ktListStartLevel: 0 as number,
       ktListEndLevel: 0 as number,
-      ktListObject: null as any,
+      ktListObject: null as KTListCollection | null,
       modeledTokenString: '' as string,
       newAccessToken: '' as string,
       isNewTokenValid: true as boolean,
@@ -232,7 +233,8 @@ export default Vue.extend({
         await this.getSummary()
         await this.getTodaysLessons()
         this.isConnected = true
-      } catch (e: any) {
+      } catch (error) {
+        let e = error as AxiosError
         this.isConnected = false
         console.error('Error loading data: ' + e.message)
       } finally {
@@ -252,9 +254,10 @@ export default Vue.extend({
         this.isNewTokenValid = true
         this.newTokenResult = 'Successfully connected to account for user ' + user.username + '!'
         this.newAccessToken = this.modeledTokenString
-      } catch (e: any) {
+      } catch (error) {
+        let e = error as AxiosError
         this.isNewTokenValid = false
-        if (e.response.status === 401) {
+        if (e.response && e.response.status === 401) {
           this.newTokenResult = 'Invalid access token.'
         } else {
           this.newTokenResult = 'Error while running test: ' + e.message
@@ -342,7 +345,7 @@ export default Vue.extend({
       }
       return allResources
     },
-    async getSubjectsByAssignmentsUrl(assignmentsUrl: string, assignmentFilter: (a: AssignmentResource) => boolean = (a) => true): Promise<SubjectResource[]> {
+    async getSubjectsByAssignmentsUrl(assignmentsUrl: string, assignmentFilter: (a: AssignmentResource) => boolean = (() => true)): Promise<SubjectResource[]> {
       // get subject ids from assignments
       let assignmentResources = await this.getPaginatedResourceData(assignmentsUrl) as AssignmentResource[]
       let subjectsList: number[] = assignmentResources.filter(assignmentFilter).map((r) => r.data.subject_id)

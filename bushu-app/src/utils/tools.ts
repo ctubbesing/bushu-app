@@ -2,16 +2,16 @@ export default {
   dec2hex(dec: number): string {
     return ('0' + dec.toString(16)).substr(-2)
   },
-  generateRandomHexString() {
-    const array = new Uint32Array(32);
-    window.crypto.getRandomValues(array);
-    return Array.from(array, this.dec2hex).join('');
+  generateRandomHexString(): string {
+    const array = new Uint32Array(32)
+    window.crypto.getRandomValues(array)
+    return Array.from(array, this.dec2hex).join('')
   },
   hexToBase64(hexStr: string): string {
     const hexPairs = hexStr.match(/\w{2}/g)
     if (hexPairs !== null) {
       return btoa(hexPairs.map((a) => {
-        return String.fromCharCode(parseInt(a, 16));
+        return String.fromCharCode(parseInt(a, 16))
       }).join(''))
     }
     return ''
@@ -21,7 +21,7 @@ export default {
                  .replace(/\//g, '_')
                  .replace(/=/g, '')
   },
-  generateCodeVerifier() {
+  generateCodeVerifier(): string {
     return this.base64URLEncode(this.hexToBase64(this.generateRandomHexString()))
   },
   async sha256(str: string): Promise<string> {
@@ -36,7 +36,7 @@ export default {
     }
     return this.base64URLEncode(btoa(resultStr))
   },
-  deepClone(obj: any): any {
+  deepClone<T>(obj: T): T {
     return JSON.parse(JSON.stringify(obj))
   },
   pluralFormat(val: number, unit: string): string {
@@ -46,7 +46,7 @@ export default {
     return (`${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`).replace(/[018]/g, c => {
       const cInt = parseInt(c)
       return (cInt ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> cInt / 4).toString(16)
-    });
+    })
   },
   getTimestamp(): string {
     return (new Date()).toISOString()

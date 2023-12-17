@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DBAccountInfo } from "@/types/dropboxTypes";
 
 export default {
@@ -14,18 +16,18 @@ export default {
     },
   },
   mutations: {
-    setAccessToken(state: any, accessToken: string) {
+    setAccessToken(state: any, accessToken: string): void {
       state.db_accessToken = accessToken
     },
-    setUserInfo(state: any, userInfo: null | DBAccountInfo) {
+    setUserInfo(state: any, userInfo: null | DBAccountInfo): void {
       state.db_userInfo = userInfo
     },
   },
   actions: {
-    updateAccessToken(context: any, accessToken: string) {
+    updateAccessToken(context: any, accessToken: string): void {
       context.commit('setAccessToken', accessToken)
     },
-    updateUserInfo(context: any, userInfo: null | DBAccountInfo) {
+    updateUserInfo(context: any, userInfo: null | DBAccountInfo): void {
       context.commit('setUserInfo', userInfo)
     },
   },

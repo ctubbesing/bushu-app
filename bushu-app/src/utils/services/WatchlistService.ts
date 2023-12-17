@@ -167,7 +167,7 @@ export default {
 
     return catalog
   },
-  async SaveCatalog(catalog: ShowInfo[]) {
+  async SaveCatalog(catalog: ShowInfo[]): Promise<void> {
     const showInfoData: DataStore<RawShowInfo> = {}
     const showSeasonData: DataStore<ShowSeason> = {}
 
@@ -215,7 +215,7 @@ export default {
 
     return watchlist
   },
-  async SaveWatchlistData(watchlist: WatchlistData) {
+  async SaveWatchlistData(watchlist: WatchlistData): Promise<void> {
     const allSeasonViews: SeasonView[] = [
       ...watchlist.main,
       ...watchlist.live,
@@ -233,7 +233,7 @@ export default {
 
     await dropbox.saveData(watchlistDataPath, rawData)
   },
-  async SaveSeasonViews(seasonViews: SeasonView[]) {
+  async SaveSeasonViews(seasonViews: SeasonView[]): Promise<void> {
     const allViews: DataStore<RawSeasonView> = await LoadSeasonViews()
     const newViews: DataStore<RawSeasonView> = tools.deepClone(allViews)
     seasonViews.forEach((view: SeasonView) => {
@@ -251,7 +251,7 @@ export default {
     SeasonViewCache = newViews
     await dropbox.saveData(seasonViewsPath, newViews)
   },
-  async SaveSeasonViewDebounced(view: SeasonView) {
+  async SaveSeasonViewDebounced(view: SeasonView): Promise<void> {
     const debounceSeconds = 3
     DebouncedSeasonViewUpdates[view.id] = view
     window.clearTimeout(DebounceTimeoutId)

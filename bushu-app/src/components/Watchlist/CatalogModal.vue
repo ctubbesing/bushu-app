@@ -287,7 +287,7 @@ export default Vue.extend({
       this.openEditModal()
     },
     editShowEntry(idx: number) {
-      this.editingShowInfo = tools.deepClone(this.catalog[idx])
+      this.editingShowInfo = tools.deepClone<ShowInfo>(this.catalog[idx])
       this.editingShowId = this.editingShowInfo.id
       this.openEditModal()
     },

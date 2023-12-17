@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
 import watchlistService from '@/utils/services/WatchlistService'
 import tools from '@/utils/tools'
@@ -11,7 +13,7 @@ export default {
     getShowInfoById: (state: any) => (showId: string): ShowInfo | undefined => {
       return state.catalog.find((show: ShowInfo) => show.id === showId)
     },
-    getShowImageLink: (state: any) => (show: ShowInfo): string => {
+    getShowImageLink: () => (show: ShowInfo): string => {
       if (show.imgLink) {
         return show.imgLink
       }

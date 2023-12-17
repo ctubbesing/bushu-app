@@ -1,5 +1,5 @@
 import Vue from "vue"
-import axios from "axios"
+import axios, { AxiosError } from 'axios'
 import store from "@/store"
 import tools from "@/utils/tools"
 import { TokenResponse, AppSettings } from "@/types/dropboxTypes"
@@ -20,7 +20,7 @@ function getBearerToken(): string {
 
 export default {
   // step 1 of PKCE authorization code flow
-  async authorizeWithDropbox(doRememberMe: boolean) {
+  async authorizeWithDropbox(doRememberMe: boolean): Promise<void> {
     const codeVerifier = tools.generateCodeVerifier()
     const codeChallenge = await tools.sha256(codeVerifier)
     vm.$cookies.set('code_verifier', codeVerifier, 300)
@@ -37,7 +37,7 @@ export default {
   },
 
   // step 2 of PKCE authorization code flow
-  async handleDropboxOAuthRedirect(authorizationCode: string, codeVerifier: string) {
+  async handleDropboxOAuthRedirect(authorizationCode: string, codeVerifier: string): Promise<void> {
     const tokenRequestURL = `https://api.dropbox.com/oauth2/token` +
                             `?client_id=${db_app_client_id}` +
                             `&redirect_uri=${encodeURIComponent(redirect_uri)}` +
@@ -58,7 +58,7 @@ export default {
   },
 
   // delete tokens and user account data
-  disconnectAccount() {
+  disconnectAccount(): void {
     store.dispatch('updateAccessToken', '')
     store.dispatch('updateUserInfo', null)
     vm.$cookies.remove('db_refresh')
@@ -77,7 +77,8 @@ export default {
         const tokenData: TokenResponse = response.data
         store.dispatch('updateAccessToken', tokenData.access_token)
         return true
-      } catch (e: any) {
+      } catch (error) {
+        const e = error as AxiosError
         if (e.response && (e.response.status === 400 || e.response.status === 401)) {
           // refresh token is invalid or expired
           vm.$cookies.remove('db_refresh')
@@ -90,7 +91,7 @@ export default {
   },
 
   // load file data
-  async getData(path: string, retries = 0): Promise<null | any> {
+  async getData<T>(path: string, retries = 0): Promise<null | T> {
     const url = 'https://content.dropboxapi.com/2/files/download'
     const dropboxAPIArg = {
       'path': path,
@@ -106,7 +107,8 @@ export default {
       })
       return response.data
 
-    } catch (e: any) {
+    } catch (error) {
+      const e = error as AxiosError
       if (e.response && e.response.status === 401) {
         if (retries < 3 && await this.tryRefreshAccessToken()) {
           return await this.getData(path, ++retries)
@@ -115,11 +117,12 @@ export default {
         // path not found
         return null
       }
+      throw(error)
     }
   },
 
   // save file data
-  async saveData(path: string, data: any, retries = 0) {
+  async saveData(path: string, data: unknown, retries = 0): Promise<void> {
     const url = 'https://content.dropboxapi.com/2/files/upload'
     const dropboxAPIArg = {
       'path': path,
@@ -138,7 +141,8 @@ export default {
         },
       })
       
-    } catch (e: any) {
+    } catch (error) {
+      const e = error as AxiosError
       console.log('save failed:')
       console.log(e)
       if (e.response && e.response.status === 401) {
@@ -150,7 +154,7 @@ export default {
   },
 
   // load user info
-  async loadUserInfo(retries = 0) {
+  async loadUserInfo(retries = 0): Promise<void> {
     const url = 'https://api.dropboxapi.com/2/users/get_current_account'
 
     try {
@@ -162,7 +166,8 @@ export default {
       })
 
       store.dispatch('updateUserInfo', response.data)
-    } catch (e: any) {
+    } catch (error) {
+      const e = error as AxiosError
       if (e.response && e.response.status === 401) {
         if (retries < 3 && await this.tryRefreshAccessToken()) {
           this.loadUserInfo(++retries)
@@ -172,7 +177,7 @@ export default {
   },
 
   // get folder list
-  async getFolders(path: string, retries = 0): Promise<null | any> {
+  async getFolders(path: string, retries = 0): Promise<null | unknown> {
     const url = 'https://api.dropboxapi.com/2/files/list_folder'
     const body = {
       'path': path,
@@ -188,7 +193,8 @@ export default {
       })
       return response.data
 
-    } catch (e: any) {
+    } catch (error) {
+      const e = error as AxiosError
       if (e.response && e.response.status === 401) {
         if (retries < 3 && await this.tryRefreshAccessToken()) {
           return await this.getFolders(path, ++retries)
@@ -198,29 +204,29 @@ export default {
   },
 
   // load API tokens
-  async loadTokens() {
+  async loadTokens(): Promise<void> {
     const tokens = await this.getData(paths.tokensPath)
 
     store.dispatch('updateAccessTokens', tokens)
   },
 
   // save API tokens
-  async saveTokens() {
+  async saveTokens(): Promise<void> {
     const tokens: { [ name: string ]: string } = store.state.accessTokens
 
     await this.saveData(paths.tokensPath, tokens)
   },
 
   // load general settings
-  async loadSettings() {
-    const settings: AppSettings = await this.getData(paths.settingsPath)
+  async loadSettings(): Promise<void> {
+    const settings: AppSettings | null = await this.getData<AppSettings>(paths.settingsPath)
     const widgetList = settings?.widgetList || []
 
     store.dispatch('updateUserWidgets', widgetList)
   },
 
   // save all general settings
-  async saveSettings() {
+  async saveSettings(): Promise<void> {
     const settings: AppSettings = {
       widgetList: store.state.userWidgets
     }
@@ -229,7 +235,7 @@ export default {
   },
 
   // reload all data
-  async reloadAll() {
+  async reloadAll(): Promise<void> {
     await this.loadUserInfo()
     await this.loadTokens()
     await this.loadSettings()
