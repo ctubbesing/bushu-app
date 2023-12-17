@@ -1,3 +1,4 @@
+/* eslint-disable require-atomic-updates */
 import {
   ShowInfo,
   ShowSeason,
