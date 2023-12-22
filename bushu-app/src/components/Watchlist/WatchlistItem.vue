@@ -35,7 +35,7 @@
       <div
         v-if="doProgressBar && editedSeasonView && !isReadOnly"
         id="progress-section"
-        :style="getProgressBar(editedSeasonView)"
+        :style="getProgressBar()"
       >
         <div v-if="editedSeasonView.beganDate">
           <span @click="toggleEpisodeCountUnits">
@@ -291,7 +291,7 @@ export default Vue.extend({
       let amtTotal = view.seasonInfo.totalEpisodeCount ? view.seasonInfo.totalEpisodeCount : 0
       return [ amtWatched, amtTotal ]
     },
-    getProgressBar(view: SeasonView): string {
+    getProgressBar(): string {
       let progressPct = 0
       progressPct = this.displayedTotalEpisodeCount ? (100 * this.displayedEpisodeProgress / this.displayedTotalEpisodeCount) : 50
       return `background-image: linear-gradient(to right, hsl(222, 71%, 60%) ${progressPct}%, hsl(222, 71%, 75%) ${progressPct}%);`
