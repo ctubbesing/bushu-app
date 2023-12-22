@@ -357,7 +357,7 @@ export default Vue.extend({
       }
     },
     saveChanges() {
-      this.showData.seasons.sort((a, b) => a.seasonNumber - b.seasonNumber)
+      this.showData.seasons.sort((a, b) => a.seasonNumber! - b.seasonNumber!)
       this.syncModel()
       this.$emit('save-changes')
       this.closeModal()

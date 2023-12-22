@@ -1,4 +1,3 @@
-/* eslint-disable require-atomic-updates */
 import {
   ShowInfo,
   ShowSeason,
@@ -168,7 +167,7 @@ export default {
 
     return catalog
   },
-  async SaveCatalog(catalog: ShowInfo[]): Promise<void> {
+  async SaveCatalog(catalog: ShowInfo[]) {
     const showInfoData: DataStore<RawShowInfo> = {}
     const showSeasonData: DataStore<ShowSeason> = {}
 
@@ -216,7 +215,7 @@ export default {
 
     return watchlist
   },
-  async SaveWatchlistData(watchlist: WatchlistData): Promise<void> {
+  async SaveWatchlistData(watchlist: WatchlistData) {
     const allSeasonViews: SeasonView[] = [
       ...watchlist.main,
       ...watchlist.live,
@@ -234,7 +233,7 @@ export default {
 
     await dropbox.saveData(watchlistDataPath, rawData)
   },
-  async SaveSeasonViews(seasonViews: SeasonView[]): Promise<void> {
+  async SaveSeasonViews(seasonViews: SeasonView[]) {
     const allViews: DataStore<RawSeasonView> = await LoadSeasonViews()
     const newViews: DataStore<RawSeasonView> = tools.deepClone(allViews)
     seasonViews.forEach((view: SeasonView) => {
@@ -252,7 +251,7 @@ export default {
     SeasonViewCache = newViews
     await dropbox.saveData(seasonViewsPath, newViews)
   },
-  async SaveSeasonViewDebounced(view: SeasonView): Promise<void> {
+  async SaveSeasonViewDebounced(view: SeasonView) {
     const debounceSeconds = 3
     DebouncedSeasonViewUpdates[view.id] = view
     window.clearTimeout(DebounceTimeoutId)

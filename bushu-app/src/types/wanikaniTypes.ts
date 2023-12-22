@@ -39,18 +39,7 @@ export interface WKUserData {
     max_level_granted: number
     period_ends_at: null | string
   }
-  preferences: WKUserPreferences
-}
-
-interface WKUserPreferences {
-  default_voice_actor_id: number
-  extra_study_autoplay_audio: boolean
-  lessons_autoplay_audio: boolean
-  lessons_batch_size: number
-  lessons_presentation_order: string
-  reviews_autoplay_audio: boolean
-  reviews_display_srs_indicator: boolean
-  reviews_presentation_order: string
+  preferences: any
 }
 
 interface AssignmentData {
@@ -101,7 +90,7 @@ export interface RadicalData extends SubjectData {
 interface SubjectAsset {
   url: string
   content_type: string
-  metadata: unknown
+  metadata: any
 }
 
 export interface KanjiData extends SubjectData {
@@ -147,18 +136,4 @@ export interface KanaVocabularyData extends SubjectData {
   meaning_mnemonic: string
   parts_of_speech: string[]
   pronounciation_audios: SubjectAsset[]
-}
-
-export interface KTListCollection {
-  learningList: {
-    own: string[]
-    list1: string[]
-    list2: string[]
-    list3: string[]
-    list4: string[]
-    list5: string[]
-    list6: string[]
-    list7: string[]
-  },
-  version: string
 }

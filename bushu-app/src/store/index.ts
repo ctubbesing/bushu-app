@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Vue from "vue";
 import Vuex from "vuex";
 import dropbox from "./modules/dropbox";

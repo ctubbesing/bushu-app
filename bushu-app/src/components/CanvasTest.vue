@@ -1316,32 +1316,30 @@ export default Vue.extend({
       this.generateCanvasImage()
     },
     look(evt: MouseEvent) {
-      let canvas = document.getElementById("c")
-      if (canvas) {
-        let rect = canvas.getBoundingClientRect()
-        let x = evt.clientX - rect.left - 1
-        let y = evt.clientY - rect.top - 1
-        if (x >= 0 && x < this.canvasWidth && y >= 0 && y < this.canvasHeight) {
-          let scene = this.allScenes[this.mainSceneIdx]
-          let cameraLeft = this.vCross(scene.camera.up, scene.camera.dir)
-          let screenWidth = 2 * Math.tan(scene.camera.fov[0])
-          let screenHeight = 2 * Math.tan(scene.camera.fov[1])
-          let pxWidth = screenWidth / this.canvasWidth
-          let pxHeight = screenHeight / this.canvasHeight
-          let pxYaw = pxWidth * (this.canvasWidth / 2 - x - 0.5)
-          let pxPitch = pxHeight * (this.canvasHeight / 2 - y - 0.5)
+      let canvas = document.getElementById("c");
+      let rect = canvas!.getBoundingClientRect()
+      let x = evt.clientX - rect.left - 1
+      let y = evt.clientY - rect.top - 1
+      if (x >= 0 && x < this.canvasWidth && y >= 0 && y < this.canvasHeight) {
+        let scene = this.allScenes[this.mainSceneIdx]
+        let cameraLeft = this.vCross(scene.camera.up, scene.camera.dir)
+        let screenWidth = 2 * Math.tan(scene.camera.fov[0])
+        let screenHeight = 2 * Math.tan(scene.camera.fov[1])
+        let pxWidth = screenWidth / this.canvasWidth
+        let pxHeight = screenHeight / this.canvasHeight
+        let pxYaw = pxWidth * (this.canvasWidth / 2 - x - 0.5)
+        let pxPitch = pxHeight * (this.canvasHeight / 2 - y - 0.5)
 
-          let targetDir = this.norm(
-            this.vAdd(
-              scene.camera.dir,
-              this.vScale(scene.camera.up, pxPitch),
-              this.vScale(cameraLeft, pxYaw)
-            )
+        let targetDir = this.norm(
+          this.vAdd(
+            scene.camera.dir,
+            this.vScale(scene.camera.up, pxPitch),
+            this.vScale(cameraLeft, pxYaw)
           )
-          scene.camera.dir = targetDir
-          this.capture(this.mainSceneIdx)
-          this.refreshCanvas()
-        }
+        )
+        scene.camera.dir = targetDir
+        this.capture(this.mainSceneIdx)
+        this.refreshCanvas()
       }
     },
     vScale(v: vec3, n: number) : vec3 {
@@ -2152,7 +2150,7 @@ export default Vue.extend({
         for (let col = 0; col < imgPxCols; col++) {
           let px = grayImg[row][col]
           let neighbors = [] as number[]
-          // let isEdge = false
+          let isEdge = false
           if (row > 0) {
             neighbors.push(grayImg[row - 1][col])
           }
