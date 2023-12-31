@@ -4,26 +4,33 @@
       v-if="watchlist"
       id="all-sections-container"
     >
+      <div id="buttons-container">
+        <icon-button
+          :icon="'collection'"
+          @click="openCatalog()"
+        />
+      </div>
       <div id="active-sections-container">
-        <div
-          id="currently-watching-section"
-          class="temp-currently-watching-section"
-        >
-          Currently Watching <br>
+        <div id="currently-watching-section">
+          Currently Watching
         </div>
         <div id="main-live-container">
-          <watchlist-section
-            :list-type="'main'"
-            :items="watchlist.main"
-            @add-item="selectCatalogEntry('main')"
-            @mark-item-completed="showMarkCompletedOptions"
-          />
-          <watchlist-section
-            :list-type="'live'"
-            :items="watchlist.live"
-            @add-item="selectCatalogEntry('live')"
-            @mark-item-completed="showMarkCompletedOptions"
-          />
+          <div id="main-list">
+            <watchlist-section
+              :list-type="'main'"
+              :items="watchlist.main"
+              @add-item="selectCatalogEntry('main')"
+              @mark-item-completed="showMarkCompletedOptions"
+            />
+          </div>
+          <div id="live-list">
+            <watchlist-section
+              :list-type="'live'"
+              :items="watchlist.live"
+              @add-item="selectCatalogEntry('live')"
+              @mark-item-completed="showMarkCompletedOptions"
+            />
+          </div>
         </div>
       </div>
       <div id="inactive-sections-container">
@@ -43,9 +50,6 @@
           @add-item="selectCatalogEntry('backlog')"
         />
       </div>
-    </div>
-    <div>
-      <b-button @click="openCatalog()">View Catalog</b-button>
     </div>
     <catalog-modal
       id="catalogModal"
@@ -103,6 +107,7 @@ import watchlistService from '@/utils/services/WatchlistService'
 import CatalogModal from '@/components/Watchlist/CatalogModal.vue'
 import WatchlistSection from '@/components/Watchlist/WatchlistSection.vue'
 import WatchlistItem from '@/components/Watchlist/WatchlistItem.vue'
+import IconButton from '@/components/utils/IconButton.vue'
 import {
   SeasonView,
   ShowInfo,
@@ -118,6 +123,7 @@ export default Vue.extend({
     catalogModal: CatalogModal,
     watchlistSection: WatchlistSection,
     watchlistItem: WatchlistItem,
+    iconButton: IconButton,
   },
   data() {
     return {
@@ -284,12 +290,24 @@ export default Vue.extend({
 </script>
 
 <style>
-.temp-currently-watching-section {
+#currently-watching-section {
   margin: 10px;
   border-radius: 10px;
   padding: 10px;
   text-align: left;
   background-color: #defb;
+}
+#buttons-container {
+  padding: 5px 5px 0;
+}
+#main-live-container {
+  padding: 0 10px;
+}
+#main-list {
+  margin-bottom: 10px;
+}
+#inactive-sections-container {
+  padding: 10px;
 }
 #mark-completed-options {
   padding: 0;
@@ -316,34 +334,57 @@ export default Vue.extend({
 @media (min-width: 992px) {
   #all-sections-container {
     display: flex;
+    align-items: stretch;
     height: 90vh;
   }
   #active-sections-container {
     display: flex;
     flex-direction: column;
     width: 70%;
+    height: fit-content;
   }
   #currently-watching-section {
-    flex-grow: 5;
+    margin-left: 0;
   }
   #main-live-container {
-    flex-grow: 2;
-    display: flex;
-  }
-  .temp-currently-watching-section {
     flex-grow: 1;
+    display: flex;
+    padding-left: 0;
+    width: 100%;
+    height: fit-content;
+    overflow: auto;
   }
-  /* #main-list {} */
-  /* #live-list {} */
+  #main-list {
+    padding-right: 5px;
+    width: 50%;
+    margin-bottom: 0;
+    overflow-y: auto;
+    height: 100%;
+  }
+  #live-list {
+    display: flex;
+    padding-left: 5px;
+    width: 50%;
+  }
   #inactive-sections-container {
     display: flex;
+    padding: 10px 0px 10px 0;
     flex-direction: column;
     width: 30%;
+    overflow-y: auto;
+    height: 100%;
+  }
+  ::-webkit-scrollbar {
+    width: 14px;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 4px solid #0000;
+    background-clip: padding-box;
+    border-radius: 7px;
+    background-color: #0003;
   }
   /* #queue-list {} */
   /* #upcoming-list {} */
-  #backlog-list {
-    flex-grow: 0.6;
-  }
+  /* #backlog-list {} */
 }
 </style>

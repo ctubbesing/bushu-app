@@ -1,7 +1,10 @@
 <template>
   <div id="section">
     <div id="header">
-      {{ listType | toTitleCase }}
+      <div id="header-title">
+        <div> {{ listType | toTitleCase }} </div>
+        <div> {{ items.length + ' item' + (items.length === 1 ? '' : 's') }} </div>
+      </div>
       <b-button
         id="add-button"
         variant="outline-light"
@@ -76,28 +79,48 @@ export default Vue.extend({
 
 <style>
 #section {
-  flex-grow: 1;
-  margin: 10px;
   border-radius: 10px;
   text-align: left;
   background-color: #fff5;
-  overflow: hidden;
 }
 #header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  font-size: 2em;
   background-color: #8bca;
+  border-radius: 10px 10px 0 0;
+}
+#header-title > div:first-child {
+  font-size: 2em;
+}
+#header-title > div:last-child {
+  margin: -10px 0 0;
+  font-size: 0.75em;
 }
 #item-list {
-  padding: 5px;
+  padding: 5px 5px 0;
+}
+#item-list::-webkit-scrollbar {
+  width: 14px;
+}
+#item-list::-webkit-scrollbar-thumb {
+  border: 4px solid #0000;
+  background-clip: padding-box;
+  border-radius: 7px;
+  background-color: #0003;
 }
 #add-button {
   padding: 6px;
   border: none;
   height: 36px;
   width: 36px;
+}
+
+@media (min-width: 992px) {
+  #item-list {
+  overflow-y: auto;
+  height: 100%;
+}
 }
 </style>
