@@ -1,9 +1,10 @@
 <template>
   <b-button
+    id="main-button"
     :variant="variant ? variant : 'outline-secondary'"
     pill
     @click="$emit('click')"
-    style="padding: 12px 14px"
+    :style="paddingStyle"
   >
     <b-icon
       :icon="icon"
@@ -22,6 +23,14 @@ export default Vue.extend({
     icon: String,
     scale: String,
     variant: String,
+  },
+  computed: {
+    isMobile(): boolean {
+      return window.innerWidth < 992
+    },
+    paddingStyle(): string {
+      return `padding: ${this.isMobile ? '10px 14px 14px' : '12px 14px'}`
+    },
   },
 })
 </script>

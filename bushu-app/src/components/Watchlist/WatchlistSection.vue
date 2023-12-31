@@ -99,7 +99,7 @@ export default Vue.extend({
   font-size: 0.75em;
 }
 #item-list {
-  padding: 5px 5px 0;
+  padding: 5px;
 }
 #item-list::-webkit-scrollbar {
   width: 14px;
@@ -115,6 +115,9 @@ export default Vue.extend({
   border: none;
   height: 36px;
   width: 36px;
+}
+#full-item:last-child {
+  margin-bottom: 0;
 }
 
 @media (min-width: 992px) {
