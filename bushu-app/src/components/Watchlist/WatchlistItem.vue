@@ -346,12 +346,12 @@ export default Vue.extend({
   display: flex;
   width: 100%;
   border-radius: 8px;
-  overflow: hidden;
   margin-bottom: 5px;
 }
 #item-details {
   flex: 11;
   background-color: #fff8;
+  border-radius: 8px 0 0 8px;
 }
 #info-section {
   display: flex;
@@ -378,6 +378,7 @@ export default Vue.extend({
   font-size: 0.8em;
   font-weight: bold;
   padding-left: 8px;
+  border-radius: 0 0 0 8px;
   user-select: none;
 }
 #progress-section > div > span:first-child {
@@ -397,6 +398,7 @@ export default Vue.extend({
   flex: 1;
   padding: 8px 0;
   background-color: #0002;
+  border-radius: 0 8px 8px 0;
 }
 #increment-button {
   margin: 3px 10px;
