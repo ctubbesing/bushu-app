@@ -8,7 +8,10 @@
           style="margin-right: 5px"
         />
         <div>
-          <div id="item-name">
+          <div
+            v-if="loadedShowInfo && loadedShowSeason"
+            id="item-name"
+          >
             <span>{{ loadedShowInfo.title }}</span>
             <template v-if="parentList !== 'backlog'">
               <span v-if="loadedShowSeason.name">
@@ -159,15 +162,15 @@ export default Vue.extend({
       default: 'queue',
     },
     seasonView: {
-      type: Object as PropType<SeasonView>,
+      type: Object as PropType<SeasonView | undefined>,
       required: false,
     },
     showSeason: {
-      type: Object as PropType<ShowSeason>,
+      type: Object as PropType<ShowSeason | undefined>,
       required: false,
     },
     showInfo: {
-      type: Object as PropType<ShowInfo>,
+      type: Object as PropType<ShowInfo | undefined>,
       required: false,
     },
     isReadOnly: {
@@ -186,12 +189,12 @@ export default Vue.extend({
     }
   },
   computed: {
-    loadedShowInfo(): ShowInfo {
+    loadedShowInfo(): ShowInfo | null {
       if (this.showInfo) {
         return this.showInfo
       }
       const showSeasonData = this.editedSeasonView ? this.editedSeasonView.seasonInfo : this.showSeason
-      return this.$store.getters.getShowInfoById(showSeasonData.showId)
+      return showSeasonData ? this.$store.getters.getShowInfoById(showSeasonData.showId) : null
     },
     loadedShowSeason(): ShowSeason | null {
       if (this.showSeason) {
@@ -205,10 +208,11 @@ export default Vue.extend({
     imageLink(): string {
       if (this.editedSeasonView || this.showSeason) {
         const showSeasonData = this.editedSeasonView ? this.editedSeasonView.seasonInfo : this.showSeason
-        if (showSeasonData.imgLink) {
+        if (showSeasonData?.imgLink) {
           return showSeasonData.imgLink
+        } else if (showSeasonData != undefined) {
+          return this.$store.getters.getImageLink(showSeasonData.showId, showSeasonData.id)
         }
-        return this.$store.getters.getImageLink(showSeasonData.showId, showSeasonData.id)
       } else if (this.showInfo) {
         return this.$store.getters.getShowImageLink(this.showInfo)
       }
@@ -218,7 +222,7 @@ export default Vue.extend({
       return this.parentList === 'main' || this.parentList === 'live'
     },
     previousSeasonsEpisodeCount(): number {
-      if (this.loadedShowSeason) {
+      if (this.loadedShowSeason && this.loadedShowInfo) {
         const currentSznNumber = this.loadedShowSeason.seasonNumber
         return this.loadedShowInfo.seasons.reduce((total: number, szn: ShowSeason) => {
           return total + ((currentSznNumber > szn.seasonNumber && szn.totalEpisodeCount) ? szn.totalEpisodeCount : 0)
@@ -233,7 +237,7 @@ export default Vue.extend({
       return 0
     },
     overallTotalEpisodeCount(): number {
-      if (this.editedSeasonView) {
+      if (this.editedSeasonView && this.loadedShowInfo) {
         return this.loadedShowInfo.seasons.reduce((total: number, szn: ShowSeason) => {
           return total + (szn.totalEpisodeCount ? szn.totalEpisodeCount : 0)
         }, 0)
@@ -279,11 +283,11 @@ export default Vue.extend({
     if (this.seasonView) {
       this.editedSeasonView = this.seasonView
     }
-    this.doEpisodeCountOverall = this.loadedShowInfo.doEpisodeCountOverall || false
+    this.doEpisodeCountOverall = this.loadedShowInfo?.doEpisodeCountOverall || false
   },
   watch: {
     seasonView() {
-      this.editedSeasonView = this.seasonView
+      this.editedSeasonView = this.seasonView ?? null
     },
   },
   methods: {
