@@ -39,6 +39,7 @@
         v-if="doProgressBar && editedSeasonView && !isReadOnly"
         id="progress-section"
         :style="getProgressBar()"
+        :key="rerenderKey"
       >
         <div v-if="editedSeasonView.beganDate">
           <span @click="toggleEpisodeCountUnits">
@@ -186,6 +187,7 @@ export default Vue.extend({
       doEpisodeCountUnitsLabel: false as boolean,
       doManualProgressEdit: false as boolean,
       editedProgress: 0 as number,
+      rerenderKey: '' as string,
     }
   },
   computed: {
@@ -333,6 +335,7 @@ export default Vue.extend({
         this.editedSeasonView.beganDate = tools.getTimestamp()
         this.saveChanges()
       }
+      this.rerenderKey = (new Date()).toString()
     },
     removeItem() {
       this.$emit('remove-item')
