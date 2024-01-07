@@ -46,11 +46,13 @@
           :list-type="'upcoming'"
           :items="watchlist.upcoming"
           @add-item="selectCatalogEntry('upcoming')"
+          @remove-item="promptConfirmRemoveItem"
         />
         <watchlist-section
           :list-type="'backlog'"
           :items="watchlist.backlog"
           @add-item="selectCatalogEntry('backlog')"
+          @remove-item="promptConfirmRemoveItem"
         />
       </div>
     </div>
@@ -69,6 +71,7 @@
       centered
       ok-title="Confirm"
       @ok="markSeasonCompleted"
+      @hide="onModalHide"
     >
       <watchlist-item
         parent-list="main"
@@ -77,7 +80,7 @@
       />
       <ul id="mark-completed-options">
         <li
-          v-if="targetNextShowSeason"
+          v-if="targetShowSeason"
           :class="{ 'selected': doNextSeasonToQueue }"
           @click.prevent="doNextSeasonToQueue = !doNextSeasonToQueue"
         >
@@ -85,7 +88,7 @@
             Add next season to Queue:
           </b-form-checkbox>
           <watchlist-item
-            :show-season="targetNextShowSeason"
+            :show-season="targetShowSeason"
             :is-read-only="true"
           />
         </li>
@@ -111,15 +114,18 @@
       size="md"
       centered
       ok-title="Confirm"
-      @ok="removeItem"
       ok-variant="danger"
+      @ok="removeItem"
+      @hide="onModalHide"
     >
       <watchlist-item
         :parent-list="targetListName"
         :season-view="targetSeasonView"
+        :show-season="targetShowSeason"
+        :show-info="targetShowInfo"
         :is-read-only="true"
       />
-      The season will be marked as Dropped and removed from the {{ targetListName | toTitleCase}} list.
+      The season will be {{ targetSeasonView ? 'marked as Dropped and' : '' }} removed from the {{ targetListName | toTitleCase}} list.
     </b-modal>
   </div>
 </template>
@@ -138,6 +144,7 @@ import {
 } from '@/types/watchlistTypes'
 import Vue from "vue";
 import tools from '@/utils/tools';
+import { BvModalEvent } from 'bootstrap-vue'
 
 export default Vue.extend({
   name: "Watchlist",
@@ -153,7 +160,8 @@ export default Vue.extend({
       isLoading: false as boolean,
       targetListName: null as string | null,
       targetSeasonView: null as SeasonView | null,
-      targetNextShowSeason: null as ShowSeason | null,
+      targetShowSeason: null as ShowSeason | null,
+      targetShowInfo: null as ShowInfo | null,
       targetNextQueueItem: null as SeasonView | null,
       doNextSeasonToQueue: true as boolean,
       doPopQueueToMain: true as boolean,
@@ -175,6 +183,13 @@ export default Vue.extend({
     await this.loadData()
   },
   methods: {
+    resetTargets() {
+      this.targetListName = null
+      this.targetSeasonView = null
+      this.targetShowSeason = null
+      this.targetShowInfo = null
+      this.targetNextQueueItem = null
+    },
     async loadData() {
       if (this.isReady) {
         await this.$store.dispatch('loadCatalogFromDropbox')
@@ -225,12 +240,12 @@ export default Vue.extend({
             this.targetSeasonView = this.watchlist.main[seasonViewIdx]
 
             // find next season of show, if any
-            this.targetNextShowSeason = null
+            this.targetShowSeason = null
             const seasonInfo = this.targetSeasonView.seasonInfo
             const seasonShowInfo: ShowInfo = this.$store.getters.getShowInfoById(seasonInfo.showId)
             let seasonIdx = seasonShowInfo.seasons.findIndex((season: ShowSeason) => season.id === seasonInfo.id)
             if (seasonIdx < seasonShowInfo.seasons.length - 1) {
-              this.targetNextShowSeason = seasonShowInfo.seasons[seasonIdx + 1]
+              this.targetShowSeason = seasonShowInfo.seasons[seasonIdx + 1]
               this.doNextSeasonToQueue = true
             }
 
@@ -248,7 +263,7 @@ export default Vue.extend({
           if (seasonViewIdx !== -1) {
             this.doNextSeasonToQueue = false
             this.doPopQueueToMain = false
-            this.targetNextShowSeason = null
+            this.targetShowSeason = null
             this.targetNextQueueItem = null
 
             this.targetSeasonView = this.watchlist.live[seasonViewIdx]
@@ -274,10 +289,10 @@ export default Vue.extend({
         }
 
         if (this.doNextSeasonToQueue) {
-          if (this.targetNextShowSeason) {
+          if (this.targetShowSeason) {
             const newSeasonView: SeasonView = {
               id: tools.getGUID(),
-              seasonInfo: this.targetNextShowSeason,
+              seasonInfo: this.targetShowSeason,
               watchedEpisodes: 0,
             }
             this.watchlist.queue.push(newSeasonView)
@@ -301,6 +316,12 @@ export default Vue.extend({
         if (sourceList === 'main' || sourceList === 'live' || sourceList === 'queue') {
           let seasonViewIdx = this.watchlist[sourceList].findIndex((view: SeasonView) => view.id === itemId)
           this.targetSeasonView = this.watchlist[sourceList][seasonViewIdx]
+        } else if (sourceList === 'upcoming') {
+          let showSeasonIdx = this.watchlist.upcoming.findIndex((szn: ShowSeason) => szn.id === itemId)
+          this.targetShowSeason = this.watchlist.upcoming[showSeasonIdx]
+        } else if (sourceList === 'backlog') {
+          let showInfoIdx = this.watchlist.backlog.findIndex((show: ShowInfo) => show.id === itemId)
+          this.targetShowInfo = this.watchlist.backlog[showInfoIdx]
         }
         this.$bvModal.show('confirmRemoveModal')
       }
@@ -328,11 +349,10 @@ export default Vue.extend({
     closeCatalog() {
       this.$bvModal.hide('catalogModal')
     },
-    resetTargets() {
-      this.targetListName = null
-      this.targetSeasonView = null
-      this.targetNextShowSeason = null
-      this.targetNextQueueItem = null
+    onModalHide(event: BvModalEvent) {
+      if (event.trigger !== 'ok') {
+        this.resetTargets()
+      }
     },
   },
 });
