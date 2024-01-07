@@ -14,7 +14,8 @@ export default {
       if (!dateStr) {
         return '?'
       }
-      return tools.getFormattedDate(dateStr)
+      const doDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(dateStr)
+      return tools.getFormattedDate(dateStr, doDateOnly)
     },
   }
 }

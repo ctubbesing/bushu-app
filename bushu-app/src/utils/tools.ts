@@ -51,7 +51,7 @@ export default {
   getTimestamp(): string {
     return (new Date()).toISOString()
   },
-  getFormattedDate(timestamp: string): string {
-    return (new Date(timestamp)).toLocaleDateString()
+  getFormattedDate(timestamp: string, doDateOnly = false): string {
+    return (new Date(timestamp)).toLocaleDateString('en-US', doDateOnly ? {timeZone: 'UTC'} : undefined)
   },
 }
