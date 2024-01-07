@@ -9,7 +9,7 @@
         />
         <div>
           <div
-            v-if="loadedShowInfo && loadedShowSeason"
+            v-if="loadedShowInfo"
             id="item-name"
           >
             <span>{{ loadedShowInfo.title }}</span>
