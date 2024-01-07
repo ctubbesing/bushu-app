@@ -21,6 +21,7 @@
               :items="watchlist.main"
               @add-item="selectCatalogEntry('main')"
               @mark-item-completed="showMarkCompletedOptions"
+              @remove-item="promptConfirmRemoveItem"
             />
           </div>
           <div id="live-list">
@@ -29,6 +30,7 @@
               :items="watchlist.live"
               @add-item="selectCatalogEntry('live')"
               @mark-item-completed="showMarkCompletedOptions"
+              @remove-item="promptConfirmRemoveItem"
             />
           </div>
         </div>
@@ -38,6 +40,7 @@
           :list-type="'queue'"
           :items="watchlist.queue"
           @add-item="selectCatalogEntry('queue')"
+          @remove-item="promptConfirmRemoveItem"
         />
         <watchlist-section
           :list-type="'upcoming'"
@@ -51,12 +54,14 @@
         />
       </div>
     </div>
+    <!-- Catalog Modal -->
     <catalog-modal
       id="catalogModal"
       :selection-target-list="targetListName"
       @item-selected="addCatalogItemToList"
       @hidden="resetTargets()"
     />
+    <!-- Mark Completed Modal -->
     <b-modal
       id="markCompletedModal"
       title="Marking Season Completed"
@@ -98,6 +103,23 @@
           />
         </li>
       </ul>
+    </b-modal>
+    <!-- Confirm Drop Modal -->
+    <b-modal
+      id="confirmRemoveModal"
+      :title="'Drop ' + (targetListName === 'backlog' ? 'show' : 'season') + '?'"
+      size="md"
+      centered
+      ok-title="Confirm"
+      @ok="removeItem"
+      ok-variant="danger"
+    >
+      <watchlist-item
+        :parent-list="targetListName"
+        :season-view="targetSeasonView"
+        :is-read-only="true"
+      />
+      The season will be marked as Dropped and removed from the {{ targetListName | toTitleCase}} list.
     </b-modal>
   </div>
 </template>
@@ -181,7 +203,6 @@ export default Vue.extend({
             id: tools.getGUID(),
             seasonInfo: item as ShowSeason,
             watchedEpisodes: 0,
-            isDropped: false,
           }
           this.watchlist[listName].push(newSeasonView)
         } else if (listName === 'upcoming') {
@@ -258,7 +279,6 @@ export default Vue.extend({
               id: tools.getGUID(),
               seasonInfo: this.targetNextShowSeason,
               watchedEpisodes: 0,
-              isDropped: false,
             }
             this.watchlist.queue.push(newSeasonView)
           }
@@ -268,6 +288,33 @@ export default Vue.extend({
           if (this.targetNextQueueItem) {
             this.watchlist.main.push(this.targetNextQueueItem)
             this.watchlist.queue.splice(0, 1)
+          }
+        }
+
+        await this.saveWatchlist()
+      }
+      this.resetTargets()
+    },
+    promptConfirmRemoveItem(itemId: string, sourceList: string) {
+      this.targetListName = sourceList
+      if (this.watchlist) {
+        if (sourceList === 'main' || sourceList === 'live' || sourceList === 'queue') {
+          let seasonViewIdx = this.watchlist[sourceList].findIndex((view: SeasonView) => view.id === itemId)
+          this.targetSeasonView = this.watchlist[sourceList][seasonViewIdx]
+        }
+        this.$bvModal.show('confirmRemoveModal')
+      }
+    },
+    async removeItem() {
+      if (this.watchlist) {
+        if ((this.targetListName === 'main' || this.targetListName === 'live' || this.targetListName === 'queue') && this.targetSeasonView) {
+          this.targetSeasonView.droppedDate = (new Date()).toISOString()
+          await watchlistService.SaveSeasonViews([ this.targetSeasonView ])
+
+          const droppedViewId = this.targetSeasonView.id
+          const droppedViewIdx = this.watchlist[this.targetListName].findIndex((view: SeasonView) => view.id === droppedViewId)
+          if (droppedViewIdx !== -1) {
+            this.watchlist[this.targetListName].splice(droppedViewIdx, 1)
           }
         }
 

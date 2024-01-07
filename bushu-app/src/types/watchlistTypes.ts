@@ -28,10 +28,9 @@ export interface SeasonView {
   seasonInfo: ShowSeason
   watchedEpisodes: number
   currentEpisodeCount?: number
-  // isCompleted: boolean
   beganDate?: string
   completedDate?: string
-  isDropped: boolean
+  droppedDate?: string
   // notes: string[]
 }
 

@@ -125,8 +125,9 @@
           <b-icon icon="three-dots-vertical" />
         </template>
         <slot name="dropdown-items">
-          <b-dropdown-item>Test item 1</b-dropdown-item>
-          <b-dropdown-item>Test item 2</b-dropdown-item>
+          <b-dropdown-item @click="removeItem">
+            {{ seasonView ? 'Drop' : 'Remove' }}
+          </b-dropdown-item>
         </slot>
       </b-dropdown>
     </div>
@@ -328,6 +329,9 @@ export default Vue.extend({
         this.editedSeasonView.beganDate = tools.getTimestamp()
         this.saveChanges()
       }
+    },
+    removeItem() {
+      this.$emit('remove-item')
     },
     markSeasonCompleted() {
       this.$emit('mark-completed')

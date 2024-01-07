@@ -35,7 +35,7 @@ interface RawSeasonView {
   currentEpisodeCount?: number
   beganDate?: string
   completedDate?: string
-  isDropped: boolean
+  droppedDate?: string
 }
 
 const showInfoPath = '/Watchlist/shows.json'
@@ -135,7 +135,7 @@ async function BuildSeasonViews(ids: string[]): Promise<DataStore<SeasonView>> {
       currentEpisodeCount: rawView.currentEpisodeCount,
       beganDate: rawView.beganDate,
       completedDate: rawView.completedDate,
-      isDropped: rawView.isDropped,
+      droppedDate: rawView.droppedDate,
     }
   })
 
@@ -244,7 +244,7 @@ export default {
         currentEpisodeCount: view.currentEpisodeCount,
         beganDate: view.beganDate,
         completedDate: view.completedDate,
-        isDropped: view.isDropped,
+        droppedDate: view.droppedDate,
       }
     })
 
