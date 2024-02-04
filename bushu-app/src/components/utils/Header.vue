@@ -30,14 +30,20 @@
       </b-collapse>
     </b-navbar>
     <div :style="'height: 58px; width: 100%'" />
+    <scroll-to-refresh @refresh="$emit('refresh', $event)" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import DropboxSignIn from '@/components/DropboxSignIn.vue'
+import ScrollToRefresh from '@/components/utils/ScrollToRefresh.vue'
+
 export default Vue.extend({
-  components: { DropboxSignIn },
+  components: {
+    DropboxSignIn,
+    ScrollToRefresh,
+  },
   name: 'Header',
   data() {
     return {}
