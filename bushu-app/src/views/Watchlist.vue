@@ -36,24 +36,30 @@
         </div>
       </div>
       <div id="inactive-sections-container">
-        <watchlist-section
-          :list-type="'queue'"
-          :items="watchlist.queue"
-          @add-item="selectCatalogEntry('queue')"
-          @remove-item="promptConfirmRemoveItem"
-        />
-        <watchlist-section
-          :list-type="'upcoming'"
-          :items="watchlist.upcoming"
-          @add-item="selectCatalogEntry('upcoming')"
-          @remove-item="promptConfirmRemoveItem"
-        />
-        <watchlist-section
-          :list-type="'backlog'"
-          :items="watchlist.backlog"
-          @add-item="selectCatalogEntry('backlog')"
-          @remove-item="promptConfirmRemoveItem"
-        />
+        <div id="queue-list">
+          <watchlist-section
+            :list-type="'queue'"
+            :items="watchlist.queue"
+            @add-item="selectCatalogEntry('queue')"
+            @remove-item="promptConfirmRemoveItem"
+          />
+        </div>
+        <div id="upcoming-list">
+          <watchlist-section
+            :list-type="'upcoming'"
+            :items="watchlist.upcoming"
+            @add-item="selectCatalogEntry('upcoming')"
+            @remove-item="promptConfirmRemoveItem"
+          />
+        </div>
+        <div id="backlog-list">
+          <watchlist-section
+            :list-type="'backlog'"
+            :items="watchlist.backlog"
+            @add-item="selectCatalogEntry('backlog')"
+            @remove-item="promptConfirmRemoveItem"
+          />
+        </div>
       </div>
     </div>
     <!-- Catalog Modal -->
@@ -372,7 +378,7 @@ export default Vue.extend({
 #main-live-container {
   padding: 0 10px;
 }
-#main-list {
+#main-list, #queue-list, #upcoming-list {
   margin-bottom: 10px;
 }
 #inactive-sections-container {
