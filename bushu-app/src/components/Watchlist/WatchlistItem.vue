@@ -129,6 +129,12 @@
           <b-icon icon="three-dots-vertical" />
         </template>
         <slot name="dropdown-items">
+          <b-dropdown-item
+            v-if="isPromotable"
+            @click="promoteItem"
+          >
+            Promote to {{ parentList === 'queue' ? 'Main' : 'Queue' }}
+          </b-dropdown-item>
           <b-dropdown-item @click="removeItem">
             {{ seasonView ? 'Drop' : 'Remove' }}
           </b-dropdown-item>
@@ -280,6 +286,9 @@ export default Vue.extend({
       }
       return false
     },
+    isPromotable(): boolean {
+      return this.parentList === 'queue' || this.parentList === 'backlog'
+    },
   },
   created() {
     if (this.seasonView) {
@@ -336,6 +345,9 @@ export default Vue.extend({
         this.saveChanges()
       }
       this.rerenderKey = (new Date()).toString()
+    },
+    promoteItem() {
+      this.$emit('promote-item')
     },
     removeItem() {
       this.$emit('remove-item')

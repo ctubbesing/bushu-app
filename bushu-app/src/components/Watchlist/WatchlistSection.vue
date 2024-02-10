@@ -27,6 +27,7 @@
         :show-season="isShowSeason ? item : undefined"
         :show-info="isShowInfo ? item : undefined"
         @mark-completed="$emit('mark-item-completed', item.id, listType)"
+        @promote-item="$emit('promote-item', item.id, listType)"
         @remove-item="$emit('remove-item', item.id, listType)"
       />
     </div>

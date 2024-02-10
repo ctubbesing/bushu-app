@@ -41,6 +41,7 @@
             :list-type="'queue'"
             :items="watchlist.queue"
             @add-item="selectCatalogEntry('queue')"
+            @promote-item="promoteItem"
             @remove-item="promptConfirmRemoveItem"
           />
         </div>
@@ -57,6 +58,7 @@
             :list-type="'backlog'"
             :items="watchlist.backlog"
             @add-item="selectCatalogEntry('backlog')"
+            @promote-item="promoteItem"
             @remove-item="promptConfirmRemoveItem"
           />
         </div>
@@ -330,6 +332,38 @@ export default Vue.extend({
           this.targetShowInfo = this.watchlist.backlog[showInfoIdx]
         }
         this.$bvModal.show('confirmRemoveModal')
+      }
+    },
+    async promoteItem(itemId: string, sourceList: string) {
+      if (this.watchlist) {
+        if (sourceList === 'queue') {
+          // promote Queued SeasonView to Main
+          const seasonViewIdx = this.watchlist.queue.findIndex((view: SeasonView) => view.id === itemId)
+          if (seasonViewIdx !== -1) {
+            const promotedSeasonView = this.watchlist.queue[seasonViewIdx]
+            this.watchlist.main.push(promotedSeasonView)
+            this.watchlist.queue.splice(seasonViewIdx, 1)
+          }
+        } else if (sourceList === 'backlog') {
+          // promote Backlog ShowInfo to Queue
+          const showInfoIdx = this.watchlist.backlog.findIndex((show: ShowInfo) => show.id === itemId)
+          if (showInfoIdx !== -1) {
+            const promotedShow = this.watchlist.backlog[showInfoIdx]
+            if (promotedShow.seasons.length > 0) {
+              const showFirstSeason = promotedShow.seasons[0]
+
+              let newSeasonView: SeasonView = {
+                id: tools.getGUID(),
+                seasonInfo: showFirstSeason,
+                watchedEpisodes: 0,
+              }
+              this.watchlist.queue.push(newSeasonView)
+            }
+            this.watchlist.backlog.splice(showInfoIdx, 1)
+          }
+        }
+
+        await this.saveWatchlist()
       }
     },
     async removeItem() {
