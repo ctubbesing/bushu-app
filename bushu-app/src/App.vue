@@ -1,14 +1,9 @@
 <template>
   <div id="app">
     <div id="nav">
-      <app-header @refresh="handleRefresh" />
+      <app-header />
     </div>
-    <div
-      id="overlay"
-      v-if="$store.state.isLoading"
-      style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #0004"
-    />
-    <router-view :refreshKey="refreshKey" />
+    <router-view />
   </div>
 </template>
 
@@ -22,11 +17,6 @@ export default Vue.extend({
   components: {
     AppHeader: Header,
   },
-  data() {
-    return {
-      refreshKey: '' as string
-    }
-  },
   async created() {
     this.$store.dispatch('updateIsLoading', true)
 
@@ -35,11 +25,6 @@ export default Vue.extend({
     this.$store.dispatch('updateIsLoading', false)
   },
   methods: {
-    handleRefresh(event: any) {
-      this.refreshKey = event
-      // alert('Refresh detected !!')
-      // alert(event)
-    },
     async initializeDropbox() {
       // update access and refresh tokens if login redirect
       let isRedirect = await this.tryHandleOauthRedirect()
