@@ -21,6 +21,7 @@
               :items="watchlist.main"
               @add-item="selectCatalogEntry('main')"
               @mark-item-completed="showMarkCompletedOptions"
+              @demote-item="demoteItem"
               @remove-item="promptConfirmRemoveItem"
             />
           </div>
@@ -360,6 +361,21 @@ export default Vue.extend({
               this.watchlist.queue.push(newSeasonView)
             }
             this.watchlist.backlog.splice(showInfoIdx, 1)
+          }
+        }
+
+        await this.saveWatchlist()
+      }
+    },
+    async demoteItem(itemId: string, sourceList: string) {
+      if (this.watchlist) {
+        if (sourceList === 'main') {
+          // demote SeasonView from Main to top of Queue
+          const seasonViewIdx = this.watchlist.main.findIndex((view: SeasonView) => view.id === itemId)
+          if (seasonViewIdx !== -1) {
+            const demotedSeasonView = this.watchlist.main[seasonViewIdx]
+            this.watchlist.queue.splice(0, 0, demotedSeasonView)
+            this.watchlist.main.splice(seasonViewIdx, 1)
           }
         }
 

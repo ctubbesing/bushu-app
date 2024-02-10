@@ -135,6 +135,12 @@
           >
             Promote to {{ parentList === 'queue' ? 'Main' : 'Queue' }}
           </b-dropdown-item>
+          <b-dropdown-item
+            v-if="parentList === 'main'"
+            @click="demoteItem"
+          >
+            Demote to Queue
+          </b-dropdown-item>
           <b-dropdown-item @click="removeItem">
             {{ seasonView ? 'Drop' : 'Remove' }}
           </b-dropdown-item>
@@ -348,6 +354,9 @@ export default Vue.extend({
     },
     promoteItem() {
       this.$emit('promote-item')
+    },
+    demoteItem() {
+      this.$emit('demote-item')
     },
     removeItem() {
       this.$emit('remove-item')
