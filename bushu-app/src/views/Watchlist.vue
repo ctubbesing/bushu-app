@@ -395,6 +395,18 @@ export default Vue.extend({
           if (droppedViewIdx !== -1) {
             this.watchlist[this.targetListName].splice(droppedViewIdx, 1)
           }
+        } else if (this.targetListName === 'upcoming' && this.targetShowSeason) {
+          const droppedSznId = this.targetShowSeason.id
+          const droppedSznIdx = this.watchlist.upcoming.findIndex((szn: ShowSeason) => szn.id === droppedSznId)
+          if (droppedSznIdx !== -1) {
+            this.watchlist.upcoming.splice(droppedSznIdx, 1)
+          }
+        } else if (this.targetListName === 'backlog' && this.targetShowInfo) {
+          const droppedShowId = this.targetShowInfo.id
+          const droppedShowIdx = this.watchlist.backlog.findIndex((show: ShowInfo) => show.id === droppedShowId)
+          if (droppedShowIdx !== -1) {
+            this.watchlist.backlog.splice(droppedShowIdx, 1)
+          }
         }
 
         await this.saveWatchlist()
