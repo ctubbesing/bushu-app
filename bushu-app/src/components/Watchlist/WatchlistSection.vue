@@ -24,21 +24,24 @@
         :group="listType"
         handle=".drag-handle"
         :disabled="!isReorderable"
+        v-bind="dragOptions"
         @change="onReorder"
       >
-        <watchlist-item
-          v-for="item in items"
-          :key="item.id"
-          :parent-list="listType"
-          :season-view="isSeasonView ? item : undefined"
-          :show-season="isShowSeason ? item : undefined"
-          :show-info="isShowInfo ? item : undefined"
-          :is-reorderable="isReorderable"
-          @mark-completed="$emit('mark-item-completed', item.id, listType)"
-          @promote-item="$emit('promote-item', item.id, listType)"
-          @demote-item="$emit('demote-item', item.id, listType)"
-          @remove-item="$emit('remove-item', item.id, listType)"
-        />
+        <transition-group type="transition">
+          <watchlist-item
+            v-for="item in items"
+            :key="item.id"
+            :parent-list="listType"
+            :season-view="isSeasonView ? item : undefined"
+            :show-season="isShowSeason ? item : undefined"
+            :show-info="isShowInfo ? item : undefined"
+            :is-reorderable="isReorderable"
+            @mark-completed="$emit('mark-item-completed', item.id, listType)"
+            @promote-item="$emit('promote-item', item.id, listType)"
+            @demote-item="$emit('demote-item', item.id, listType)"
+            @remove-item="$emit('remove-item', item.id, listType)"
+          />
+        </transition-group>
       </draggable>
     </div>
   </div>
@@ -74,6 +77,10 @@ export default Vue.extend({
   data() {
     return {
       items: [] as SeasonView[] | ShowSeason[] | ShowInfo[],
+      dragOptions: {
+        animation: 200,
+        ghostClass: 'drag-ghost',
+      }
     }
   },
   computed: {
@@ -159,6 +166,9 @@ export default Vue.extend({
 }
 #full-item:last-child {
   margin-bottom: 0;
+}
+.drag-ghost {
+  opacity: 0.5;
 }
 
 @media (min-width: 992px) {
