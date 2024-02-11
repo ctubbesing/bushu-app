@@ -136,7 +136,8 @@
         :show-info="targetShowInfo"
         :is-read-only="true"
       />
-      The season will be {{ targetSeasonView ? 'marked as Dropped and' : '' }} removed from the {{ targetListName | toTitleCase}} list.
+      The season will be {{ targetSeasonView ? 'marked as Dropped and' : '' }} removed from
+      {{ targetListName === 'queue' || targetListName === 'backlog' ? 'the ' : '' }}{{ targetListName | toTitleCase }}.
     </b-modal>
   </div>
 </template>
