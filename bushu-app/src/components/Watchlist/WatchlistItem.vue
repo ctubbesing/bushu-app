@@ -146,6 +146,13 @@
           </b-dropdown-item>
         </slot>
       </b-dropdown>
+      <div style="text-align: center">
+        <img
+          v-if="isReorderable"
+          src="@/assets/dragHandle.svg"
+          class="drag-handle"
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -187,6 +194,11 @@ export default Vue.extend({
       required: false,
     },
     isReadOnly: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    isReorderable: {
       type: Boolean,
       required: false,
       default: false,
@@ -428,9 +440,16 @@ export default Vue.extend({
 }
 #side-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   padding: 8px 0;
   background-color: #0002;
   border-radius: 0 8px 8px 0;
+}
+.drag-handle {
+  width: 75%;
+  cursor: grab;
 }
 #increment-button {
   margin: 3px 10px;

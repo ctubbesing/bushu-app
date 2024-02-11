@@ -17,8 +17,8 @@
         <div id="main-live-container">
           <div id="main-list">
             <watchlist-section
+              v-model="watchlist.main"
               :list-type="'main'"
-              :items="watchlist.main"
               @add-item="selectCatalogEntry('main')"
               @mark-item-completed="showMarkCompletedOptions"
               @demote-item="demoteItem"
@@ -27,8 +27,8 @@
           </div>
           <div id="live-list">
             <watchlist-section
+              v-model="watchlist.live"
               :list-type="'live'"
-              :items="watchlist.live"
               @add-item="selectCatalogEntry('live')"
               @mark-item-completed="showMarkCompletedOptions"
               @remove-item="promptConfirmRemoveItem"
@@ -39,28 +39,30 @@
       <div id="inactive-sections-container">
         <div id="queue-list">
           <watchlist-section
+            v-model="watchlist.queue"
             :list-type="'queue'"
-            :items="watchlist.queue"
             @add-item="selectCatalogEntry('queue')"
             @promote-item="promoteItem"
             @remove-item="promptConfirmRemoveItem"
+            @reorder="onReorderList"
           />
         </div>
         <div id="upcoming-list">
           <watchlist-section
+            v-model="watchlist.upcoming"
             :list-type="'upcoming'"
-            :items="watchlist.upcoming"
             @add-item="selectCatalogEntry('upcoming')"
             @remove-item="promptConfirmRemoveItem"
           />
         </div>
         <div id="backlog-list">
           <watchlist-section
+            v-model="watchlist.backlog"
             :list-type="'backlog'"
-            :items="watchlist.backlog"
             @add-item="selectCatalogEntry('backlog')"
             @promote-item="promoteItem"
             @remove-item="promptConfirmRemoveItem"
+            @reorder="onReorderList"
           />
         </div>
       </div>
@@ -398,6 +400,9 @@ export default Vue.extend({
         await this.saveWatchlist()
       }
       this.resetTargets()
+    },
+    async onReorderList() {
+      await this.saveWatchlist()
     },
     openCatalog() {
       this.$bvModal.show('catalogModal')

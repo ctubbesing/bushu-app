@@ -19,25 +19,36 @@
       </b-button>
     </div>
     <div id="item-list">
-      <watchlist-item
-        v-for="item in items"
-        :key="item.id"
-        :parent-list="listType"
-        :season-view="isSeasonView ? item : undefined"
-        :show-season="isShowSeason ? item : undefined"
-        :show-info="isShowInfo ? item : undefined"
-        @mark-completed="$emit('mark-item-completed', item.id, listType)"
-        @promote-item="$emit('promote-item', item.id, listType)"
-        @demote-item="$emit('demote-item', item.id, listType)"
-        @remove-item="$emit('remove-item', item.id, listType)"
-      />
+      <draggable
+        v-model="items"
+        :group="listType"
+        handle=".drag-handle"
+        :disabled="!isReorderable"
+        @change="onReorder"
+      >
+        <watchlist-item
+          v-for="item in items"
+          :key="item.id"
+          :parent-list="listType"
+          :season-view="isSeasonView ? item : undefined"
+          :show-season="isShowSeason ? item : undefined"
+          :show-info="isShowInfo ? item : undefined"
+          :is-reorderable="isReorderable"
+          @mark-completed="$emit('mark-item-completed', item.id, listType)"
+          @promote-item="$emit('promote-item', item.id, listType)"
+          @demote-item="$emit('demote-item', item.id, listType)"
+          @remove-item="$emit('remove-item', item.id, listType)"
+        />
+      </draggable>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import Vue, { PropType } from 'vue'
 import WatchlistItem from '@/components/Watchlist/WatchlistItem.vue'
+import tools from '@/utils/tools'
+import Draggable from 'vuedraggable'
 import {
   SeasonView,
   ShowInfo,
@@ -48,16 +59,22 @@ export default Vue.extend({
   name: 'WatchlistSection',
   components: {
     watchlistItem: WatchlistItem,
+    draggable: Draggable,
   },
   props: {
     listType: {
       type: String,
       required: true,
     },
-    items: {
+    value: {
       type: Array as PropType<SeasonView[] | ShowSeason[] | ShowInfo[]>,
       required: true,
     },
+  },
+  data() {
+    return {
+      items: [] as SeasonView[] | ShowSeason[] | ShowInfo[],
+    }
   },
   computed: {
     isSeasonView(): boolean {
@@ -71,8 +88,29 @@ export default Vue.extend({
     isShowInfo(): boolean {
       return this.listType === 'backlog'
     },
+    isReorderable(): boolean {
+      return this.listType === 'queue' || this.listType === 'backlog'
+    },
+  },
+  watch: {
+    value() {
+      this.loadValue()
+    },
+  },
+  created() {
+    this.loadValue()
   },
   methods: {
+    loadValue() {
+      this.items = tools.deepClone(this.value)
+    },
+    syncModel() {
+      this.$emit('input', this.items)
+    },
+    onReorder() {
+      this.syncModel()
+      this.$emit('reorder')
+    },
     addItem() {
       this.$emit('add-item')
     },
