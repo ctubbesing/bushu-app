@@ -362,7 +362,7 @@ export default Vue.extend({
         this.editedSeasonView.beganDate = tools.getTimestamp()
         this.saveChanges()
       }
-      this.rerenderKey = (new Date()).toString()
+      this.rerenderKey = tools.getTimestamp()
     },
     promoteItem() {
       this.$emit('promote-item')

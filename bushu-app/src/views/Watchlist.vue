@@ -288,7 +288,7 @@ export default Vue.extend({
       if (this.watchlist && this.targetSeasonView) {
         // set date completed, save, & remove from source list
         // TODO: eventually should move completed SVs to new save file but for now this works fine
-        this.targetSeasonView.completedDate = (new Date()).toISOString()
+        this.targetSeasonView.completedDate = tools.getTimestamp()
         await watchlistService.SaveSeasonViews([ this.targetSeasonView ])
 
         if (this.targetListName === 'main' || this.targetListName === 'live') {
@@ -387,7 +387,7 @@ export default Vue.extend({
     async removeItem() {
       if (this.watchlist) {
         if ((this.targetListName === 'main' || this.targetListName === 'live' || this.targetListName === 'queue') && this.targetSeasonView) {
-          this.targetSeasonView.droppedDate = (new Date()).toISOString()
+          this.targetSeasonView.droppedDate = tools.getTimestamp()
           await watchlistService.SaveSeasonViews([ this.targetSeasonView ])
 
           const droppedViewId = this.targetSeasonView.id
