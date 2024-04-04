@@ -434,6 +434,7 @@ export default Vue.extend({
 
 <style>
 #currently-watching-section {
+  display: none;
   margin: 10px;
   border-radius: 10px;
   padding: 10px;
@@ -444,6 +445,7 @@ export default Vue.extend({
   padding: 5px 5px 0;
 }
 #main-live-container {
+  margin-top: 10px;
   padding: 0 10px;
 }
 #main-list, #queue-list, #upcoming-list {
