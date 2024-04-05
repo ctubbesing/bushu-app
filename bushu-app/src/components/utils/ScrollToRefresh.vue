@@ -18,17 +18,19 @@
 import Vue from 'vue'
 export default Vue.extend({
   name: 'ScrollToRefresh',
+  props: {
+    isLoading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
   data() {
     return {
       doRefresh: false as boolean,
       // refreshTrigger: '' as string,
       // loading: false as boolean,
     }
-  },
-  computed: {
-    isLoading(): boolean {
-      return this.$store.state.isLoading
-    },
   },
   created () {
     window.addEventListener('scroll', this.handleScroll);
@@ -39,11 +41,8 @@ export default Vue.extend({
   watch: {
     async doRefresh() {
       if (this.doRefresh) {
-        // this.loading = true
         const refreshKey = Date.now().toString()
         this.$emit('refresh', refreshKey)
-        // await dropbox.reloadAll()///////////////////////////////     emit instead
-        // this.loading = false
       }
     },
   },
@@ -58,11 +57,10 @@ export default Vue.extend({
 <style scoped>
 .refresh-div {
   height: auto;
-  background-color: green;
+  transition: height 0.25s;
 }
 .refresh-div.refreshing {
   height: 60px;
-  background-color: blue;
 }
 .loading-icon {
   position: absolute;

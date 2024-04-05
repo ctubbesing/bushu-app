@@ -1,12 +1,9 @@
 <template>
   <div class="home">
-    <scroll-to-refresh @refresh="handleScrollToRefresh" />
-    <!-- <b-icon
-      icon="hexagon"
-      font-scale="2"
-      :animation="loading ? 'spin' : ''"
-      class="loading-icon"
-    /> -->
+    <scroll-to-refresh
+      :is-loading="loading"
+      @refresh="handleScrollToRefresh"
+    />
     <img
       src="@/assets/b314_icon_inner.svg"
       alt="bushu314 logo"
@@ -52,12 +49,4 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-/* .loading-icon {
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin-top: -50px;
-  margin-left: auto;
-  margin-right: auto;
-} */
 </style>
