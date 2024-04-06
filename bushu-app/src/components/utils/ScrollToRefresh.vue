@@ -45,16 +45,20 @@ export default Vue.extend({
   watch: {
     async doRefresh() {
       if (this.doRefresh) {
-        window.scrollTo(0, 0)
         const refreshKey = Date.now().toString()
         this.$emit('refresh', refreshKey)
       }
     },
   },
   methods: {
-    handleScroll() {
+    handleScroll(e: any) {
       this.doRefresh = window.scrollY < -70
       this.scrollVal = window.scrollY
+
+      if (this.doRefresh) {
+        e.preventDefault()
+        window.scrollTo(0, 0)
+      }
     },
   },
 })
@@ -64,6 +68,7 @@ export default Vue.extend({
 .refresh-div {
   position: relative;
   height: 70px;
+  /* margin-top: 0; */
   margin-top: -70px;
   /* margin-bottom: 45px; */
   /* height: auto; */
