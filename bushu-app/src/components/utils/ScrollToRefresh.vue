@@ -11,7 +11,7 @@
       :animation="isLoading ? 'spin' : ''"
       class="loading-icon"
     />
-    <div style="position: absolute">
+    <div style="position: absolute; bottom: -20px">
       {{ scrollVal }}
     </div>
   </div>
@@ -52,7 +52,7 @@ export default Vue.extend({
   },
   methods: {
     handleScroll() {
-      this.doRefresh = window.scrollY < -100
+      this.doRefresh = window.scrollY < -70
       this.scrollVal = window.scrollY
     },
   },
@@ -62,18 +62,24 @@ export default Vue.extend({
 <style scoped>
 .refresh-div {
   position: relative;
+  height: 70px;
+  margin-top: -70px;
+  /* margin-bottom: 45px; */
   /* height: auto; */
-  transition: height 0.25s;
+  /* transition: height 0.25s; */
   background-color: #f00;
+
+  display: flex;
+  align-items: center;
 }
 .refresh-div.refreshing {
-  height: 60px;
+  /* height: 60px; */
   background-color: #0f0;
 }
 .loading-icon {
-  position: absolute;
-  left: 0;
-  right: 0;
+  /* position: absolute; */
+  /* left: 0;
+  right: 0; */
   /* margin-top: -60px; */
   margin-left: auto;
   margin-right: auto;
