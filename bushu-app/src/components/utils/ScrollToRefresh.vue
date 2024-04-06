@@ -11,8 +11,9 @@
       :animation="isLoading ? 'spin' : ''"
       class="loading-icon"
     />
-    <div style="position: absolute; bottom: -20px">
-      {{ scrollVal }}
+    <div style="position: absolute; bottom: -70px">
+      {{ scrollVal }}<br>
+      {{ isTouchScrolling }}<br>
     </div>
   </div>
 </template>
@@ -32,6 +33,8 @@ export default Vue.extend({
     return {
       doRefresh: false as boolean,
       scrollVal: 0 as number,
+      isTouchScrolling: false as boolean,
+      touchCounter: 0 as number,
       // refreshTrigger: '' as string,
       // loading: false as boolean,
     }
@@ -63,9 +66,19 @@ export default Vue.extend({
       }
     },
     disableFingerScroll(e: any) {
+      this.touchCounter += 1
+      let currentCount = this.touchCounter
+      this.isTouchScrolling = true
       if (this.isLoading) {
         e.preventDefault()
       }
+
+      this.$nextTick(() => {
+        if (currentCount === this.touchCounter) {
+          this.isTouchScrolling = false
+          this.touchCounter = 0
+        }
+      })
     },
   },
 })
