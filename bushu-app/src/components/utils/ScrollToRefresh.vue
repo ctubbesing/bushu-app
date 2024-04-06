@@ -37,10 +37,12 @@ export default Vue.extend({
     }
   },
   created () {
-    window.addEventListener('scroll', this.handleScroll);
+    window.addEventListener('scroll', this.handleScroll)
+    document.body.addEventListener('touchmove', this.disableFingerScroll, { passive: false })
   },
   destroyed () {
-    window.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener('scroll', this.handleScroll)
+    window.removeEventListener('touchmove', this.disableFingerScroll)
   },
   watch: {
     async doRefresh() {
@@ -56,8 +58,13 @@ export default Vue.extend({
       this.scrollVal = window.scrollY
 
       if (this.doRefresh) {
-        e.preventDefault()
+        // e.preventDefault()
         window.scrollTo(0, 0)
+      }
+    },
+    disableFingerScroll(e: any) {
+      if (this.isLoading) {
+        e.preventDefault()
       }
     },
   },
