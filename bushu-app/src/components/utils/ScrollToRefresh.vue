@@ -61,9 +61,13 @@ export default Vue.extend({
       this.doRefresh = window.scrollY < -70
       this.scrollVal = window.scrollY
 
-      if (this.doRefresh) {
+      // console.log('a')
+
+      if (this.isLoading) {
         let e = document.getElementById('refreshDiv')
+        // console.log(e)
         if (e) {
+          // console.log('asdf')
           e.style.backgroundColor = '#00f'
           if (e.style.marginTop.substring(0, 1) === '-') {
             e.style.marginTop = window.scrollY + ''

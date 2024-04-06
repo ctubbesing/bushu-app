@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+      <!-- :is-loading="true" -->
     <scroll-to-refresh
       :is-loading="loading"
       @refresh="handleScrollToRefresh"
