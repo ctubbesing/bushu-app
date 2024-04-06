@@ -57,14 +57,17 @@ export default Vue.extend({
     },
   },
   methods: {
-    handleScroll(e: any) {
+    handleScroll() {
       this.doRefresh = window.scrollY < -70
       this.scrollVal = window.scrollY
 
       if (this.doRefresh) {
         let e = document.getElementById('refreshDiv')
-        if (e && e.style.marginTop.substring(0, 1) === '-') {
-          e.style.marginTop = window.scrollY + ''
+        if (e) {
+          e.style.backgroundColor = '#00f'
+          if (e.style.marginTop.substring(0, 1) === '-') {
+            e.style.marginTop = window.scrollY + ''
+          }
         }
         // e.preventDefault()
         // window.scrollTo(0, 0)
