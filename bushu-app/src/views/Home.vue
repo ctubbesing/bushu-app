@@ -40,7 +40,7 @@ export default Vue.extend({
       // this.refreshKey = key
       // await this.refreshPage()
       await new Promise(r => setTimeout(r, 5000))
-      this.loading = false
+      // this.loading = false
     },
     async refreshPage() {
       await dropbox.reloadAll()

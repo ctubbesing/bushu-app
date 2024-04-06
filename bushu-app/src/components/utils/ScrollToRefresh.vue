@@ -1,5 +1,6 @@
 <template>
   <div
+    id="refreshDiv"
     :class="[
       'refresh-div',
       { 'refreshing': isLoading }
@@ -61,6 +62,10 @@ export default Vue.extend({
       this.scrollVal = window.scrollY
 
       if (this.doRefresh) {
+        let e = document.getElementById('refreshDiv')
+        if (e && e.style.marginTop.substring(0, 1) === '-') {
+          e.style.marginTop = window.scrollY + ''
+        }
         // e.preventDefault()
         // window.scrollTo(0, 0)
       }
@@ -100,7 +105,7 @@ export default Vue.extend({
 }
 .refresh-div.refreshing {
   /* height: 60px; */
-  margin-top: 0;
+  /* margin-top: 0; */
   background-color: #0f0;
 }
 .loading-icon {
