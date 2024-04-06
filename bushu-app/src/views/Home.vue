@@ -37,8 +37,9 @@ export default Vue.extend({
   methods: {
     async handleScrollToRefresh(key: string) {
       this.loading = true
-      this.refreshKey = key
-      await this.refreshPage()
+      // this.refreshKey = key
+      // await this.refreshPage()
+      await new Promise(r => setTimeout(r, 5000))
       this.loading = false
     },
     async refreshPage() {
