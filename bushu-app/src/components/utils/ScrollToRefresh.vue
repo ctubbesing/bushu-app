@@ -45,6 +45,7 @@ export default Vue.extend({
   watch: {
     async doRefresh() {
       if (this.doRefresh) {
+        window.scrollTo(0, 0)
         const refreshKey = Date.now().toString()
         this.$emit('refresh', refreshKey)
       }
@@ -74,6 +75,7 @@ export default Vue.extend({
 }
 .refresh-div.refreshing {
   /* height: 60px; */
+  margin-top: 0;
   background-color: #0f0;
 }
 .loading-icon {
@@ -81,7 +83,7 @@ export default Vue.extend({
   /* left: 0;
   right: 0; */
   /* margin-top: -60px; */
-  margin-left: auto;
-  margin-right: auto;
+  margin: auto;
+  /* margin-right: auto; */
 }
 </style>
