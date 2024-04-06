@@ -13,7 +13,7 @@
     />
     <div style="position: absolute; bottom: -70px">
       {{ scrollVal }}<br>
-      {{ isTouchScrolling }}<br>
+      <!-- {{ isTouchScrolling }}<br> -->
     </div>
   </div>
 </template>
@@ -33,19 +33,19 @@ export default Vue.extend({
     return {
       doRefresh: false as boolean,
       scrollVal: 0 as number,
-      isTouchScrolling: false as boolean,
-      touchCounter: 0 as number,
+      // isTouchScrolling: false as boolean,
+      // touchCounter: 0 as number,
       // refreshTrigger: '' as string,
       // loading: false as boolean,
     }
   },
   created () {
     window.addEventListener('scroll', this.handleScroll)
-    document.body.addEventListener('touchmove', this.disableFingerScroll, { passive: false })
+    // document.body.addEventListener('touchmove', this.disableFingerScroll, { passive: false })
   },
   destroyed () {
     window.removeEventListener('scroll', this.handleScroll)
-    window.removeEventListener('touchmove', this.disableFingerScroll)
+    // window.removeEventListener('touchmove', this.disableFingerScroll)
   },
   watch: {
     async doRefresh() {
@@ -62,24 +62,24 @@ export default Vue.extend({
 
       if (this.doRefresh) {
         // e.preventDefault()
-        window.scrollTo(0, 0)
+        // window.scrollTo(0, 0)
       }
     },
-    disableFingerScroll(e: any) {
-      this.touchCounter += 1
-      let currentCount = this.touchCounter
-      this.isTouchScrolling = true
-      if (this.isLoading) {
-        e.preventDefault()
-      }
+    // disableFingerScroll(e: any) {
+    //   this.touchCounter += 1
+    //   let currentCount = this.touchCounter
+    //   this.isTouchScrolling = true
+    //   if (this.isLoading) {
+    //     e.preventDefault()
+    //   }
 
-      this.$nextTick(() => {
-        if (currentCount === this.touchCounter) {
-          this.isTouchScrolling = false
-          this.touchCounter = 0
-        }
-      })
-    },
+    //   this.$nextTick(() => {
+    //     if (currentCount === this.touchCounter) {
+    //       this.isTouchScrolling = false
+    //       this.touchCounter = 0
+    //     }
+    //   })
+    // },
   },
 })
 </script>
