@@ -12,10 +12,9 @@
       :animation="isLoading ? 'spin' : ''"
       class="loading-icon"
     />
-    <div style="position: absolute; bottom: -70px">
+    <!-- <div style="position: absolute; bottom: -70px">
       {{ scrollVal }}<br>
-      <!-- {{ isTouchScrolling }}<br> -->
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -63,19 +62,19 @@ export default Vue.extend({
 
       // console.log('a')
 
-      if (this.isLoading) {
-        let e = document.getElementById('refreshDiv')
-        // console.log(e)
-        if (e) {
-          // console.log('asdf')
-          e.style.backgroundColor = '#00f'
-          if (e.style.marginTop.substring(0, 1) === '-') {
-            e.style.marginTop = window.scrollY + ''
-          }
-        }
-        // e.preventDefault()
-        // window.scrollTo(0, 0)
-      }
+      // if (this.isLoading) {
+      //   let e = document.getElementById('refreshDiv')
+      //   // console.log(e)
+      //   if (e) {
+      //     // console.log('asdf')/
+      //     e.style.backgroundColor = '#00f'
+      //     if (e.style.marginTop.substring(0, 1) === '-') {
+      //       e.style.marginTop = window.scrollY + ''
+      //     }
+      //   }
+      //   // e.preventDefault()
+      //   // window.scrollTo(0, 0)
+      // }
     },
     // disableFingerScroll(e: any) {
     //   this.touchCounter += 1
