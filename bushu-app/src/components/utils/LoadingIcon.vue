@@ -1,7 +1,7 @@
 <template>
 <!-- <div> -->
   <!-- B - max both -->
-    <svg
+    <!-- <svg
       viewBox="2 2.5 16 15"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
@@ -9,8 +9,8 @@
       stroke-width="1"
       stroke-linejoin="round"
       stroke-linecap="round"
-      max-height="100%"
-      max-width="100%"
+      max-height="75px"
+      max-width="75px"
     >
       <defs>
         <linearGradient
@@ -21,7 +21,7 @@
           <stop offset="95%" stop-color="red" />
         </linearGradient>
       </defs>
-      <!-- Box -->
+      Box
       <path
         d="
           M 2.5 3
@@ -33,7 +33,7 @@
         stroke="#043"
         fill="#043"
       />
-      <!-- B -->
+      B
       <path
         d="
           M 8.5 7
@@ -48,15 +48,15 @@
           z
         "
       />
-    </svg>
-    <!-- :style="styleDimensions" -->
-  <!-- <svg
-    id="loading-icon"
+    </svg> -->
+    <!-- id="loading-icon" -->
+  <svg
     viewBox="0 0 10 13"
     xmlns="http://www.w3.org/2000/svg"
-    max-height="100%"
-    max-width="100%"
+    :style="styleDimensions"
   >
+    <!-- max-height="100%"
+    max-width="100%" -->
     <defs>
       <linearGradient
         id="myGradient"
@@ -135,7 +135,7 @@
         </path>
       </g>
     </g>
-  </svg> -->
+  </svg>
   <!-- </div> -->
 </template>
 
