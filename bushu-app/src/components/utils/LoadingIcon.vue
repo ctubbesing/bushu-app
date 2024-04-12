@@ -3,8 +3,10 @@
     id="loading-icon"
     viewBox="0 0 10 13"
     xmlns="http://www.w3.org/2000/svg"
-    :style="styleDimensions"
+    max-height="100%"
+    max-width="100%"
   >
+    <!-- :style="styleDimensions" -->
     <defs>
       <linearGradient
         id="myGradient"
@@ -87,7 +89,6 @@
 </template>
 
 <script lang="ts">
-import { max } from 'moment'
 import Vue from 'vue'
 export default Vue.extend({
   name: 'LoadingIcon',
