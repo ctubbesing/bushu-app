@@ -18,6 +18,8 @@
       stroke-width="1"
       stroke-linejoin="round"
       stroke-linecap="round"
+      height="150px"
+      width="100px"
     >
       <defs>
         <linearGradient
