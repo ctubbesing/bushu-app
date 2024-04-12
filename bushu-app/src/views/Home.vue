@@ -10,6 +10,7 @@
       alt="bushu314 logo"
       style="margin-top: 50px; max-width: 250px"
     />
+    <!-- all - pct -->
     <svg
       viewBox="2 2.5 16 15"
       xmlns="http://www.w3.org/2000/svg"
@@ -18,8 +19,8 @@
       stroke-width="1"
       stroke-linejoin="round"
       stroke-linecap="round"
-      height="150px"
-      width="100px"
+      height="50%"
+      width="50%"
     >
       <defs>
         <linearGradient
@@ -78,6 +79,185 @@
           m 0 3
           l 2 0
         "
+      />
+      <!-- 4 -->
+      <path
+        d="
+          M 12.5 4
+          l 0 6
+          l 4 0
+          m 0 -6
+          l 0 12
+        "
+      />
+    </svg>
+    <!-- B - only height -->
+    <svg
+      viewBox="2 2.5 16 15"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke="url('#myGradient')"
+      stroke-width="1"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      height="150px"
+    >
+      <defs>
+        <linearGradient
+          id="myGradient"
+          gradientTransform="rotate(90)"
+        >
+          <stop offset="5%" stop-color="gold" />
+          <stop offset="95%" stop-color="red" />
+        </linearGradient>
+      </defs>
+      <!-- Box -->
+      <path
+        d="
+          M 2.5 3
+          l 15 0
+          l 0 14
+          l -15 0
+          Z
+        "
+        stroke="#043"
+        fill="#043"
+      />
+      <!-- B -->
+      <path
+        d="
+          M 8.5 7
+          l 0 -1
+          l -5 0
+          l 0 8
+          l 5 0
+          l 0 -1
+          l -3 -3
+          l -2 0
+          l 2 0
+          z
+        "
+      />
+    </svg>
+    <!-- 3 - preserveAR -->
+    <svg
+      viewBox="2 2.5 16 15"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke="url('#myGradient')"
+      stroke-width="1"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      preserveAspectRatio="none meet"
+    >
+      <defs>
+        <linearGradient
+          id="myGradient"
+          gradientTransform="rotate(90)"
+        >
+          <stop offset="5%" stop-color="gold" />
+          <stop offset="95%" stop-color="red" />
+        </linearGradient>
+      </defs>
+      <!-- Box -->
+      <path
+        d="
+          M 2.5 3
+          l 15 0
+          l 0 14
+          l -15 0
+          Z
+        "
+        stroke="#043"
+        fill="#043"
+      />
+      <!-- 3 -->
+      <path
+        d="
+          M 3.5 4
+          l 7 0
+          l 0 12
+          l -7 0
+          m 7 -6
+          l -2 0
+        "
+      />
+    </svg>
+    <!-- 1 - max-height only -->
+    <svg
+      viewBox="2 2.5 16 15"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke="url('#myGradient')"
+      stroke-width="1"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      max-height="50%"
+    >
+      <defs>
+        <linearGradient
+          id="myGradient"
+          gradientTransform="rotate(90)"
+        >
+          <stop offset="5%" stop-color="gold" />
+          <stop offset="95%" stop-color="red" />
+        </linearGradient>
+      </defs>
+      <!-- Box -->
+      <path
+        d="
+          M 2.5 3
+          l 15 0
+          l 0 14
+          l -15 0
+          Z
+        "
+        stroke="#043"
+        fill="#043"
+      />
+      <!-- 1 -->
+      <path
+        d="
+          M 13.5 12
+          l 0 4
+          m -0 -3
+          l -1 0
+          m 0 3
+          l 2 0
+        "
+      />
+    </svg>
+    <!-- 4 - css both h/w -->
+    <svg
+      viewBox="2 2.5 16 15"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke="url('#myGradient')"
+      stroke-width="1"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      style="max-height: 100%; max-width: 200px"
+    >
+      <defs>
+        <linearGradient
+          id="myGradient"
+          gradientTransform="rotate(90)"
+        >
+          <stop offset="5%" stop-color="gold" />
+          <stop offset="95%" stop-color="red" />
+        </linearGradient>
+      </defs>
+      <!-- Box -->
+      <path
+        d="
+          M 2.5 3
+          l 15 0
+          l 0 14
+          l -15 0
+          Z
+        "
+        stroke="#043"
+        fill="#043"
       />
       <!-- 4 -->
       <path
