@@ -91,7 +91,7 @@
         "
       />
     </svg>
-    <!-- B - only height -->
+    <!-- B - max both -->
     <svg
       viewBox="2 2.5 16 15"
       xmlns="http://www.w3.org/2000/svg"
@@ -100,7 +100,8 @@
       stroke-width="1"
       stroke-linejoin="round"
       stroke-linecap="round"
-      height="150px"
+      max-height="100%"
+      max-width="100%"
     >
       <defs>
         <linearGradient
