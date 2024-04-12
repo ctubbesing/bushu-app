@@ -121,8 +121,10 @@ export default Vue.extend({
     isLoading(loading: boolean) {
       if (!loading) {
         this.$nextTick(() => {
-          let elements = document.getElementsByClassName('end-animate') as unknown as SVGAnimateElement[]
+          let elements = document.getElementsByClassName('end-animate') as unknown as SVGAnimationElement[]
           for (let i = 0; i < elements.length; i++) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             elements[i].beginElement()
           }
         })
