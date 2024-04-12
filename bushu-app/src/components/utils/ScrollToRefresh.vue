@@ -6,12 +6,17 @@
       { 'refreshing': isLoading }
     ]"
   >
-    <b-icon
+    <!-- <b-icon
       icon="hexagon"
       font-scale="2"
       :animation="isLoading ? 'spin' : ''"
       class="loading-icon"
+    /> -->
+    <loading-icon
+      class="loading-icon"
+      :is-loading="isLoading"
     />
+    <!-- <button @click="testLoading = !testLoading">{{ testLoading ? '1' : '0' }} toggle loading</button> -->
     <!-- <div style="position: absolute; bottom: -70px">
       {{ scrollVal }}<br>
     </div> -->
@@ -20,8 +25,10 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import LoadingIcon from '@/components/utils/LoadingIcon.vue'
 export default Vue.extend({
   name: 'ScrollToRefresh',
+  components: { LoadingIcon },
   props: {
     isLoading: {
       type: Boolean,
@@ -32,11 +39,7 @@ export default Vue.extend({
   data() {
     return {
       doRefresh: false as boolean,
-      scrollVal: 0 as number,
-      // isTouchScrolling: false as boolean,
-      // touchCounter: 0 as number,
-      // refreshTrigger: '' as string,
-      // loading: false as boolean,
+      // testLoading: false as boolean,
     }
   },
   created () {
@@ -58,7 +61,7 @@ export default Vue.extend({
   methods: {
     handleScroll() {
       this.doRefresh = window.scrollY < -70
-      this.scrollVal = window.scrollY
+      // this.scrollVal = window.scrollY
 
       // console.log('a')
 
@@ -104,7 +107,7 @@ export default Vue.extend({
   /* margin-bottom: 45px; */
   /* height: auto; */
   /* transition: height 0.25s; */
-  background-color: #f00;
+  /* background-color: #f00; */
 
   display: flex;
   align-items: center;
@@ -115,11 +118,13 @@ export default Vue.extend({
   background-color: #0f0;
 }
 .loading-icon {
+  /* max-width: 50px; */
+  max-height: 100%;
   /* position: absolute; */
   /* left: 0;
   right: 0; */
   /* margin-top: -60px; */
-  margin: auto;
+  margin: 0 auto;
   /* margin-right: auto; */
 }
 </style>
