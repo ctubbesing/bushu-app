@@ -156,8 +156,8 @@
               repeatCount="indefinite"
             />
           </path>
+            <!-- v-if="!isLoading" -->
           <path
-            v-if="!isLoading"
             :d="iconPath"
             stroke="url('#myGradient')"
           >
