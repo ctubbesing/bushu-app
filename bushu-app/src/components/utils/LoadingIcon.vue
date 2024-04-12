@@ -1,12 +1,62 @@
 <template>
-  <svg
+<!-- <div> -->
+  <!-- B - max both -->
+    <svg
+      viewBox="2 2.5 16 15"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke="url('#myGradient')"
+      stroke-width="1"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+      max-height="100%"
+      max-width="100%"
+    >
+      <defs>
+        <linearGradient
+          id="myGradient"
+          gradientTransform="rotate(90)"
+        >
+          <stop offset="5%" stop-color="gold" />
+          <stop offset="95%" stop-color="red" />
+        </linearGradient>
+      </defs>
+      <!-- Box -->
+      <path
+        d="
+          M 2.5 3
+          l 15 0
+          l 0 14
+          l -15 0
+          Z
+        "
+        stroke="#043"
+        fill="#043"
+      />
+      <!-- B -->
+      <path
+        d="
+          M 8.5 7
+          l 0 -1
+          l -5 0
+          l 0 8
+          l 5 0
+          l 0 -1
+          l -3 -3
+          l -2 0
+          l 2 0
+          z
+        "
+      />
+    </svg>
+    <!-- :style="styleDimensions" -->
+  <!-- <svg
     id="loading-icon"
     viewBox="0 0 10 13"
     xmlns="http://www.w3.org/2000/svg"
     max-height="100%"
     max-width="100%"
   >
-    <!-- :style="styleDimensions" -->
     <defs>
       <linearGradient
         id="myGradient"
@@ -42,13 +92,13 @@
           stroke-dasharray="16 16"
           :stroke="loadingColorA"
         >
-          <!-- <animate
+          <animate
             attributeName="stroke-dashoffset"
             values="16; 48"
             :begin="'0s'"
             :dur="'2s'"
             repeatCount="indefinite"
-          /> -->
+          />
         </path>
         <path
           :d="iconPath"
@@ -68,7 +118,7 @@
           :d="iconPath"
           stroke="url('#myGradient')"
         >
-          <!-- <animate
+          <animate
             class="end-animate"
             attributeName="stroke-dasharray"
             values="0 32; 32 0"
@@ -81,11 +131,12 @@
             values="0; 16"
             begin="indefinite"
             :dur="'0.5s'"
-          /> -->
+          />
         </path>
       </g>
     </g>
-  </svg>
+  </svg> -->
+  <!-- </div> -->
 </template>
 
 <script lang="ts">
