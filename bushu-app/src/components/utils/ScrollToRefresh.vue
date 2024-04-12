@@ -103,7 +103,7 @@ export default Vue.extend({
   position: relative;
   height: 70px;
   /* margin-top: 0; */
-  margin-top: -70px;
+  /* margin-top: -70px; */
   /* margin-bottom: 45px; */
   /* height: auto; */
   /* transition: height 0.25s; */
