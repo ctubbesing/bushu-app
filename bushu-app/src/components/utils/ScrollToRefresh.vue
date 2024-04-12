@@ -15,6 +15,7 @@
     <loading-icon
       class="loading-icon"
       :is-loading="isLoading"
+      :max-height="'100%'"
     />
     <!-- <button @click="testLoading = !testLoading">{{ testLoading ? '1' : '0' }} toggle loading</button> -->
     <!-- <div style="position: absolute; bottom: -70px">
@@ -119,7 +120,7 @@ export default Vue.extend({
 }
 .loading-icon {
   /* max-width: 50px; */
-  max-height: 100%;
+  /* max-height: 100%; */
   /* position: absolute; */
   /* left: 0;
   right: 0; */

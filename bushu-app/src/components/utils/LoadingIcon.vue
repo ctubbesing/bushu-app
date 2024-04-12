@@ -3,6 +3,7 @@
     id="loading-icon"
     viewBox="0 0 10 13"
     xmlns="http://www.w3.org/2000/svg"
+    :style="styleDimensions"
   >
     <defs>
       <linearGradient
@@ -39,33 +40,33 @@
           stroke-dasharray="16 16"
           :stroke="loadingColorA"
         >
-          <!-- <animate
+          <animate
             attributeName="stroke-dashoffset"
             values="16; 48"
             :begin="'0s'"
             :dur="'2s'"
             repeatCount="indefinite"
-          /> -->
+          />
         </path>
         <path
           :d="iconPath"
           :stroke="loadingColorB"
           stroke-dasharray="16 16"
         >
-          <!-- <animate
+          <animate
             attributeName="stroke-dashoffset"
             values="0; -32"
             :begin="'0s'"
             :dur="'2s'"
             repeatCount="indefinite"
-          /> -->
+          />
         </path>
         <path
           v-if="!isLoading"
           :d="iconPath"
           stroke="url('#myGradient')"
         >
-          <!-- <animate
+          <animate
             class="end-animate"
             attributeName="stroke-dasharray"
             values="0 32; 32 0"
@@ -78,7 +79,7 @@
             values="0; 16"
             begin="indefinite"
             :dur="'0.5s'"
-          /> -->
+          />
         </path>
       </g>
     </g>
@@ -86,6 +87,7 @@
 </template>
 
 <script lang="ts">
+import { max } from 'moment'
 import Vue from 'vue'
 export default Vue.extend({
   name: 'LoadingIcon',
@@ -93,7 +95,17 @@ export default Vue.extend({
     isLoading: {
       type: Boolean,
       required: false,
-      default: false,
+      default: true,
+    },
+    maxHeight: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    maxWidth: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   data() {
@@ -116,6 +128,28 @@ export default Vue.extend({
       loadingColorA: '#fd8a' as string,
       loadingColorB: '#8dfa' as string,
     }
+  },
+  computed: {
+    styleDimensions(): string {
+      let style = ''
+      if (this.maxHeight) {
+        style += `max-height: ${this.maxHeight}; `
+      }
+      if (this.maxWidth) {
+        style += `max-width: ${this.maxWidth};`
+      }
+      if (!this.maxHeight && !this.maxWidth) {
+        style = 'max-height: 100%'
+      }
+      return style
+    },
+    // usedMaxHeight(): string {
+    //   if (this.maxHeight) {
+    //     return this.maxHeight
+    //   } else if (!this.maxWidth) {
+    //     return '100%'
+    //   }
+    // },
   },
   watch: {
     isLoading(loading: boolean) {
