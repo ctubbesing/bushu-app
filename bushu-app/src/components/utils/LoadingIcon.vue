@@ -42,13 +42,13 @@
           stroke-dasharray="16 16"
           :stroke="loadingColorA"
         >
-          <animate
+          <!-- <animate
             attributeName="stroke-dashoffset"
             values="16; 48"
             :begin="'0s'"
             :dur="'2s'"
             repeatCount="indefinite"
-          />
+          /> -->
         </path>
         <path
           :d="iconPath"
@@ -68,7 +68,7 @@
           :d="iconPath"
           stroke="url('#myGradient')"
         >
-          <animate
+          <!-- <animate
             class="end-animate"
             attributeName="stroke-dasharray"
             values="0 32; 32 0"
@@ -81,7 +81,7 @@
             values="0; 16"
             begin="indefinite"
             :dur="'0.5s'"
-          />
+          /> -->
         </path>
       </g>
     </g>
