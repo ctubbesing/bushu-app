@@ -1,17 +1,14 @@
 <template>
-<!-- <div> -->
-  <!-- B - max both -->
-    <!-- <svg
-      viewBox="2 2.5 16 15"
+  <div :style="`display: inline-flex; height: ${height}`">
+  <!-- <div style="display: inline-block; background-color: red; height: 40px"> -->
+    <!-- AASDF -->
+    <svg
+      viewBox="0 0 10 13"
       xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      stroke="url('#myGradient')"
-      stroke-width="1"
-      stroke-linejoin="round"
-      stroke-linecap="round"
-      max-height="75px"
-      max-width="75px"
     >
+      <!-- :style="styleDimensions" -->
+      <!-- max-height="100%"
+      max-width="100%" -->
       <defs>
         <linearGradient
           id="myGradient"
@@ -21,122 +18,77 @@
           <stop offset="95%" stop-color="red" />
         </linearGradient>
       </defs>
-      Box
-      <path
-        d="
-          M 2.5 3
-          l 15 0
-          l 0 14
-          l -15 0
-          Z
-        "
-        stroke="#043"
-        fill="#043"
-      />
-      B
-      <path
-        d="
-          M 8.5 7
-          l 0 -1
-          l -5 0
-          l 0 8
-          l 5 0
-          l 0 -1
-          l -3 -3
-          l -2 0
-          l 2 0
-          z
-        "
-      />
-    </svg> -->
-    <!-- id="loading-icon" -->
-  <svg
-    viewBox="0 0 10 13"
-    xmlns="http://www.w3.org/2000/svg"
-    :style="styleDimensions"
-  >
-    <!-- max-height="100%"
-    max-width="100%" -->
-    <defs>
-      <linearGradient
-        id="myGradient"
-        gradientTransform="rotate(90)"
-      >
-        <stop offset="5%" stop-color="gold" />
-        <stop offset="95%" stop-color="red" />
-      </linearGradient>
-    </defs>
-    <g>
-      <rect
-        x="0"
-        y="0"
-        width="10"
-        height="13"
-        stroke="none"
-        :fill="boxColor"
-        rx="2.5"
-      />
-      <g
-        fill="none"
-        stroke-width="1"
-        stroke-linejoin="round"
-        stroke-linecap="round"
-      >
-        <path
-          :d="iconPath"
-          stroke-dasharray="32.5"
-          :stroke="pathColor"
+      <g>
+        <rect
+          x="0"
+          y="0"
+          width="10"
+          height="13"
+          stroke="none"
+          :fill="boxColor"
+          rx="2.5"
         />
-        <path
-          :d="iconPath"
-          stroke-dasharray="16 16"
-          :stroke="loadingColorA"
+        <g
+          fill="none"
+          stroke-width="1"
+          stroke-linejoin="round"
+          stroke-linecap="round"
         >
-          <animate
-            attributeName="stroke-dashoffset"
-            values="16; 48"
-            :begin="'0s'"
-            :dur="'2s'"
-            repeatCount="indefinite"
+          <path
+            :d="iconPath"
+            stroke-dasharray="32.5"
+            :stroke="pathColor"
           />
-        </path>
-        <path
-          :d="iconPath"
-          :stroke="loadingColorB"
-          stroke-dasharray="16 16"
-        >
-          <animate
-            attributeName="stroke-dashoffset"
-            values="0; -32"
-            :begin="'0s'"
-            :dur="'2s'"
-            repeatCount="indefinite"
-          />
-        </path>
-        <path
-          v-if="!isLoading"
-          :d="iconPath"
-          stroke="url('#myGradient')"
-        >
-          <animate
-            class="end-animate"
-            attributeName="stroke-dasharray"
-            values="0 32; 32 0"
-            begin="indefinite"
-            :dur="'0.5s'"
-          />
-          <animate
-            class="end-animate"
-            attributeName="stroke-dashoffset"
-            values="0; 16"
-            begin="indefinite"
-            :dur="'0.5s'"
-          />
-        </path>
+          <path
+            :d="iconPath"
+            stroke-dasharray="16 16"
+            :stroke="loadingColorA"
+          >
+            <animate
+              attributeName="stroke-dashoffset"
+              values="16; 48"
+              :begin="'0s'"
+              :dur="'2s'"
+              repeatCount="indefinite"
+            />
+          </path>
+          <path
+            :d="iconPath"
+            :stroke="loadingColorB"
+            stroke-dasharray="16 16"
+          >
+            <animate
+              attributeName="stroke-dashoffset"
+              values="0; -32"
+              :begin="'0s'"
+              :dur="'2s'"
+              repeatCount="indefinite"
+            />
+          </path>
+          <path
+            v-if="!isLoading"
+            :d="iconPath"
+            stroke="url('#myGradient')"
+          >
+            <animate
+              class="end-animate"
+              attributeName="stroke-dasharray"
+              values="0 32; 32 0"
+              begin="indefinite"
+              :dur="'0.5s'"
+            />
+            <animate
+              class="end-animate"
+              attributeName="stroke-dashoffset"
+              values="0; 16"
+              begin="indefinite"
+              :dur="'0.5s'"
+            />
+          </path>
+        </g>
       </g>
-    </g>
-  </svg>
-  <!-- </div> -->
+    </svg>
+  </div>
 </template>
 
 <script lang="ts">
@@ -148,6 +100,10 @@ export default Vue.extend({
       type: Boolean,
       required: false,
       default: true,
+    },
+    height: {
+      type: String,
+      required: true,
     },
     maxHeight: {
       type: String,
@@ -184,15 +140,16 @@ export default Vue.extend({
   computed: {
     styleDimensions(): string {
       let style = ''
-      if (this.maxHeight) {
-        style += `max-height: ${this.maxHeight}; `
-      }
-      if (this.maxWidth) {
-        style += `max-width: ${this.maxWidth};`
-      }
-      if (!this.maxHeight && !this.maxWidth) {
-        style = 'max-height: 100%'
-      }
+      // let style = 'min-height: 50px'
+      // if (this.maxHeight) {
+      //   style += `max-height: ${this.maxHeight}; `
+      // }
+      // if (this.maxWidth) {
+      //   style += `max-width: ${this.maxWidth};`
+      // }
+      // if (!this.maxHeight && !this.maxWidth) {
+      //   style = 'max-height: 100%'
+      // }
       return style
     },
     // usedMaxHeight(): string {

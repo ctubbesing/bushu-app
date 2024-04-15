@@ -14,10 +14,12 @@
     /> -->
     <loading-icon
       class="loading-icon"
-      :is-loading="isLoading"
-      :max-height="'100%'"
+      :is-loading="testLoading"
+      :height="'100%'"
     />
-    <!-- <button @click="testLoading = !testLoading">{{ testLoading ? '1' : '0' }} toggle loading</button> -->
+    <button @click="testLoading = !testLoading">
+      Loading: {{ testLoading ? 'On' : 'Off' }}
+    </button>
     <!-- <div style="position: absolute; bottom: -70px">
       {{ scrollVal }}<br>
     </div> -->
@@ -40,7 +42,7 @@ export default Vue.extend({
   data() {
     return {
       doRefresh: false as boolean,
-      // testLoading: false as boolean,
+      testLoading: false as boolean,
     }
   },
   created () {
@@ -119,6 +121,7 @@ export default Vue.extend({
   background-color: #0f0;
 }
 .loading-icon {
+  /* height: 70px; */
   /* max-width: 50px; */
   /* max-height: 100%; */
   /* position: absolute; */
