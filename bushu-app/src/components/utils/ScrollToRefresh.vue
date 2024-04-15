@@ -34,9 +34,9 @@
         Loading: {{ testLoading ? 'On' : 'Off' }}
       </button>
     </div> -->
-    <!-- <div style="position: absolute; bottom: -70px">
+    <div style="position: absolute; bottom: -70px">
       {{ scrollVal }}<br>
-    </div> -->
+    </div>
   </div>
 </template>
 

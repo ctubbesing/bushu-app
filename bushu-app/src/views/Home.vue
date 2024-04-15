@@ -13,7 +13,6 @@
     <widget-list
       :refreshTrigger="refreshKey"
     />
-    <button @click="forceReload">Reload</button>
   </div>
 </template>
 
@@ -65,9 +64,6 @@ export default Vue.extend({
     async refreshPage() {
       await dropbox.reloadAll()
     },
-    // forceReload() {
-      
-    // },
   },
 });
 </script>
