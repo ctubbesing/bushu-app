@@ -53,11 +53,11 @@ export default Vue.extend({
       this.loading = true
 
       // for real
-      // this.refreshKey = key
-      // await this.refreshPage()
+      this.refreshKey = key
+      await this.refreshPage()
 
       // for testing
-      await new Promise(r => setTimeout(r, 5000))
+      // await new Promise(r => setTimeout(r, 5000))
 
       this.loading = false
     },

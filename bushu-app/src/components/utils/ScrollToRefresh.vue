@@ -114,7 +114,7 @@ export default Vue.extend({
 .refresh-div.refreshing {
   /* height: 60px; */
   /* margin-top: 0; */
-  background-color: rgb(0, 110, 255);
+  /* background-color: rgb(0, 110, 255); */
 }
 .refresh-div.refreshing > .loading-icon {
   top: 70px;
