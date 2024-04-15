@@ -100,7 +100,7 @@ export default Vue.extend({
 .refresh-div {
   position: relative;
   /* top: -60; */
-  height: 57.4125px;
+  height: 57px;
   /* margin-top: 0; */
   margin-top: -57.4125px;
   /* margin-bottom: 45px; */
@@ -117,7 +117,7 @@ export default Vue.extend({
   background-color: #0f0;
 }
 .refresh-div.refreshing > .loading-icon {
-  position: sticky;
+  position: fixed;
   top: 60px;
 }
 .loading-icon {
