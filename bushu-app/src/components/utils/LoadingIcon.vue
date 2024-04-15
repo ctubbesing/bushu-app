@@ -138,7 +138,9 @@ export default Vue.extend({
   computed: {
     styleDimensions(): string {
       const width = this.heightPx * this.viewboxWidthPx / this.viewboxHeightPx
-      return `height: ${this.heightPx}px; width: ${width}px;`
+      // return `height: ${this.heightPx}px; width: ${width}px;`
+      // return 'height: 100%'
+      return ''
     },
   },
 })
@@ -146,13 +148,21 @@ export default Vue.extend({
 
 <style scoped>
 #svg-wrapper {
-  display: inline-block;
+  display: inline-flex;
+  justify-content: middle;
   position: relative;
-  transition: height 0.5s;
+  /* transition: height 0.5s; */
 }
 svg {
   position: absolute;
-  top: 0;
-  left: 0;
+  /* top: 0;
+  left: 0; */
+  height: 100%;
+
+  top: 50%;  /* position the top  edge of the element at the middle of the parent */
+    left: 50%; /* position the left edge of the element at the middle of the parent */
+
+    transform: translate(-50%, -50%); /* This is a shorthand of
+                                         translateX(-50%) and translateY(-50%) */
 }
 </style>
