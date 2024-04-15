@@ -15,9 +15,9 @@
     <loading-icon
       class="loading-icon"
       :is-loading="testLoading"
-      :height="'100%'"
+      :height-px="70"
     />
-    <button @click="testLoading = !testLoading">
+    <button @click="testLoading = !testLoading" style="width: 100px">
       Loading: {{ testLoading ? 'On' : 'Off' }}
     </button>
     <!-- <div style="position: absolute; bottom: -70px">
@@ -42,7 +42,7 @@ export default Vue.extend({
   data() {
     return {
       doRefresh: false as boolean,
-      testLoading: false as boolean,
+      testLoading: true as boolean,
     }
   },
   created () {

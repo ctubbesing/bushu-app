@@ -1,27 +1,14 @@
 <template>
-  <div :style="`display: inline-block; position: relative`">
-  <!-- <div :style="`display: inline-block; position: relative; height: ${height}`"> -->
-  <!-- <div style="display: inline-block; background-color: red; height: 40px"> -->
+  <div :style="`display: inline-block; position: relative; ${styleDimensions}`">
     <svg
-      viewBox="0 0 10 13"
+      :viewBox="`0 0 ${viewboxWidthPx} ${viewboxHeightPx}`"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <!-- :style="styleDimensions" -->
-      <!-- <defs>
-        <linearGradient
-          id="myGradient"
-          gradientTransform="rotate(90)"
-        >
-          <stop offset="5%" stop-color="gold" />
-          <stop offset="95%" stop-color="red" />
-        </linearGradient>
-      </defs> -->
-      <!-- <g> -->
       <rect
         x="0"
         y="0"
-        width="10"
-        height="13"
+        :width="viewboxWidthPx"
+        :height="viewboxHeightPx"
         stroke="none"
         :fill="boxColor"
         rx="2.5"
@@ -34,7 +21,7 @@
       >
         <path
           :d="iconPath"
-          stroke-dasharray="32.5"
+          :stroke-dasharray="pathLength"
           :stroke="pathColor"
         />
         <path
@@ -63,32 +50,11 @@
             repeatCount="indefinite"
           />
         </path>
-        <!-- <path
-          v-if="!isLoading"
-          :d="iconPath"
-          stroke="url('#myGradient')"
-        >
-          <animate
-            class="end-animate"
-            attributeName="stroke-dasharray"
-            values="0 32; 32 0"
-            begin="indefinite"
-            :dur="'0.5s'"
-          />
-          <animate
-            class="end-animate"
-            attributeName="stroke-dashoffset"
-            values="0; 16"
-            begin="indefinite"
-            :dur="'0.5s'"
-          />
-        </path> -->
       </g>
-      <!-- </g> -->
     </svg>
     <svg
       v-if="!isLoading"
-      viewBox="0 0 10 13"
+      :viewBox="`0 0 ${viewboxWidthPx} ${viewboxHeightPx}`"
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
@@ -137,19 +103,9 @@ export default Vue.extend({
       required: false,
       default: true,
     },
-    height: {
-      type: String,
+    heightPx: {
+      type: Number,
       required: true,
-    },
-    maxHeight: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    maxWidth: {
-      type: String,
-      required: false,
-      default: '',
     },
   },
   data() {
@@ -167,49 +123,21 @@ export default Vue.extend({
         l -5 0
         z
       ` as string,
+      pathLength: 32 as number,
       boxColor: '#043' as string,
       pathColor: '#dfe7' as string,
       loadingColorA: '#fd8a' as string,
       loadingColorB: '#8dfa' as string,
+      viewboxHeightPx: 13 as number,
+      viewboxWidthPx: 10 as number,
     }
   },
   computed: {
     styleDimensions(): string {
-      let style = ''
-      // let style = 'min-height: 50px'
-      // if (this.maxHeight) {
-      //   style += `max-height: ${this.maxHeight}; `
-      // }
-      // if (this.maxWidth) {
-      //   style += `max-width: ${this.maxWidth};`
-      // }
-      // if (!this.maxHeight && !this.maxWidth) {
-      //   style = 'max-height: 100%'
-      // }
-      return style
+      const width = this.heightPx * this.viewboxWidthPx / this.viewboxHeightPx
+      return `height: ${this.heightPx}px; width: ${width}px;`
     },
-    // usedMaxHeight(): string {
-    //   if (this.maxHeight) {
-    //     return this.maxHeight
-    //   } else if (!this.maxWidth) {
-    //     return '100%'
-    //   }
-    // },
   },
-  // watch: {
-  //   isLoading(loading: boolean) {
-  //     if (!loading) {
-  //       this.$nextTick(() => {
-  //         let elements = document.getElementsByClassName('end-animate') as unknown as SVGAnimationElement[]
-  //         for (let i = 0; i < elements.length; i++) {
-  //           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //           // @ts-ignore
-  //           elements[i].beginElement()
-  //         }
-  //       })
-  //     }
-  //   },
-  // },
 })
 </script>
 
@@ -218,6 +146,5 @@ svg {
   position: absolute;
   top: 0;
   left: 0;
-  height: 70px;
 }
 </style>
