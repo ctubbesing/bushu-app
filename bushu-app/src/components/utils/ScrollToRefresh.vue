@@ -14,9 +14,9 @@
     <!-- <button @click="testLoading = !testLoading" style="width: 100px">
       Loading: {{ testLoading ? 'On' : 'Off' }}
     </button> -->
-    <div style="position: absolute; bottom: -70px">
+    <!-- <div style="position: absolute; bottom: -70px">
       {{ scrollVal }}<br>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -114,7 +114,7 @@ export default Vue.extend({
 .refresh-div.refreshing {
   /* height: 60px; */
   /* margin-top: 0; */
-  background-color: rgb(0, 255, 234);
+  background-color: rgb(0, 110, 255);
 }
 .refresh-div.refreshing > .loading-icon {
   top: 70px;
