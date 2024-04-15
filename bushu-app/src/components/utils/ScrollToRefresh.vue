@@ -6,6 +6,10 @@
       { 'refreshing': isLoading }
     ]"
   >
+    <div
+      id="expander"
+      :class="{ 'refreshing': isLoading }"
+    ></div>
     <loading-icon
       class="loading-icon"
       :is-loading="isLoading"
@@ -98,11 +102,11 @@ export default Vue.extend({
 
 <style scoped>
 .refresh-div {
-  position: relative;
-  /* top: -60; */
+  position: absolute;
+  top: 0;
   height: 57px;
   /* margin-top: 0; */
-  margin-top: -57.4125px;
+  /* margin-top: -57.4125px; */
   /* margin-bottom: 45px; */
   /* height: auto; */
   /* transition: height 0.25s; */
@@ -116,13 +120,13 @@ export default Vue.extend({
   /* margin-top: 0; */
   /* background-color: rgb(0, 110, 255); */
 }
-.refresh-div.refreshing > .loading-icon {
+/* .refresh-div.refreshing > .loading-icon {
   top: 70px;
 
-}
+} */
 .loading-icon {
-  position: fixed;
-  top: 0px;
+  /* position: fixed;
+  top: 0px; */
   /* height: 70px; */
   /* max-width: 50px; */
   /* max-height: 100%; */
@@ -132,7 +136,14 @@ export default Vue.extend({
   /* margin-top: -60px; */
   margin: 0 auto;
   /* margin-right: auto; */
-  transition: top 0.5s;
+  /* transition: top 0.5s; */
   transition: height 0.5s;
+}
+#expander {
+  height: 0px;
+  transition: height 0.5s;
+}
+#expander.refreshing {
+  height: 70px;
 }
 </style>
