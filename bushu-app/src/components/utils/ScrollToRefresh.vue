@@ -6,20 +6,14 @@
       { 'refreshing': isLoading }
     ]"
   >
-    <!-- <b-icon
-      icon="hexagon"
-      font-scale="2"
-      :animation="isLoading ? 'spin' : ''"
-      class="loading-icon"
-    /> -->
     <loading-icon
       class="loading-icon"
-      :is-loading="testLoading"
+      :is-loading="isLoading"
       :height-px="70"
     />
-    <button @click="testLoading = !testLoading" style="width: 100px">
+    <!-- <button @click="testLoading = !testLoading" style="width: 100px">
       Loading: {{ testLoading ? 'On' : 'Off' }}
-    </button>
+    </button> -->
     <!-- <div style="position: absolute; bottom: -70px">
       {{ scrollVal }}<br>
     </div> -->
@@ -106,7 +100,7 @@ export default Vue.extend({
   position: relative;
   height: 70px;
   /* margin-top: 0; */
-  /* margin-top: -70px; */
+  margin-top: -70px;
   /* margin-bottom: 45px; */
   /* height: auto; */
   /* transition: height 0.25s; */
@@ -119,6 +113,10 @@ export default Vue.extend({
   /* height: 60px; */
   /* margin-top: 0; */
   background-color: #0f0;
+}
+.refresh-div.refreshing > .loading-icon {
+  position: fixed;
+  top: 10px;
 }
 .loading-icon {
   /* height: 70px; */
