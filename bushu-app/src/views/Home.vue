@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-      <!-- :is-loading="true" -->
     <scroll-to-refresh
       :is-loading="loading"
       @refresh="handleScrollToRefresh"
@@ -51,14 +50,8 @@ export default Vue.extend({
   methods: {
     async handleScrollToRefresh(key: string) {
       this.loading = true
-
-      // for real
-      // this.refreshKey = key
-      // await this.refreshPage()
-
-      // for testing
-      await new Promise(r => setTimeout(r, 5000))
-
+      this.refreshKey = key
+      await this.refreshPage()
       this.loading = false
     },
     async refreshPage() {

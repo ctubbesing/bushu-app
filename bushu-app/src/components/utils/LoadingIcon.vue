@@ -1,8 +1,5 @@
 <template>
-  <div
-    id="svg-wrapper"
-    :style="`${styleDimensions}`"
-  >
+  <div id="svg-wrapper">
     <svg
       :viewBox="`0 0 ${viewboxWidthPx} ${viewboxHeightPx}`"
       xmlns="http://www.w3.org/2000/svg"
@@ -135,14 +132,6 @@ export default Vue.extend({
       viewboxWidthPx: 10 as number,
     }
   },
-  computed: {
-    styleDimensions(): string {
-      const width = this.heightPx * this.viewboxWidthPx / this.viewboxHeightPx
-      // return `height: ${this.heightPx}px; width: ${width}px;`
-      // return 'height: 100%'
-      return ''
-    },
-  },
 })
 </script>
 
@@ -151,18 +140,12 @@ export default Vue.extend({
   display: inline-flex;
   justify-content: middle;
   position: relative;
-  /* transition: height 0.5s; */
 }
 svg {
   position: absolute;
-  /* top: 0;
-  left: 0; */
   height: 100%;
-
-  top: 50%;  /* position the top  edge of the element at the middle of the parent */
-    left: 50%; /* position the left edge of the element at the middle of the parent */
-
-    transform: translate(-50%, -50%); /* This is a shorthand of
-                                         translateX(-50%) and translateY(-50%) */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
