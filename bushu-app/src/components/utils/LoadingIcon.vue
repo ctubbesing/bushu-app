@@ -1,5 +1,8 @@
 <template>
-  <div :style="`display: inline-block; position: relative; ${styleDimensions}`">
+  <div
+    id="svg-wrapper"
+    :style="`${styleDimensions}`"
+  >
     <svg
       :viewBox="`0 0 ${viewboxWidthPx} ${viewboxHeightPx}`"
       xmlns="http://www.w3.org/2000/svg"
@@ -142,6 +145,11 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+#svg-wrapper {
+  display: inline-block;
+  position: relative;
+  transition: height 0.5s;
+}
 svg {
   position: absolute;
   top: 0;

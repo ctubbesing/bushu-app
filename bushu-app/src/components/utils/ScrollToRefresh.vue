@@ -9,7 +9,7 @@
     <loading-icon
       class="loading-icon"
       :is-loading="isLoading"
-      :height-px="isLoading ? 80 : 57"
+      :height-px="isLoading ? 80 : 55"
     />
     <!-- <button @click="testLoading = !testLoading" style="width: 100px">
       Loading: {{ testLoading ? 'On' : 'Off' }}
@@ -117,10 +117,12 @@ export default Vue.extend({
   background-color: rgb(0, 255, 234);
 }
 .refresh-div.refreshing > .loading-icon {
-  position: fixed;
-  top: 60px;
+  top: 70px;
+
 }
 .loading-icon {
+  position: fixed;
+  top: 0px;
   /* height: 70px; */
   /* max-width: 50px; */
   /* max-height: 100%; */
