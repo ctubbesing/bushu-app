@@ -113,7 +113,7 @@ export default Vue.extend({
   /* background-color: #f00; */
 
   display: flex;
-  align-items: center;
+  /* align-items: center; */
 }
 .refresh-div.refreshing {
   /* height: 60px; */

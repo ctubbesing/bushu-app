@@ -1,14 +1,96 @@
 <template>
-  <div :style="`display: inline-flex; height: ${height}`">
+  <div :style="`display: inline-block; position: relative`">
+  <!-- <div :style="`display: inline-block; position: relative; height: ${height}`"> -->
   <!-- <div style="display: inline-block; background-color: red; height: 40px"> -->
-    <!-- AASDF -->
     <svg
       viewBox="0 0 10 13"
       xmlns="http://www.w3.org/2000/svg"
     >
       <!-- :style="styleDimensions" -->
-      <!-- max-height="100%"
-      max-width="100%" -->
+      <!-- <defs>
+        <linearGradient
+          id="myGradient"
+          gradientTransform="rotate(90)"
+        >
+          <stop offset="5%" stop-color="gold" />
+          <stop offset="95%" stop-color="red" />
+        </linearGradient>
+      </defs> -->
+      <!-- <g> -->
+      <rect
+        x="0"
+        y="0"
+        width="10"
+        height="13"
+        stroke="none"
+        :fill="boxColor"
+        rx="2.5"
+      />
+      <g
+        fill="none"
+        stroke-width="1"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+      >
+        <path
+          :d="iconPath"
+          stroke-dasharray="32.5"
+          :stroke="pathColor"
+        />
+        <path
+          :d="iconPath"
+          stroke-dasharray="16 16"
+          :stroke="loadingColorA"
+        >
+          <animate
+            attributeName="stroke-dashoffset"
+            values="16; 48"
+            :begin="'0s'"
+            :dur="'2s'"
+            repeatCount="indefinite"
+          />
+        </path>
+        <path
+          :d="iconPath"
+          :stroke="loadingColorB"
+          stroke-dasharray="16 16"
+        >
+          <animate
+            attributeName="stroke-dashoffset"
+            values="0; -32"
+            :begin="'0s'"
+            :dur="'2s'"
+            repeatCount="indefinite"
+          />
+        </path>
+        <!-- <path
+          v-if="!isLoading"
+          :d="iconPath"
+          stroke="url('#myGradient')"
+        >
+          <animate
+            class="end-animate"
+            attributeName="stroke-dasharray"
+            values="0 32; 32 0"
+            begin="indefinite"
+            :dur="'0.5s'"
+          />
+          <animate
+            class="end-animate"
+            attributeName="stroke-dashoffset"
+            values="0; 16"
+            begin="indefinite"
+            :dur="'0.5s'"
+          />
+        </path> -->
+      </g>
+      <!-- </g> -->
+    </svg>
+    <svg
+      v-if="!isLoading"
+      viewBox="0 0 10 13"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <defs>
         <linearGradient
           id="myGradient"
@@ -18,75 +100,29 @@
           <stop offset="95%" stop-color="red" />
         </linearGradient>
       </defs>
-      <g>
-        <rect
-          x="0"
-          y="0"
-          width="10"
-          height="13"
-          stroke="none"
-          :fill="boxColor"
-          rx="2.5"
+      <path
+        :d="iconPath"
+        fill="none"
+        stroke="url('#myGradient')"
+        stroke-width="1"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+      >
+        <animate
+          class="end-animate"
+          attributeName="stroke-dasharray"
+          values="0 32; 32 0"
+          begin="0s"
+          :dur="'0.3s'"
         />
-        <g
-          fill="none"
-          stroke-width="1"
-          stroke-linejoin="round"
-          stroke-linecap="round"
-        >
-          <path
-            :d="iconPath"
-            stroke-dasharray="32.5"
-            :stroke="pathColor"
-          />
-          <path
-            :d="iconPath"
-            stroke-dasharray="16 16"
-            :stroke="loadingColorA"
-          >
-            <animate
-              attributeName="stroke-dashoffset"
-              values="16; 48"
-              :begin="'0s'"
-              :dur="'2s'"
-              repeatCount="indefinite"
-            />
-          </path>
-          <path
-            :d="iconPath"
-            :stroke="loadingColorB"
-            stroke-dasharray="16 16"
-          >
-            <animate
-              attributeName="stroke-dashoffset"
-              values="0; -32"
-              :begin="'0s'"
-              :dur="'2s'"
-              repeatCount="indefinite"
-            />
-          </path>
-          <path
-            v-if="!isLoading"
-            :d="iconPath"
-            stroke="url('#myGradient')"
-          >
-            <animate
-              class="end-animate"
-              attributeName="stroke-dasharray"
-              values="0 32; 32 0"
-              begin="indefinite"
-              :dur="'0.5s'"
-            />
-            <animate
-              class="end-animate"
-              attributeName="stroke-dashoffset"
-              values="0; 16"
-              begin="indefinite"
-              :dur="'0.5s'"
-            />
-          </path>
-        </g>
-      </g>
+        <animate
+          class="end-animate"
+          attributeName="stroke-dashoffset"
+          values="0; 16"
+          begin="0s"
+          :dur="'0.3s'"
+        />
+      </path>
     </svg>
   </div>
 </template>
@@ -160,19 +196,28 @@ export default Vue.extend({
     //   }
     // },
   },
-  watch: {
-    isLoading(loading: boolean) {
-      if (!loading) {
-        this.$nextTick(() => {
-          let elements = document.getElementsByClassName('end-animate') as unknown as SVGAnimationElement[]
-          for (let i = 0; i < elements.length; i++) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            elements[i].beginElement()
-          }
-        })
-      }
-    },
-  },
+  // watch: {
+  //   isLoading(loading: boolean) {
+  //     if (!loading) {
+  //       this.$nextTick(() => {
+  //         let elements = document.getElementsByClassName('end-animate') as unknown as SVGAnimationElement[]
+  //         for (let i = 0; i < elements.length; i++) {
+  //           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //           // @ts-ignore
+  //           elements[i].beginElement()
+  //         }
+  //       })
+  //     }
+  //   },
+  // },
 })
 </script>
+
+<style scoped>
+svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 70px;
+}
+</style>
