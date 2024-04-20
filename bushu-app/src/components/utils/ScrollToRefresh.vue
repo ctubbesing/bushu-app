@@ -25,6 +25,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import LoadingIcon from '@/components/utils/LoadingIcon.vue'
+
 export default Vue.extend({
   name: 'ScrollToRefresh',
   components: { LoadingIcon },
@@ -38,7 +39,6 @@ export default Vue.extend({
   data() {
     return {
       doRefresh: false as boolean,
-      testLoading: true as boolean,
     }
   },
   created () {
@@ -73,7 +73,7 @@ export default Vue.extend({
 .loading-icon {
   height: 55px;
   margin: 0 auto;
-  transition: height 0.5s 0.3s;
+  transition: height 0.5s 0.5s;
 }
 .loading-icon.refreshing {
   height: 90px;
@@ -81,7 +81,7 @@ export default Vue.extend({
 }
 #expander {
   padding-top: 0;
-  transition: padding-top 0.5s 0.3s;
+  transition: padding-top 0.5s 0.5s;
   background-color: #9dea;
 }
 #expander.refreshing {

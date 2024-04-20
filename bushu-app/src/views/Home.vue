@@ -1,17 +1,15 @@
 <template>
   <div class="home">
     <scroll-to-refresh
-      :is-loading="loading"
-      @refresh="handleScrollToRefresh"
+      :is-loading="isLoading"
+      @refresh="handleRefresh"
     />
     <img
       src="@/assets/b314_icon_inner.svg"
       alt="bushu314 logo"
-      style="margin-top: 50px; max-width: 250px"
+      style="margin: 50px 0 30px; max-width: 200px"
     />
-    <widget-list
-      :refreshTrigger="refreshKey"
-    />
+    <widget-list :refreshTrigger="refreshKey" />
   </div>
 </template>
 
@@ -31,35 +29,18 @@ export default Vue.extend({
     return {
       doRefresh: false as boolean,
       refreshKey: '' as string,
-      loading: false as boolean,
-      iconPath: `
-        M 2.5 6.5
-        l 0 4
-        l 5 0
-        l 0 -1
-        l -3 -3
-        l -1.757359313 0
-        l 1.757359313 0
-        l 3 -3
-        l 0 -1
-        l -5 0
-        z
-      ` as string,
+      isLoading: false as boolean,
     };
   },
   methods: {
-    async handleScrollToRefresh(key: string) {
-      this.loading = true
+    async handleRefresh(key: string) {
+      this.isLoading = true
+
       this.refreshKey = key
-      await this.refreshPage()
-      this.loading = false
-    },
-    async refreshPage() {
       await dropbox.reloadAll()
+
+      this.isLoading = false
     },
   },
 });
 </script>
-
-<style scoped>
-</style>
