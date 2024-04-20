@@ -19,6 +19,19 @@
         :height-px="isLoading ? 80 : 55"
       />
     </div>
+    <div
+      v-if="showManualTrigger && !isLoading"
+      id="trigger"
+    >
+      <b-button
+        size="sm"
+        pill
+        variant="outline-danger"
+        @click="triggerRefresh"
+      >
+        Refresh
+      </b-button>
+    </div>
   </div>
 </template>
 
@@ -39,6 +52,7 @@ export default Vue.extend({
   data() {
     return {
       doRefresh: false as boolean,
+      showManualTrigger: false as boolean,
     }
   },
   created () {
@@ -50,14 +64,17 @@ export default Vue.extend({
   watch: {
     async doRefresh() {
       if (this.doRefresh) {
-        const refreshKey = Date.now().toString()
-        this.$emit('refresh', refreshKey)
+        this.triggerRefresh()
       }
     },
   },
   methods: {
     handleScroll() {
-      this.doRefresh = window.scrollY < -70
+      this.doRefresh = !this.isLoading && window.scrollY < -70
+    },
+    triggerRefresh() {
+      const refreshKey = Date.now().toString()
+      this.$emit('refresh', refreshKey)
     },
   },
 })
@@ -87,5 +104,9 @@ export default Vue.extend({
 #expander.refreshing {
   padding-top: 70px;
   transition: padding-top 0.5s;
+}
+#trigger {
+  padding: 5px;
+  text-align: right;
 }
 </style>
