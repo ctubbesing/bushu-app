@@ -62,7 +62,7 @@ export default Vue.extend({
     window.removeEventListener('scroll', this.handleScroll)
   },
   watch: {
-    async doRefresh() {
+    doRefresh() {
       if (this.doRefresh) {
         this.triggerRefresh()
       }
@@ -82,7 +82,7 @@ export default Vue.extend({
 
 <style scoped>
 .refresh-div {
-  position: absolute;
+  position: fixed;
   top: 0;
   height: 57px;
   width: 100%;
@@ -108,5 +108,6 @@ export default Vue.extend({
 #trigger {
   padding: 5px;
   text-align: right;
+  background-color: #ccc6;
 }
 </style>
