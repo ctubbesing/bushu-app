@@ -1,5 +1,8 @@
 <template>
   <div>
+    <scroll-to-refresh
+      :is-loading="isLoading"
+    />
     <div
       v-if="watchlist"
       id="all-sections-container"
@@ -143,20 +146,21 @@
 </template>
 
 <script lang="ts">
-import watchlistService from '@/utils/services/WatchlistService'
-import CatalogModal from '@/components/Watchlist/CatalogModal.vue'
-import WatchlistSection from '@/components/Watchlist/WatchlistSection.vue'
-import WatchlistItem from '@/components/Watchlist/WatchlistItem.vue'
-import IconButton from '@/components/utils/IconButton.vue'
+import Vue from "vue"
+import { BvModalEvent } from 'bootstrap-vue'
 import {
   SeasonView,
   ShowInfo,
   ShowSeason,
   WatchlistData,
 } from '@/types/watchlistTypes'
-import Vue from "vue";
+import watchlistService from '@/utils/services/WatchlistService'
 import tools from '@/utils/tools';
-import { BvModalEvent } from 'bootstrap-vue'
+import CatalogModal from '@/components/Watchlist/CatalogModal.vue'
+import IconButton from '@/components/utils/IconButton.vue'
+import ScrollToRefresh from '@/components/utils/ScrollToRefresh.vue'
+import WatchlistItem from '@/components/Watchlist/WatchlistItem.vue'
+import WatchlistSection from '@/components/Watchlist/WatchlistSection.vue'
 
 export default Vue.extend({
   name: "Watchlist",
@@ -165,6 +169,7 @@ export default Vue.extend({
     watchlistSection: WatchlistSection,
     watchlistItem: WatchlistItem,
     iconButton: IconButton,
+    scrollToRefresh: ScrollToRefresh,
   },
   data() {
     return {
@@ -202,20 +207,21 @@ export default Vue.extend({
       this.targetShowInfo = null
       this.targetNextQueueItem = null
     },
-    async loadData() {
-      if (this.isReady) {
-        await this.$store.dispatch('loadCatalogFromDropbox')
-
-        await this.loadWatchlist()
-      }
-    },
     async loadWatchlist() {
       this.watchlist = await watchlistService.GetWatchlistData()
     },
     async saveWatchlist() {
       if (this.watchlist) {
-        this.isLoading = true
         await watchlistService.SaveWatchlistData(this.watchlist)
+      }
+    },
+    async loadData() {
+      if (this.isReady) {
+        this.isLoading = true
+
+        await this.$store.dispatch('loadCatalogFromDropbox')
+        await this.loadWatchlist()
+
         this.isLoading = false
       }
     },
