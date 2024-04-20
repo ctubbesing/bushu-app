@@ -131,13 +131,21 @@
         <slot name="dropdown-items">
           <b-dropdown-item
             v-if="isPromotable"
-            @click="promoteItem"
+            @click="promoteItem()"
           >
             Promote to {{ parentList === 'queue' ? 'Main' : 'Queue' }}
           </b-dropdown-item>
+          <template v-if="parentList === 'upcoming'">
+            <b-dropdown-item @click="promoteItem('live')">
+              Promote to Live
+            </b-dropdown-item>
+            <b-dropdown-item @click="promoteItem('main')">
+              Promote to Main
+            </b-dropdown-item>
+          </template>
           <b-dropdown-item
             v-if="parentList === 'live'"
-            @click="promoteItem"
+            @click="promoteItem()"
           >
             Move to Main
           </b-dropdown-item>
@@ -373,8 +381,8 @@ export default Vue.extend({
       }
       this.rerenderKey = tools.getTimestamp()
     },
-    promoteItem() {
-      this.$emit('promote-item')
+    promoteItem(destination: string | undefined = undefined) {
+      this.$emit('promote-item', destination)
     },
     demoteItem() {
       this.$emit('demote-item')

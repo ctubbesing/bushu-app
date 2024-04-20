@@ -37,7 +37,7 @@
             :show-info="isShowInfo ? item : undefined"
             :is-reorderable="isReorderable"
             @mark-completed="$emit('mark-item-completed', item.id, listType)"
-            @promote-item="$emit('promote-item', item.id, listType)"
+            @promote-item="$emit('promote-item', item.id, listType, $event)"
             @demote-item="$emit('demote-item', item.id, listType)"
             @remove-item="$emit('remove-item', item.id, listType)"
           />

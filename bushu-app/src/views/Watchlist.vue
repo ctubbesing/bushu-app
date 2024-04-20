@@ -58,6 +58,7 @@
             v-model="watchlist.upcoming"
             :list-type="'upcoming'"
             @add-item="selectCatalogEntry('upcoming')"
+            @promote-item="promoteItem"
             @remove-item="promptConfirmRemoveItem"
           />
         </div>
@@ -355,7 +356,7 @@ export default Vue.extend({
         this.$bvModal.show('confirmRemoveModal')
       }
     },
-    async promoteItem(itemId: string, sourceList: string) {
+    async promoteItem(itemId: string, sourceList: string, destinationList: string | undefined = undefined) {
       if (this.watchlist) {
         if (sourceList === 'live' || sourceList === 'queue') {
           // promote Live or Queued SeasonView to Main
@@ -364,6 +365,25 @@ export default Vue.extend({
             const promotedSeasonView = this.watchlist[sourceList][seasonViewIdx]
             this.watchlist.main.push(promotedSeasonView)
             this.watchlist[sourceList].splice(seasonViewIdx, 1)
+          }
+        } else if (sourceList === 'upcoming') {
+          // promote Upcoming ShowSeason to Live or Main
+          const sznIdx = this.watchlist.upcoming.findIndex((szn: ShowSeason) => szn.id === itemId)
+          if (sznIdx !== -1) {
+            const promotedSzn = this.watchlist.upcoming[sznIdx]
+
+            let newSeasonView: SeasonView = {
+              id: tools.getGUID(),
+              seasonInfo: promotedSzn,
+              watchedEpisodes: 0,
+            }
+            if (!destinationList || destinationList === 'live') {
+              this.watchlist.live.push(newSeasonView)
+            } else if (destinationList === 'main') {
+              this.watchlist.main.push(newSeasonView)
+            }
+
+            this.watchlist.upcoming.splice(sznIdx, 1)
           }
         } else if (sourceList === 'backlog') {
           // promote Backlog ShowInfo to Queue
