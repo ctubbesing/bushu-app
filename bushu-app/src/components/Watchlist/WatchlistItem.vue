@@ -136,7 +136,7 @@
             Promote to {{ parentList === 'queue' ? 'Main' : 'Queue' }}
           </b-dropdown-item>
           <b-dropdown-item
-            v-if="parentList === 'main'"
+            v-if="isDemotable"
             @click="demoteItem"
           >
             Demote to Queue
@@ -306,6 +306,9 @@ export default Vue.extend({
     },
     isPromotable(): boolean {
       return this.parentList === 'queue' || this.parentList === 'backlog'
+    },
+    isDemotable(): boolean {
+      return this.parentList === 'main' || this.parentList === 'live'
     },
   },
   created() {

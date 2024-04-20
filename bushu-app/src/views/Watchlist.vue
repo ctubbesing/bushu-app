@@ -35,6 +35,7 @@
               :list-type="'live'"
               @add-item="selectCatalogEntry('live')"
               @mark-item-completed="showMarkCompletedOptions"
+              @demote-item="demoteItem"
               @remove-item="promptConfirmRemoveItem"
             />
           </div>
@@ -387,13 +388,13 @@ export default Vue.extend({
     },
     async demoteItem(itemId: string, sourceList: string) {
       if (this.watchlist) {
-        if (sourceList === 'main') {
-          // demote SeasonView from Main to top of Queue
-          const seasonViewIdx = this.watchlist.main.findIndex((view: SeasonView) => view.id === itemId)
+        if (sourceList === 'main' || sourceList === 'live') {
+          // demote SeasonView from Main or Live to top of Queue
+          const seasonViewIdx = this.watchlist[sourceList].findIndex((view: SeasonView) => view.id === itemId)
           if (seasonViewIdx !== -1) {
-            const demotedSeasonView = this.watchlist.main[seasonViewIdx]
+            const demotedSeasonView = this.watchlist[sourceList][seasonViewIdx]
             this.watchlist.queue.splice(0, 0, demotedSeasonView)
-            this.watchlist.main.splice(seasonViewIdx, 1)
+            this.watchlist[sourceList].splice(seasonViewIdx, 1)
           }
         }
 
