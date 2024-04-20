@@ -2,6 +2,7 @@
   <div>
     <scroll-to-refresh
       :is-loading="isLoading"
+      @refresh="handleRefresh"
     />
     <div
       v-if="watchlist"
@@ -197,7 +198,9 @@ export default Vue.extend({
     },
   },
   async created() {
-    await this.loadData()
+    if (this.isReady) {
+      await this.loadData()
+    }
   },
   methods: {
     resetTargets() {
@@ -207,23 +210,29 @@ export default Vue.extend({
       this.targetShowInfo = null
       this.targetNextQueueItem = null
     },
-    async loadWatchlist() {
-      this.watchlist = await watchlistService.GetWatchlistData()
+    async loadWatchlist(doForceReload = false) {
+      this.watchlist = await watchlistService.GetWatchlistData(doForceReload)
     },
     async saveWatchlist() {
       if (this.watchlist) {
         await watchlistService.SaveWatchlistData(this.watchlist)
       }
     },
-    async loadData() {
-      if (this.isReady) {
-        this.isLoading = true
+    async loadData(doForceReload = false) {
+      this.isLoading = true
 
-        await this.$store.dispatch('loadCatalogFromDropbox')
-        await this.loadWatchlist()
+      await this.$store.dispatch('loadCatalogFromDropbox')
+      await this.loadWatchlist(doForceReload)
 
-        this.isLoading = false
-      }
+      this.isLoading = false
+    },
+    async handleRefresh() {
+      this.isLoading = true
+
+      await watchlistService.ForceSaveSeasonViews()
+      await this.loadData(true)
+
+      this.isLoading = false
     },
     selectCatalogEntry(listName: string) {
       this.targetListName = listName
