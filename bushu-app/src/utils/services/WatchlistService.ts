@@ -50,8 +50,8 @@ let SeasonViewCache: DataStore<RawSeasonView> = {}
 let DebouncedSeasonViewUpdates: DataStore<SeasonView> = {}
 let DebounceTimeoutId: number | undefined = undefined
 
-async function LoadShowInfo(): Promise<DataStore<RawShowInfo>> {
-  if (Object.keys(ShowInfoCache).length === 0) {
+async function LoadShowInfo(doForceReload = false): Promise<DataStore<RawShowInfo>> {
+  if (doForceReload || Object.keys(ShowInfoCache).length === 0) {
     let showInfo: DataStore<RawShowInfo> | null = await dropbox.getData(showInfoPath)
     if (showInfo === null) {
       showInfo = {}
@@ -61,8 +61,8 @@ async function LoadShowInfo(): Promise<DataStore<RawShowInfo>> {
   return ShowInfoCache
 }
 
-async function LoadShowSeasons(): Promise<DataStore<ShowSeason>> {
-  if (Object.keys(ShowSeasonCache).length === 0) {
+async function LoadShowSeasons(doForceReload = false): Promise<DataStore<ShowSeason>> {
+  if (doForceReload || Object.keys(ShowSeasonCache).length === 0) {
     let showSeasons: DataStore<ShowSeason> | null = await dropbox.getData(showSeasonsPath)
     if (showSeasons === null) {
       showSeasons = {}
@@ -72,8 +72,8 @@ async function LoadShowSeasons(): Promise<DataStore<ShowSeason>> {
   return ShowSeasonCache
 }
 
-async function LoadSeasonViews(): Promise<DataStore<RawSeasonView>> {
-  if (Object.keys(SeasonViewCache).length === 0) {
+async function LoadSeasonViews(doForceReload = false): Promise<DataStore<RawSeasonView>> {
+  if (doForceReload || Object.keys(SeasonViewCache).length === 0) {
     let seasonViews: DataStore<RawSeasonView> | null = await dropbox.getData(seasonViewsPath)
     if (seasonViews === null) {
       seasonViews = {}
@@ -97,10 +97,10 @@ async function LoadWatchlistData(): Promise<RawWatchlistData> {
   return watchlistData
 }
 
-async function BuildShowInfo(ids: string[]): Promise<DataStore<ShowInfo>> {
+async function BuildShowInfo(ids: string[], doForceReload = false): Promise<DataStore<ShowInfo>> {
   const uniqueIds = [ ...new Set(ids) ]
-  const rawShowInfo: DataStore<RawShowInfo> = await LoadShowInfo()
-  const showSeasons: DataStore<ShowSeason> = await LoadShowSeasons()
+  const rawShowInfo: DataStore<RawShowInfo> = await LoadShowInfo(doForceReload)
+  const showSeasons: DataStore<ShowSeason> = await LoadShowSeasons(doForceReload)
   const showInfo: DataStore<ShowInfo> = {}
 
   uniqueIds.forEach((id: string) => {
@@ -120,10 +120,10 @@ async function BuildShowInfo(ids: string[]): Promise<DataStore<ShowInfo>> {
   return showInfo
 }
 
-async function BuildSeasonViews(ids: string[]): Promise<DataStore<SeasonView>> {
+async function BuildSeasonViews(ids: string[], doForceReload = false): Promise<DataStore<SeasonView>> {
   const uniqueIds = [ ...new Set(ids) ]
-  const rawViews: DataStore<RawSeasonView> = await LoadSeasonViews()
-  const showSeasons: DataStore<ShowSeason> = await LoadShowSeasons()
+  const rawViews: DataStore<RawSeasonView> = await LoadSeasonViews(doForceReload)
+  const showSeasons: DataStore<ShowSeason> = await LoadShowSeasons(doForceReload)
   const seasonViews: DataStore<SeasonView> = {}
 
   uniqueIds.forEach((id: string) => {
@@ -194,16 +194,16 @@ export default {
     ShowInfoCache = showInfoData
     ShowSeasonCache = showSeasonData
   },
-  async GetWatchlistData(): Promise<WatchlistData> {
+  async GetWatchlistData(doForceReload = false): Promise<WatchlistData> {
     const rawWLData: RawWatchlistData = await LoadWatchlistData()
     const allSeasonViewIds = [
       ...rawWLData.mainSeasonViewIds,
       ...rawWLData.liveSeasonViewIds,
       ...rawWLData.queueSeasonViewIds,
     ]
-    const allSeasonViews: DataStore<SeasonView> = await BuildSeasonViews(allSeasonViewIds)
-    const allShowInfo: DataStore<ShowInfo> = await BuildShowInfo(rawWLData.backlogShowInfoIds)
-    const allShowSeasons: DataStore<ShowSeason> = await LoadShowSeasons()
+    const allSeasonViews: DataStore<SeasonView> = await BuildSeasonViews(allSeasonViewIds, doForceReload)
+    const allShowInfo: DataStore<ShowInfo> = await BuildShowInfo(rawWLData.backlogShowInfoIds, doForceReload)
+    const allShowSeasons: DataStore<ShowSeason> = await LoadShowSeasons(doForceReload)
 
     const watchlist: WatchlistData = {
       main: rawWLData.mainSeasonViewIds.map((id) => allSeasonViews[id]),
@@ -259,6 +259,18 @@ export default {
       const newSeasonViews: SeasonView[] = Object.values(DebouncedSeasonViewUpdates)
       this.SaveSeasonViews(newSeasonViews)
       DebouncedSeasonViewUpdates = {}
+      DebounceTimeoutId = undefined
     }, debounceSeconds * 1000)
+  },
+  async ForceSaveSeasonViews(): Promise<void> {
+    if (Object.keys(DebouncedSeasonViewUpdates).length > 0) {
+      window.clearTimeout(DebounceTimeoutId)
+      DebounceTimeoutId = undefined
+
+      const newSeasonViews: SeasonView[] = Object.values(DebouncedSeasonViewUpdates)
+      await this.SaveSeasonViews(newSeasonViews)
+
+      DebouncedSeasonViewUpdates = {}
+    }
   },
 }
