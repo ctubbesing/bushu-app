@@ -136,6 +136,12 @@
             Promote to {{ parentList === 'queue' ? 'Main' : 'Queue' }}
           </b-dropdown-item>
           <b-dropdown-item
+            v-if="parentList === 'live'"
+            @click="promoteItem"
+          >
+            Move to Main
+          </b-dropdown-item>
+          <b-dropdown-item
             v-if="isDemotable"
             @click="demoteItem"
           >

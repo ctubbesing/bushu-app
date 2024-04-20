@@ -35,6 +35,7 @@
               :list-type="'live'"
               @add-item="selectCatalogEntry('live')"
               @mark-item-completed="showMarkCompletedOptions"
+              @promote-item="promoteItem"
               @demote-item="demoteItem"
               @remove-item="promptConfirmRemoveItem"
             />
@@ -356,13 +357,13 @@ export default Vue.extend({
     },
     async promoteItem(itemId: string, sourceList: string) {
       if (this.watchlist) {
-        if (sourceList === 'queue') {
-          // promote Queued SeasonView to Main
-          const seasonViewIdx = this.watchlist.queue.findIndex((view: SeasonView) => view.id === itemId)
+        if (sourceList === 'live' || sourceList === 'queue') {
+          // promote Live or Queued SeasonView to Main
+          const seasonViewIdx = this.watchlist[sourceList].findIndex((view: SeasonView) => view.id === itemId)
           if (seasonViewIdx !== -1) {
-            const promotedSeasonView = this.watchlist.queue[seasonViewIdx]
+            const promotedSeasonView = this.watchlist[sourceList][seasonViewIdx]
             this.watchlist.main.push(promotedSeasonView)
-            this.watchlist.queue.splice(seasonViewIdx, 1)
+            this.watchlist[sourceList].splice(seasonViewIdx, 1)
           }
         } else if (sourceList === 'backlog') {
           // promote Backlog ShowInfo to Queue
