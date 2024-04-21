@@ -33,6 +33,12 @@
               Completed {{ editedSeasonView.completedDate | formatDate }}
             </div>
           </div>
+          <div
+            v-if="parentList === 'upcoming' && loadedShowSeason"
+            id="release-date"
+          >
+            Airing {{ loadedShowSeason.startDate | formatDate }}
+          </div>
         </div>
       </div>
       <div
@@ -430,6 +436,9 @@ export default Vue.extend({
   font-size: 0.9em;
 }
 #viewed-dates {
+  font-size: 0.8em;
+}
+#release-date {
   font-size: 0.8em;
 }
 #progress-section {
