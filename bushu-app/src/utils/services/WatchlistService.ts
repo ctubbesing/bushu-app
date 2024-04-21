@@ -251,7 +251,7 @@ export default {
     SeasonViewCache = newViews
     await dropbox.saveData(seasonViewsPath, newViews)
   },
-  async SaveSeasonViewDebounced(view: SeasonView): Promise<void> {
+  SaveSeasonViewDebounced(view: SeasonView): void {
     const debounceSeconds = 3
     DebouncedSeasonViewUpdates[view.id] = view
     window.clearTimeout(DebounceTimeoutId)

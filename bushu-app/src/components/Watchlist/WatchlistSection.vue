@@ -29,7 +29,7 @@
       >
         <transition-group type="transition">
           <watchlist-item
-            v-for="item in items"
+            v-for="(item, idx) in items"
             :key="item.id"
             :parent-list="listType"
             :season-view="isSeasonView ? item : undefined"
@@ -40,6 +40,7 @@
             @promote-item="$emit('promote-item', item.id, listType, $event)"
             @demote-item="$emit('demote-item', item.id, listType)"
             @remove-item="$emit('remove-item', item.id, listType)"
+            @season-view-updated="updateSeasonView(idx, $event)"
           />
         </transition-group>
       </draggable>
@@ -120,6 +121,12 @@ export default Vue.extend({
     },
     addItem() {
       this.$emit('add-item')
+    },
+    updateSeasonView(itemIdx: number, seasonView: SeasonView) {
+      if (this.isSeasonView) {
+        this.items[itemIdx] = seasonView
+        this.syncModel()
+      }
     },
   },
 });

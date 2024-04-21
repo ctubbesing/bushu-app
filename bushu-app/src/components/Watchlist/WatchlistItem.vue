@@ -396,6 +396,7 @@ export default Vue.extend({
     saveChanges() {
       if (this.editedSeasonView) {
         watchlistService.SaveSeasonViewDebounced(this.editedSeasonView)
+        this.$emit('season-view-updated', this.editedSeasonView)
       }
     },
   },
