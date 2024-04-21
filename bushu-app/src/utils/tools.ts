@@ -54,4 +54,7 @@ export default {
   getFormattedDate(timestamp: string, doDateOnly = false): string {
     return (new Date(timestamp)).toLocaleDateString('en-US', doDateOnly ? {timeZone: 'UTC'} : undefined)
   },
+  getToday(): string {
+    return (new Date().toLocaleString('sv')).substring(0, 10)
+  },
 }

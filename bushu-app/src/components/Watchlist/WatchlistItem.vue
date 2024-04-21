@@ -110,13 +110,27 @@
       </div>
       <div
         v-if="isSeasonProgressComplete && !isReadOnly"
-        id="mark-completed-container"
+        id="modify-item-container"
       >
         <div
-          id="mark-completed-button"
+          id="modify-item-button"
           @click="markSeasonCompleted"
         >
           Mark season completed
+        </div>
+      </div>
+      <div
+        v-if="parentList === 'upcoming' && hasBegunAiring"
+        id="modify-item-container"
+      >
+        <div>
+          This item has begun airing!
+        </div>
+        <div
+          id="modify-item-button"
+          @click="promoteItem('live')"
+        >
+          Move to Live
         </div>
       </div>
     </div>
@@ -330,6 +344,13 @@ export default Vue.extend({
     isDemotable(): boolean {
       return this.parentList === 'main' || this.parentList === 'live'
     },
+    hasBegunAiring(): boolean {
+      if (this.loadedShowSeason && this.loadedShowSeason.startDate) {
+        const today = tools.getToday()
+        return this.loadedShowSeason.startDate <= today
+      }
+      return false
+    },
   },
   created() {
     if (this.seasonView) {
@@ -351,7 +372,10 @@ export default Vue.extend({
     getProgressBar(): string {
       let progressPct = 0
       progressPct = this.displayedTotalEpisodeCount ? (100 * this.displayedEpisodeProgress / this.displayedTotalEpisodeCount) : 50
-      return `background-image: linear-gradient(to right, hsl(222, 71%, 60%) ${progressPct}%, hsl(222, 71%, 75%) ${progressPct}%);`
+
+      let progressBarStyle = `border-radius: 0 0 0 ${this.isSeasonProgressComplete ? '0' : '8px'};`
+      progressBarStyle += `background-image: linear-gradient(to right, hsl(222, 71%, 60%) ${progressPct}%, hsl(222, 71%, 75%) ${progressPct}%);`
+      return progressBarStyle
     },
     incrementProgress() {
       if (this.editedSeasonView) {
@@ -449,7 +473,6 @@ export default Vue.extend({
   font-size: 0.8em;
   font-weight: bold;
   padding-left: 8px;
-  border-radius: 0 0 0 8px;
   user-select: none;
 }
 #progress-section > div > span:first-child {
@@ -483,19 +506,23 @@ export default Vue.extend({
   height: 20px;
   width: 20px;
 }
-#mark-completed-container {
-  display: flex;
-  justify-content: center;
+#modify-item-container {
+  text-align: center;
   padding: 3px;
+  border-radius: 0 0 0 8px;
+  background-color: hsl(222, 71%, 60%, 0.2);
+  color: hsl(222, 71%, 60%);
+  font-size: 0.7rem;
+  font-weight: bold;
 }
-#mark-completed-button {
-  padding: 2px 4px;
+#modify-item-button {
+  display: inline-block;
+  padding: 2px 6px;
   margin: auto 3px;
   border-radius: 4px;
   background-color: hsl(222, 71%, 60%);
   color: #fffd;
-  font-size: 1.3em;
-  font-weight: bold;
+  font-size: 1.3rem;
   cursor: pointer;
   user-select: none;
 }
@@ -511,10 +538,10 @@ export default Vue.extend({
   cursor: pointer;
   user-select: none;
 }
-#mark-completed-button:hover, #begin-watching-button:hover {
+#modify-item-button:hover, #begin-watching-button:hover {
   background-color: hsl(222, 71%, 70%);
 }
-#mark-completed-button:active, #begin-watching-button:active {
+#modify-item-button:active, #begin-watching-button:active {
   background-color: hsl(222, 71%, 65%);
 }
 </style>
