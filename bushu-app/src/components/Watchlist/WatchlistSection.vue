@@ -132,7 +132,7 @@ export default Vue.extend({
 });
 </script>
 
-<style>
+<style scoped>
 #section {
   border-radius: 10px;
   text-align: left;

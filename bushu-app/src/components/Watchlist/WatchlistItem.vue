@@ -433,7 +433,7 @@ export default Vue.extend({
 });
 </script>
 
-<style>
+<style scoped>
 #full-item {
   display: flex;
   width: 100%;

@@ -321,7 +321,7 @@ export default Vue.extend({
 });
 </script>
 
-<style>
+<style scoped>
 .show-info {
   display: flex;
   justify-content: space-between;

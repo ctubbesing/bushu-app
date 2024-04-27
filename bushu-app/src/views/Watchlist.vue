@@ -469,7 +469,7 @@ export default Vue.extend({
 });
 </script>
 
-<style>
+<style scoped>
 #currently-watching-section {
   display: none;
   margin: 10px;
