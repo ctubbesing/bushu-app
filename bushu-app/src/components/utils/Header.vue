@@ -20,6 +20,7 @@
           <b-nav-item to="/">Home</b-nav-item>
           <!-- <b-nav-item to="/about">About</b-nav-item> -->
           <b-nav-item-dropdown text="Apps">
+            <b-dropdown-item to="/readingList">Reading List</b-dropdown-item>
             <b-dropdown-item to="/watchlist">Watchlist</b-dropdown-item>
             <b-dropdown-item to="/raytracer">Ray Tracer</b-dropdown-item>
           </b-nav-item-dropdown>

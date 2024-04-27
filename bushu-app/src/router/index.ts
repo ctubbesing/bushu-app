@@ -1,6 +1,7 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
 import Home from "@/views/Home.vue"
+import ReadingList from "@/views/ReadingList.vue"
 import Watchlist from "@/views/Watchlist.vue"
 import RayTracer from "@/views/RayTracer.vue"
 // import About from "@/views/About.vue"
@@ -21,6 +22,11 @@ export default new VueRouter({
     //   name: "About",
     //   component: About,
     // },
+    {
+      path: "/readingList",
+      name: "ReadingList",
+      component: ReadingList,
+    },
     {
       path: "/watchlist",
       name: "Watchlist",
