@@ -16,7 +16,7 @@
           { 'refreshing': isLoading }
         ]"
         :is-loading="isLoading"
-        :height-px="isLoading ? 80 : 55"
+        :height-px="isLoading ? 80 : 50"
       />
     </div>
     <div
@@ -84,11 +84,10 @@ export default Vue.extend({
 .refresh-div {
   position: fixed;
   top: 0;
-  height: 57px;
   width: 100%;
 }
 .loading-icon {
-  height: 55px;
+  height: 50px;
   margin: 0 auto;
   transition: height 0.5s 0.5s;
 }
