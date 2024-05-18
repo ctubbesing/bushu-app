@@ -17,6 +17,7 @@
     "eventsource": "^2.0.2",
     "follow-redirects": "^1.14.7",
     "glob-parent": "^6.0.2",
+    "luxon": "^3.4.4",
     "moment": "^2.29.3",
     "node-fetch": "^3.2.0",
     "node-forge": "^1.2.1",
@@ -28,6 +29,7 @@
     "vuex": "^3.4.0"
   },
   "devDependencies": {
+    "@types/luxon": "^3.4.2",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "@vue/cli-plugin-babel": "~4.5.0",
