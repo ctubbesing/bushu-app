@@ -51,35 +51,59 @@
           <span @click="toggleEpisodeCountUnits">
             Progress:
           </span>
-          <span>
-            <span
-              v-if="!doManualProgressEdit"
-              @click="enableManualProgressEdit"
-              style="cursor: pointer"
-            >
-              {{ displayedEpisodeProgress ? displayedEpisodeProgress : '-' }}
-            </span>
-            <span
-              v-else
-              style="display: inline-block"
-            >
-              <b-form-input
-                type="number"
-                v-model.number="editedProgress"
-                :max="maxValidProgress"
-                :min="minValidProgress"
-                :state="isEditedProgressValid ? null : false"
-                size="sm"
-                style="width: 75px; font-size: 0.8em"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                autofocus
-                @blur="saveManualProgressEdit"
-                @keyup.enter="saveManualProgressEdit"
-              />
-            </span>
-            <span> / {{ displayedTotalEpisodeCount ? displayedTotalEpisodeCount : '?' }}</span>
+          <span
+            v-if="!doManualProgressEdit"
+            @click="enableManualProgressEdit"
+            style="cursor: pointer"
+          >
+            {{ displayedEpisodeProgress ? displayedEpisodeProgress : '-' }}
           </span>
+          <span
+            v-else
+            style="display: inline-block"
+          >
+            <b-form-input
+              type="number"
+              v-model.number="editedProgress"
+              :max="maxValidProgress"
+              :min="minValidProgress"
+              :state="isEditedProgressValid ? null : false"
+              size="sm"
+              style="width: 75px; font-size: 0.8em"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              autofocus
+              @blur="saveManualProgressEdit"
+              @keyup.enter="saveManualProgressEdit"
+            />
+          </span>
+          <span> / </span>
+          <span v-if="!releaseSchedule || releaseSchedule.length === 0">
+            {{ displayedTotalEpisodeCount ? displayedTotalEpisodeCount : '?' }}
+          </span>
+          <div
+            v-else
+            class="live-episode-release-details"
+          >
+            <table>
+              <tr>
+                <td>
+                  {{ displayedAvailableEpisodeCount ? displayedAvailableEpisodeCount : '?' }}
+                </td>
+                <td>
+                  available
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  {{ displayedTotalEpisodeCount ? displayedTotalEpisodeCount : '?' }}
+                </td>
+                <td>
+                  total
+                </td>
+              </tr>
+            </table>
+          </div>
           <span
             v-if="doEpisodeCountUnitsLabel"
             class="episode-count-units"
@@ -192,7 +216,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import Vue, { PropType } from 'vue'
+import { DateTime } from 'luxon'
 import {
   SeasonView,
   ShowInfo,
@@ -351,6 +376,37 @@ export default Vue.extend({
       }
       return false
     },
+    releaseSchedule(): { episode: number, date: DateTime }[] {
+      let episodeDates: { episode: number, date: DateTime }[] = []
+      if (this.parentList === 'live' && this.loadedShowSeason && this.loadedShowSeason.startDate) {
+        let startDate = DateTime.fromISO(this.loadedShowSeason.startDate)
+        if (startDate.isValid)
+        {
+          if (this.loadedShowSeason.totalEpisodeCount != null) {
+            for (let i = 0; i < this.loadedShowSeason.totalEpisodeCount; i++) {
+              episodeDates.push({
+                episode: i + 1,
+                date: startDate.plus({days: 7 * i})
+              })
+            }
+          }
+        }
+      }
+      return episodeDates
+    },
+    availableEpisodeCount(): number {
+      let today = DateTime.now()
+      return this.releaseSchedule.filter((d: { episode: number, date: DateTime }) => d.date <= today).length
+    },
+    displayedAvailableEpisodeCount(): number {
+      let thisSeasonEpisodes = ((this.loadedShowSeason?.totalEpisodeCount) ? this.loadedShowSeason.totalEpisodeCount : 0)
+      let thisSeasonNotYetAvailable = Math.max(0, thisSeasonEpisodes - this.availableEpisodeCount)
+      if (this.doEpisodeCountOverall) {
+        return this.overallTotalEpisodeCount - thisSeasonNotYetAvailable
+      } else {
+        return this.availableEpisodeCount
+      }
+    },
   },
   created() {
     if (this.seasonView) {
@@ -475,6 +531,13 @@ export default Vue.extend({
   padding-left: 8px;
   user-select: none;
 }
+#progress-section > div:first-child {
+  display: flex;
+  align-items: center;
+}
+#progress-section > div:first-child > span {
+  margin-right: 4px;
+}
 #progress-section > div > span:first-child {
   cursor: pointer;
 }
@@ -487,6 +550,17 @@ export default Vue.extend({
 @keyframes fadeOut {
   from {opacity: 1;}
   to {opacity: 0;}
+}
+.live-episode-release-details {
+  line-height: 15.5px
+}
+.live-episode-release-details td:first-child {
+  text-align: right;
+}
+.live-episode-release-details td:nth-child(2) {
+  padding-left: 3px;
+  font-size: 0.8em;
+  font-weight: normal;
 }
 #side-info {
   flex: 1;
