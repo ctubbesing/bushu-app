@@ -426,11 +426,26 @@ export default Vue.extend({
       return [ amtWatched, amtTotal ]
     },
     getProgressBar(): string {
-      let progressPct = 0
-      progressPct = this.displayedTotalEpisodeCount ? (100 * this.displayedEpisodeProgress / this.displayedTotalEpisodeCount) : 50
-
       let progressBarStyle = `border-radius: 0 0 0 ${this.isSeasonProgressComplete ? '0' : '8px'};`
-      progressBarStyle += `background-image: linear-gradient(to right, hsl(222, 71%, 60%) ${progressPct}%, hsl(222, 71%, 75%) ${progressPct}%);`
+
+      let progressPct = -1
+      let availablePct = -1
+      if (this.displayedTotalEpisodeCount) {
+        progressPct = 100 * this.displayedEpisodeProgress / this.displayedTotalEpisodeCount
+
+        if (this.displayedAvailableEpisodeCount) {
+          availablePct = 100 * this.displayedAvailableEpisodeCount / this.displayedTotalEpisodeCount
+        }
+
+        progressBarStyle += `background-image: linear-gradient(to right, ` +
+                            `hsl(222, 71%, 60%) ${progressPct}%, ` +
+                            ( availablePct === -1 ? '' : `hsl(222, 60%, 67.5%) ${progressPct}%, `) +
+                            ( availablePct === -1 ? '' : `hsl(222, 60%, 67.5%) ${availablePct}%, `) +
+                            `hsl(222, 71%, 75%) ${Math.max(progressPct, availablePct)}%);`
+      } else {
+        progressBarStyle += `background-image: linear-gradient(to right, hsl(222, 71%, 60%) 25%, hsl(222, 71%, 75%) 75%);`
+      }
+
       return progressBarStyle
     },
     incrementProgress() {
