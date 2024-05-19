@@ -47,7 +47,10 @@
         :style="getProgressBar()"
         :key="rerenderKey"
       >
-        <div v-if="editedSeasonView.beganDate">
+        <div
+          v-if="editedSeasonView.beganDate"
+          class="counts"
+        >
           <span @click="toggleEpisodeCountUnits">
             Progress:
           </span>
@@ -546,7 +549,7 @@ export default Vue.extend({
   padding-left: 8px;
   user-select: none;
 }
-#progress-section > div:first-child {
+#progress-section > .counts {
   display: flex;
   align-items: center;
 }
