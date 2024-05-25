@@ -147,7 +147,15 @@
         </div>
       </div>
       <div
-        v-if="parentList === 'upcoming' && hasBegunAiring"
+        v-else-if="parentList === 'live' && !isSeasonFullyReleased"
+        id="modify-item-container"
+      >
+        <div>
+          Next episode expected {{ formatReleaseDate(releaseSchedule[availableEpisodeCount].date) }}
+        </div>
+      </div>
+      <div
+        v-else-if="parentList === 'upcoming' && hasBegunAiring"
         id="modify-item-container"
       >
         <div>
@@ -385,13 +393,12 @@ export default Vue.extend({
         let startDate = DateTime.fromISO(this.loadedShowSeason.startDate)
         if (startDate.isValid)
         {
-          if (this.loadedShowSeason.totalEpisodeCount != null) {
-            for (let i = 0; i < this.loadedShowSeason.totalEpisodeCount; i++) {
-              episodeDates.push({
-                episode: i + 1,
-                date: startDate.plus({days: 7 * i})
-              })
-            }
+          let episodeCount = this.loadedShowSeason.totalEpisodeCount ?? 30
+          for (let i = 0; i < episodeCount; i++) {
+            episodeDates.push({
+              episode: i + 1,
+              date: startDate.plus({days: 7 * i})
+            })
           }
         }
       }
@@ -410,6 +417,9 @@ export default Vue.extend({
         return this.availableEpisodeCount
       }
     },
+    isSeasonFullyReleased(): boolean {
+      return this.availableEpisodeCount === (this.loadedShowSeason?.totalEpisodeCount ?? -1)
+    },
   },
   created() {
     if (this.seasonView) {
@@ -423,6 +433,9 @@ export default Vue.extend({
     },
   },
   methods: {
+    formatReleaseDate(date: DateTime) {
+      return date.toFormat('EEEE, M/d/yyyy')
+    },
     getViewProgress(view: SeasonView): number[] {
       let amtWatched = view.watchedEpisodes
       let amtTotal = view.seasonInfo.totalEpisodeCount ? view.seasonInfo.totalEpisodeCount : 0
@@ -436,7 +449,7 @@ export default Vue.extend({
       if (this.displayedTotalEpisodeCount) {
         progressPct = 100 * this.displayedEpisodeProgress / this.displayedTotalEpisodeCount
 
-        if (this.displayedAvailableEpisodeCount) {
+        if (this.displayedAvailableEpisodeCount && this.parentList === 'live') {
           availablePct = 100 * this.displayedAvailableEpisodeCount / this.displayedTotalEpisodeCount
         }
 
