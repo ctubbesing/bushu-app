@@ -115,16 +115,8 @@
             ({{ doEpisodeCountOverall ? 'Overall' : 'This season' }})
           </span>
         </div>
-        <hover-icon
-          v-if="editedSeasonView.beganDate"
-          id="increment-button"
-          icon="plus-circle"
-          scale="1.3"
-          variant="light"
-          @click="incrementProgress()"
-        />
         <div
-          v-else
+          v-if="!editedSeasonView.beganDate"
           style="width: 100%; text-align: center"
         >
           <div
@@ -134,38 +126,31 @@
             Begin watching
           </div>
         </div>
+        <hover-icon
+          v-else-if="!isSeasonProgressComplete && !isUpToDateWithLiveSeason"
+          id="increment-button"
+          icon="plus-circle"
+          scale="1.3"
+          variant="light"
+          @click="incrementProgress()"
+        />
       </div>
       <div
-        v-if="isSeasonProgressComplete && !isReadOnly"
+        v-if="itemMessages.length > 0 || itemButton"
         id="modify-item-container"
       >
         <div
-          id="modify-item-button"
-          @click="markSeasonCompleted"
+          v-for="(message, idx) in itemMessages"
+          :key="idx"
         >
-          Mark season completed
-        </div>
-      </div>
-      <div
-        v-else-if="parentList === 'live' && !isSeasonFullyReleased"
-        id="modify-item-container"
-      >
-        <div>
-          Next episode expected {{ formatReleaseDate(releaseSchedule[availableEpisodeCount].date) }}
-        </div>
-      </div>
-      <div
-        v-else-if="parentList === 'upcoming' && hasBegunAiring"
-        id="modify-item-container"
-      >
-        <div>
-          This item has begun airing!
+          {{ message }}
         </div>
         <div
+          v-if="itemButton != null"
           id="modify-item-button"
-          @click="promoteItem('live')"
+          @click="itemButton.action(...itemButton.args)"
         >
-          Move to Live
+          {{ itemButton.label }}
         </div>
       </div>
     </div>
@@ -420,6 +405,38 @@ export default Vue.extend({
     isSeasonFullyReleased(): boolean {
       return this.availableEpisodeCount === (this.loadedShowSeason?.totalEpisodeCount ?? -1)
     },
+    isUpToDateWithLiveSeason(): boolean {
+      return this.parentList === 'live' && this.editedSeasonView?.watchedEpisodes === this.availableEpisodeCount
+    },
+    itemMessages(): string[] {
+      let messages: string[] = []
+      if (this.parentList === 'live' && !this.isSeasonFullyReleased) {
+        if (this.isUpToDateWithLiveSeason) {
+          messages.push('Up to date!')
+        }
+        messages.push(`Next episode expected ${this.formatReleaseDate(this.releaseSchedule[this.availableEpisodeCount].date)}`)
+      } else if (this.parentList === 'upcoming' && this.hasBegunAiring) {
+        messages.push('This item has begun airing!')
+      }
+      return messages
+    },
+    itemButton(): { label: string, action: () => void, args: unknown[] } | null {
+      if (this.isSeasonProgressComplete && !this.isReadOnly) {
+        return {
+          label: 'Mark season completed',
+          action: this.markSeasonCompleted,
+          args: [],
+        }
+      }
+      if (this.parentList === 'upcoming' && this.hasBegunAiring) {
+        return {
+          label: 'Move to Live',
+          action: this.promoteItem,
+          args: ['live'],
+        }
+      }
+      return null
+    },
   },
   created() {
     if (this.seasonView) {
@@ -442,14 +459,14 @@ export default Vue.extend({
       return [ amtWatched, amtTotal ]
     },
     getProgressBar(): string {
-      let progressBarStyle = `border-radius: 0 0 0 ${this.isSeasonProgressComplete ? '0' : '8px'};`
+      let progressBarStyle = `border-radius: 0 0 0 ${(this.itemMessages.length > 0 || this.itemButton) ? '0' : '8px'};`
 
       let progressPct = -1
       let availablePct = -1
       if (this.displayedTotalEpisodeCount) {
         progressPct = 100 * this.displayedEpisodeProgress / this.displayedTotalEpisodeCount
 
-        if (this.displayedAvailableEpisodeCount && this.parentList === 'live') {
+        if (this.displayedAvailableEpisodeCount && this.parentList === 'live' && this.editedSeasonView?.beganDate) {
           availablePct = 100 * this.displayedAvailableEpisodeCount / this.displayedTotalEpisodeCount
         }
 
@@ -555,6 +572,7 @@ export default Vue.extend({
 #progress-section {
   display: flex;
   justify-content: space-between;
+  min-height: 26px;
   align-items: center;
   color: #fffd;
   font-size: 0.8em;
