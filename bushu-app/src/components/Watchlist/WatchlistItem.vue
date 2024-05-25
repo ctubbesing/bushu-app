@@ -136,7 +136,7 @@
         />
       </div>
       <div
-        v-if="itemMessages.length > 0 || itemButton"
+        v-if="!isReadOnly && (itemMessages.length > 0 || itemButton)"
         id="modify-item-container"
       >
         <div
