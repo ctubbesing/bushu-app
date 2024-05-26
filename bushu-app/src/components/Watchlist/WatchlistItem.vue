@@ -198,6 +198,12 @@
           <b-dropdown-item @click="removeItem">
             {{ seasonView ? 'Drop' : 'Remove' }}
           </b-dropdown-item>
+          <b-dropdown-item
+            v-if="parentList === 'live'"
+            @click="openScheduleModal"
+          >
+            View Release Schedule
+          </b-dropdown-item>
         </slot>
       </b-dropdown>
       <div style="text-align: center">
@@ -208,6 +214,60 @@
         >
       </div>
     </div>
+    <!-- Release Schedule Modal -->
+      <!-- size="md" -->
+    <b-modal
+      v-if="parentList === 'live' && loadedShowSeason"
+      :id="`release-schedule-modal-${seasonView.id}`"
+      title="Projected Release Schedule"
+      centered
+      ok-title="Done"
+      ok-variant="outline-primary"
+      ok-only
+    >
+      <watchlist-item
+        :show-season="loadedShowSeason"
+        :is-read-only="true"
+      />
+      <table id="release-schedule-table">
+        <thead>
+          <tr>
+            <th style="width: 35%"> Episode </th>
+            <th style="width: 65%"> Date </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="episode in releaseSchedule"
+            :key="episode.episodeNumber"
+            :class="{
+              'released-episode': episode.episodeNumber <= availableEpisodeCount,
+              'latest-episode': episode.episodeNumber === availableEpisodeCount,
+            }"
+          >
+            <td> {{ episode.episodeNumber }} </td>
+            <td>
+              <div class="schedule-date">
+                {{ formatReleaseDate(episode.date) }}
+              </div>
+            </td>
+          </tr>
+          <tr
+            v-if="loadedShowSeason.totalEpisodeCount == undefined"
+            style="background-color: #0001; font-size: 0.7em; color: #0008"
+          >
+            <td colspan="2">
+              <div style="padding: 2px">
+                <span style="margin-right: 2px">
+                  <b-icon icon="exclamation-circle" />
+                </span>
+                The number of episodes shown may be inaccurate because the total episode count for this season is unset.
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </b-modal>
   </div>
 </template>
 
@@ -372,8 +432,8 @@ export default Vue.extend({
       }
       return false
     },
-    releaseSchedule(): { episode: number, date: DateTime }[] {
-      let episodeDates: { episode: number, date: DateTime }[] = []
+    releaseSchedule(): { episodeNumber: number, date: DateTime }[] {
+      let episodeDates: { episodeNumber: number, date: DateTime }[] = []
       if (this.parentList === 'live' && this.loadedShowSeason && this.loadedShowSeason.startDate) {
         let startDate = DateTime.fromISO(this.loadedShowSeason.startDate)
         if (startDate.isValid)
@@ -381,7 +441,7 @@ export default Vue.extend({
           let episodeCount = this.loadedShowSeason.totalEpisodeCount ?? 30
           for (let i = 0; i < episodeCount; i++) {
             episodeDates.push({
-              episode: i + 1,
+              episodeNumber: i + 1,
               date: startDate.plus({days: 7 * i})
             })
           }
@@ -391,7 +451,7 @@ export default Vue.extend({
     },
     availableEpisodeCount(): number {
       let today = DateTime.now()
-      return this.releaseSchedule.filter((d: { episode: number, date: DateTime }) => d.date <= today).length
+      return this.releaseSchedule.filter((d: { episodeNumber: number, date: DateTime }) => d.date <= today).length
     },
     displayedAvailableEpisodeCount(): number {
       let thisSeasonEpisodes = ((this.loadedShowSeason?.totalEpisodeCount) ? this.loadedShowSeason.totalEpisodeCount : 0)
@@ -452,11 +512,6 @@ export default Vue.extend({
   methods: {
     formatReleaseDate(date: DateTime) {
       return date.toFormat('EEEE, M/d/yyyy')
-    },
-    getViewProgress(view: SeasonView): number[] {
-      let amtWatched = view.watchedEpisodes
-      let amtTotal = view.seasonInfo.totalEpisodeCount ? view.seasonInfo.totalEpisodeCount : 0
-      return [ amtWatched, amtTotal ]
     },
     getProgressBar(): string {
       let progressBarStyle = `border-radius: 0 0 0 ${(this.itemMessages.length > 0 || this.itemButton) ? '0' : '8px'};`
@@ -531,6 +586,11 @@ export default Vue.extend({
       if (this.editedSeasonView) {
         watchlistService.SaveSeasonViewDebounced(this.editedSeasonView)
         this.$emit('season-view-updated', this.editedSeasonView)
+      }
+    },
+    openScheduleModal() {
+      if (this.seasonView) {
+        this.$bvModal.show(`release-schedule-modal-${this.seasonView.id}`)
       }
     },
   },
@@ -666,5 +726,33 @@ export default Vue.extend({
 }
 #modify-item-button:active, #begin-watching-button:active {
   background-color: hsl(222, 71%, 65%);
+}
+#release-schedule-table {
+  width: 100%;
+  background-color: #defb;
+  border-radius: 8px;
+  text-align: center;
+  overflow: hidden;
+}
+#release-schedule-table > tbody > tr {
+  height: 30px;
+  border-bottom: 1px solid #0001;
+}
+#release-schedule-table tr.released-episode {
+  background-color: #0002;
+}
+#release-schedule-table tr.latest-episode {
+  border-bottom: 2px solid hsl(210, 60%, 60%, 0.5);
+}
+#release-schedule-table > tbody > tr:last-child {
+  border-bottom: none;
+}
+#release-schedule-table .schedule-date {
+  width: 80%;
+  margin: 2px auto;
+  padding: 3px;
+  border-radius: 3px;
+  border: 2px solid hsl(210, 60%, 60%, 0.3);
+  background-color: hsl(210, 60%, 60%, 0.3);
 }
 </style>
