@@ -215,59 +215,20 @@
       </div>
     </div>
     <!-- Release Schedule Modal -->
-      <!-- size="md" -->
-    <b-modal
+    <release-schedule-modal
       v-if="parentList === 'live' && loadedShowSeason"
-      :id="`release-schedule-modal-${seasonView.id}`"
-      title="Projected Release Schedule"
-      centered
-      ok-title="Done"
-      ok-variant="outline-primary"
-      ok-only
+      :release-schedule="releaseSchedule"
+      :show-season="loadedShowSeason"
+      :available-episode-count="availableEpisodeCount"
+      :season-view-id="seasonView.id"
     >
-      <watchlist-item
-        :show-season="loadedShowSeason"
-        :is-read-only="true"
-      />
-      <table id="release-schedule-table">
-        <thead>
-          <tr>
-            <th style="width: 35%"> Episode </th>
-            <th style="width: 65%"> Date </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="episode in releaseSchedule"
-            :key="episode.episodeNumber"
-            :class="{
-              'released-episode': episode.episodeNumber <= availableEpisodeCount,
-              'latest-episode': episode.episodeNumber === availableEpisodeCount,
-            }"
-          >
-            <td> {{ episode.episodeNumber }} </td>
-            <td>
-              <div class="schedule-date">
-                {{ formatReleaseDate(episode.date) }}
-              </div>
-            </td>
-          </tr>
-          <tr
-            v-if="loadedShowSeason.totalEpisodeCount == undefined"
-            style="background-color: #0001; font-size: 0.7em; color: #0008"
-          >
-            <td colspan="2">
-              <div style="padding: 2px">
-                <span style="margin-right: 2px">
-                  <b-icon icon="exclamation-circle" />
-                </span>
-                The number of episodes shown may be inaccurate because the total episode count for this season is unset.
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </b-modal>
+      <template v-slot:item-info>
+        <watchlist-item
+          :show-season="loadedShowSeason"
+          :is-read-only="true"
+        />
+      </template>
+    </release-schedule-modal>
   </div>
 </template>
 
@@ -280,6 +241,7 @@ import {
   ShowSeason,
 } from '@/types/watchlistTypes'
 import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
+import ReleaseScheduleModal from '@/components/Watchlist/ReleaseScheduleModal.vue'
 import HoverIcon from '@/components/utils/HoverIcon.vue'
 import watchlistService from '@/utils/services/WatchlistService'
 import tools from '@/utils/tools'
@@ -287,6 +249,7 @@ import tools from '@/utils/tools'
 export default Vue.extend({
   name: 'WatchlistItem',
   components: {
+    releaseScheduleModal: ReleaseScheduleModal,
     thumbnailImage: ThumbnailImage,
     hoverIcon: HoverIcon,
   },
@@ -726,33 +689,5 @@ export default Vue.extend({
 }
 #modify-item-button:active, #begin-watching-button:active {
   background-color: hsl(222, 71%, 65%);
-}
-#release-schedule-table {
-  width: 100%;
-  background-color: #defb;
-  border-radius: 8px;
-  text-align: center;
-  overflow: hidden;
-}
-#release-schedule-table > tbody > tr {
-  height: 30px;
-  border-bottom: 1px solid #0001;
-}
-#release-schedule-table tr.released-episode {
-  background-color: #0002;
-}
-#release-schedule-table tr.latest-episode {
-  border-bottom: 2px solid hsl(210, 60%, 60%, 0.5);
-}
-#release-schedule-table > tbody > tr:last-child {
-  border-bottom: none;
-}
-#release-schedule-table .schedule-date {
-  width: 80%;
-  margin: 2px auto;
-  padding: 3px;
-  border-radius: 3px;
-  border: 2px solid hsl(210, 60%, 60%, 0.3);
-  background-color: hsl(210, 60%, 60%, 0.3);
 }
 </style>
