@@ -7,6 +7,7 @@ import tools from '@/utils/tools'
 export default {
   state: {
     isLoading: false as boolean,
+    isUpdatingSeason: false as boolean,
     catalog: [] as ShowInfo[],
   },
   getters: {
@@ -37,8 +38,20 @@ export default {
     setIsLoading(state: any, isLoading: boolean) {
       state.isLoading = isLoading
     },
+    setIsUpdatingSeason(state: any, isUpdatingSeason: boolean) {
+      state.isUpdatingSeason = isUpdatingSeason
+    },
     setCatalog(state: any, catalog: ShowInfo[]) {
       state.catalog = catalog
+    },
+    setCatalogShowSeason(state: any, season: ShowSeason) {
+      const showIdx: number = state.catalog.findIndex((s: ShowInfo) => s.id === season.showId)
+      if (showIdx !== -1) {
+        const sznIdx: number = state.catalog[showIdx].seasons.findIndex((s: ShowSeason) => s.id === season.id)
+        if (sznIdx !== -1) {
+          state.catalog[showIdx].seasons[sznIdx] = season
+        }
+      }
     },
   },
   actions: {
@@ -50,12 +63,20 @@ export default {
       
       context.commit('setIsLoading', false)
     },
+    async updateCatalogShowSeason(context: any, newSeasonData: ShowSeason) {
+      context.commit('setIsUpdatingSeason', true)
+      
+      await watchlistService.UpdateShowSeason(newSeasonData)
+      context.commit('setCatalogShowSeason', newSeasonData)
+      
+      context.commit('setIsUpdatingSeason', false)
+    },
     async loadCatalogFromDropbox(context: any) {
       context.commit('setIsLoading', true)
 
       const catalogData: ShowInfo[] = await watchlistService.GetCatalog()
       context.commit('setCatalog', catalogData)
-
+  
       context.commit('setIsLoading', false)
     },
   },

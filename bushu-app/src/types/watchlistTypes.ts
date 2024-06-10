@@ -1,3 +1,5 @@
+import { DateTime } from "luxon"
+
 export interface ShowInfo {
   id: string
   title: string
@@ -15,12 +17,18 @@ export interface ShowSeason {
   seasonNumber: number
   name?: string
   totalEpisodeCount?: number | null
+  irregularDates?: EpisodeDate[]
   startDate?: string
   endDate?: string
   airingSeason?: string
   airingYear?: number
   infoLink?: string
   imgLink?: string
+}
+
+export interface EpisodeDate {
+  episode: number
+  date: DateTime
 }
 
 export interface SeasonView {
