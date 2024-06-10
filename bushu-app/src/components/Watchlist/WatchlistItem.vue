@@ -239,6 +239,8 @@ import {
   SeasonView,
   ShowInfo,
   ShowSeason,
+  RawEpisodeDate,
+  EpisodeDate,
 } from '@/types/watchlistTypes'
 import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
 import ReleaseScheduleModal from '@/components/Watchlist/ReleaseScheduleModal.vue'
@@ -395,17 +397,18 @@ export default Vue.extend({
       }
       return false
     },
-    releaseSchedule(): { episodeNumber: number, date: DateTime }[] {
-      let episodeDates: { episodeNumber: number, date: DateTime }[] = []
+    releaseSchedule(): EpisodeDate[] {
+      let episodeDates: EpisodeDate[] = []
       if (this.parentList === 'live' && this.loadedShowSeason && this.loadedShowSeason.startDate) {
         let startDate = DateTime.fromISO(this.loadedShowSeason.startDate)
         if (startDate.isValid)
         {
           let episodeCount = this.loadedShowSeason.totalEpisodeCount ?? 30
           for (let i = 0; i < episodeCount; i++) {
+            let irregularDate = this.loadedShowSeason.irregularDates?.find((d: RawEpisodeDate) => d.episode === i + 1)
             episodeDates.push({
-              episodeNumber: i + 1,
-              date: startDate.plus({days: 7 * i})
+              episode: i + 1,
+              date: irregularDate ? DateTime.fromISO(irregularDate.date) : startDate.plus({days: 7 * i})
             })
           }
         }
@@ -414,7 +417,7 @@ export default Vue.extend({
     },
     availableEpisodeCount(): number {
       let today = DateTime.now()
-      return this.releaseSchedule.filter((d: { episodeNumber: number, date: DateTime }) => d.date <= today).length
+      return this.releaseSchedule.filter((d: EpisodeDate) => d.date <= today).length
     },
     displayedAvailableEpisodeCount(): number {
       let thisSeasonEpisodes = ((this.loadedShowSeason?.totalEpisodeCount) ? this.loadedShowSeason.totalEpisodeCount : 0)

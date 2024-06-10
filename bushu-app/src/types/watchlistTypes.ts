@@ -17,13 +17,18 @@ export interface ShowSeason {
   seasonNumber: number
   name?: string
   totalEpisodeCount?: number | null
-  irregularDates?: EpisodeDate[]
+  irregularDates?: RawEpisodeDate[]
   startDate?: string
   endDate?: string
   airingSeason?: string
   airingYear?: number
   infoLink?: string
   imgLink?: string
+}
+
+export interface RawEpisodeDate {
+  episode: number
+  date: string
 }
 
 export interface EpisodeDate {
