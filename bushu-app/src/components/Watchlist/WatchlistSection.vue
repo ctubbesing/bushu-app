@@ -41,6 +41,7 @@
             @demote-item="$emit('demote-item', item.id, listType)"
             @remove-item="$emit('remove-item', item.id, listType)"
             @season-view-updated="updateSeasonView(idx, $event)"
+            @irregular-seasons-updated="$emit('irregular-seasons-updated')"
           />
         </transition-group>
       </draggable>

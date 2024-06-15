@@ -221,6 +221,7 @@
       :show-season="loadedShowSeason"
       :available-episode-count="availableEpisodeCount"
       :season-view-id="seasonView.id"
+      @irregular-seasons-updated="$emit('irregular-seasons-updated')"
     >
       <template v-slot:item-info>
         <watchlist-item

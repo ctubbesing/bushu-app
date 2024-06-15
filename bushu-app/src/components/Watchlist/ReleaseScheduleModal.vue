@@ -22,18 +22,71 @@
           </tr>
         </thead>
         <tbody>
+          <div
+            v-if="isLoading"
+            class="loading-cover"
+          >
+            <b-spinner variant="light" />
+          </div>
           <tr
-            v-for="episode in releaseSchedule"
-            :key="episode.episodeNumber"
+            v-for="episodeDate in releaseSchedule"
+            :key="episodeDate.episode"
             :class="{
-              'released-episode': episode.episodeNumber <= availableEpisodeCount,
-              'latest-episode': episode.episodeNumber === availableEpisodeCount,
+              'released-episode': episodeDate.episode <= availableEpisodeCount,
+              'latest-episode': episodeDate.episode === availableEpisodeCount,
             }"
           >
-            <td> {{ episode.episodeNumber }} </td>
+            <td> {{ episodeDate.episode }} </td>
             <td>
-              <div class="schedule-date">
-                {{ formatReleaseDate(episode.date) }}
+              <div
+                v-if="episodeDate.episode === editingEpisode"
+                class="date-editor"
+              >
+                <b-form-datepicker
+                  v-model="editingDate"
+                  size="sm"
+                  style="margin: 2px 0"
+                  :state="datePickerState"
+                />
+                <div>
+                  <b-button
+                    variant="secondary"
+                    size="sm"
+                    :disabled="isLoading"
+                    @click="closeDateEditor()"
+                  >
+                    Cancel
+                  </b-button>
+                  <b-button
+                    variant="warning"
+                    size="sm"
+                    :disabled="!isEditingDateIrregular || isLoading"
+                    @click="setIrregularDate(true)"
+                  >
+                    Reset
+                  </b-button>
+                  <b-button
+                    variant="primary"
+                    size="sm"
+                    :disabled="!isEditingDateChanged || isLoading"
+                    @click="setIrregularDate()"
+                  >
+                    Save
+                  </b-button>
+                </div>
+              </div>
+              <div
+                v-else
+                :class="[
+                  'schedule-date',
+                  {
+                    'irregular-date': isIrregularlyScheduledEpisode(episodeDate.episode),
+                    'clickable': !isLoading,
+                  }
+                ]"
+                @click="editEpisodeDate(episodeDate)"
+              >
+                {{ formatReleaseDate(episodeDate.date) }}
               </div>
             </td>
           </tr>
@@ -59,7 +112,8 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue'
 import { DateTime } from 'luxon'
-import { ShowSeason } from '@/types/watchlistTypes'
+import { ShowSeason, EpisodeDate, RawEpisodeDate } from '@/types/watchlistTypes'
+import tools from '@/utils/tools';
 
 export default Vue.extend({
   name: 'ReleaseScheduleModal',
@@ -82,13 +136,73 @@ export default Vue.extend({
     },
   },
   data() {
-    return {};
+    return {
+      editingEpisode: -1 as number,
+      editingDate: '' as string,
+    };
   },
-  computed: {},
+  computed: {
+    datePickerState(): true | null {
+      return (this.editingEpisode > 0 && this.isIrregularlyScheduledEpisode(this.editingEpisode)) || null
+    },
+    isEditingDateChanged(): boolean {
+      return this.editingEpisode > 0 &&
+             this.releaseSchedule[this.editingEpisode - 1].date.toISODate() !== this.editingDate
+    },
+    isEditingDateIrregular(): boolean {
+      return this.editingEpisode > 0 &&
+             this.isIrregularlyScheduledEpisode(this.editingEpisode)
+    },
+    isLoading(): boolean {
+      return this.$store.state.watchlist.isUpdatingSeason
+    },
+  },
   methods: {
     formatReleaseDate(date: DateTime) {
       return date.toFormat('EEEE, M/d/yyyy')
     },
+    isIrregularlyScheduledEpisode(episodeNumber: number): boolean {
+      return this.showSeason.irregularDates?.some((d: RawEpisodeDate) => d.episode === episodeNumber) ?? false
+    },
+    editEpisodeDate(episodeDate: EpisodeDate) {
+      if (!this.isLoading) {
+        this.editingEpisode = episodeDate.episode
+        this.editingDate = episodeDate.date.toISODate() ?? DateTime.now().toISODate()
+      }
+    },
+    closeDateEditor() {
+      this.editingEpisode = -1
+    },
+    async setIrregularDate(doReset = false) {
+      if (!this.isLoading) {
+        let updatedSeason: ShowSeason = tools.deepClone(this.showSeason)
+        let irregularDates: RawEpisodeDate[] = updatedSeason.irregularDates ?? []
+        let updatedDateIdx = irregularDates.findIndex((d: RawEpisodeDate) => d.episode === this.editingEpisode)
+        if (updatedDateIdx === -1) {
+          irregularDates.push({
+            episode: this.editingEpisode,
+            date: this.editingDate
+          })
+        } else {
+          if (doReset) {
+            irregularDates.splice(updatedDateIdx, 1)
+          } else {
+            irregularDates[updatedDateIdx].date = this.editingDate
+          }
+        }
+        irregularDates.sort((a: RawEpisodeDate, b: RawEpisodeDate) => a.episode - b.episode)
+
+        updatedSeason.irregularDates = irregularDates
+
+        await this.updateShowSeason(updatedSeason)
+        this.$emit('irregular-seasons-updated')
+
+        this.closeDateEditor()
+      }
+    },
+    async updateShowSeason(updatedSeason: ShowSeason) {
+      await this.$store.dispatch('updateCatalogShowSeason', updatedSeason)
+    }
   },
 });
 </script>
@@ -99,7 +213,9 @@ export default Vue.extend({
   background-color: #defb;
   border-radius: 8px;
   text-align: center;
-  overflow: hidden;
+}
+#release-schedule-table > tbody {
+  position: relative;
 }
 #release-schedule-table > tbody > tr {
   height: 30px;
@@ -123,7 +239,31 @@ export default Vue.extend({
   background-color: hsl(210, 60%, 60%, 0.3);
   cursor: pointer;
 }
-#release-schedule-table .schedule-date:hover {
+#release-schedule-table .schedule-date.irregular-date {
+  border: 4px solid hsl(210, 30%, 40%, 0.5);
+  color: #555;
+  font-style: italic;
+}
+#release-schedule-table .schedule-date.clickable:hover {
   background-color: hsl(210, 60%, 60%, 0.5);
+}
+.date-editor {
+  position: relative;
+  margin: 3px;
+}
+.date-editor > div {
+  display: flex;
+  justify-content: space-around;
+}
+.loading-cover {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  border-radius: 0 0 8px 8px;
+  background-color: #0004;
+  z-index: 100;
 }
 </style>

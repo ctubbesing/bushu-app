@@ -38,6 +38,7 @@
               @promote-item="promoteItem"
               @demote-item="demoteItem"
               @remove-item="promptConfirmRemoveItem"
+              @irregular-seasons-updated="loadWatchlist()"
             />
           </div>
         </div>
