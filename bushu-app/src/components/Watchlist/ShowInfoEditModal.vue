@@ -178,10 +178,11 @@
                         <label :for="`form-szn-${idx}-start-date`">Start date:</label>
                       </b-col>
                       <b-col>
-                        <b-form-input
+                        <b-datepicker
                           :id="`form-szn-${idx}-start-date`"
-                          type="date"
                           v-model="season.startDate"
+                          show-decade-nav
+                          :label-help="''"
                         />
                       </b-col>
                     </b-form-row>
@@ -190,10 +191,11 @@
                         <label :for="`form-szn-${idx}-end-date`">End date:</label>
                       </b-col>
                       <b-col>
-                        <b-form-input
+                        <b-datepicker
                           :id="`form-szn-${idx}-end-date`"
-                          type="date"
                           v-model="season.endDate"
+                          show-decade-nav
+                          :label-help="''"
                         />
                       </b-col>
                     </b-form-row>

@@ -54,6 +54,7 @@
                   size="sm"
                   style="margin: 2px 0"
                   :state="datePickerState"
+                  :label-help="''"
                 />
                 <div>
                   <b-button
