@@ -404,12 +404,28 @@ export default Vue.extend({
         let startDate = DateTime.fromISO(this.loadedShowSeason.startDate)
         if (startDate.isValid)
         {
+          episodeDates = [{
+            episode: 1,
+            date: startDate,
+          }]
           let episodeCount = this.loadedShowSeason.totalEpisodeCount ?? 30
-          for (let i = 0; i < episodeCount; i++) {
-            let irregularDate = this.loadedShowSeason.irregularDates?.find((d: RawEpisodeDate) => d.episode === i + 1)
+          let previousDate: DateTime = startDate
+          for (let i = 1; i < episodeCount; i++) {
+            let nextIrregularDate = this.loadedShowSeason.irregularDates?.find((d: RawEpisodeDate) => d.episode >= i + 1)
+
+            let currentDate: DateTime
+            if (nextIrregularDate?.episode === i + 1) {
+              currentDate = DateTime.fromISO(nextIrregularDate.date)
+            } else {
+              let nextWeekDate = previousDate.plus({days: 7})
+              currentDate = nextIrregularDate ? DateTime.min(DateTime.fromISO(nextIrregularDate.date), nextWeekDate) : nextWeekDate
+            }
+
+            previousDate = currentDate
+
             episodeDates.push({
               episode: i + 1,
-              date: irregularDate ? DateTime.fromISO(irregularDate.date) : startDate.plus({days: 7 * i})
+              date: currentDate
             })
           }
         }
