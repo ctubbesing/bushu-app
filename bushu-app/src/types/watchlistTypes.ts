@@ -33,7 +33,7 @@ export interface RawEpisodeDate {
 
 export interface EpisodeDate {
   episode: number
-  date: DateTime
+  date: DateTime<true>
 }
 
 export interface SeasonView {

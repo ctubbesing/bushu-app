@@ -42,8 +42,15 @@
                 v-if="episodeDate.episode === editingEpisode"
                 class="date-editor"
               >
+                <div
+                  v-if="conflictingIrregularEpisodes.length > 0"
+                  class="invalid-entry-message"
+                >
+                  This conflicts with other episode dates.
+                </div>
                 <b-form-datepicker
                   v-model="editingDate"
+                  :min="showSeason.startDate"
                   size="sm"
                   style="margin: 2px 0"
                   :state="datePickerState"
@@ -68,7 +75,7 @@
                   <b-button
                     variant="primary"
                     size="sm"
-                    :disabled="!isEditingDateChanged || isLoading"
+                    :disabled="!isEditingDateChanged || isLoading || conflictingIrregularEpisodes.length > 0"
                     @click="setIrregularDate()"
                   >
                     Save
@@ -81,7 +88,8 @@
                   'schedule-date',
                   {
                     'irregular-date': isIrregularlyScheduledEpisode(episodeDate.episode),
-                    'clickable': !isLoading,
+                    'invalid-date': isConflictingIrregularDate(episodeDate.episode),
+                    'clickable': !isLoading && episodeDate.episode !== 1,
                   }
                 ]"
                 @click="editEpisodeDate(episodeDate)"
@@ -119,7 +127,7 @@ export default Vue.extend({
   name: 'ReleaseScheduleModal',
   props: {
     releaseSchedule: {
-      type: Array as PropType<{ episodeNumber: number, date: DateTime }[]>,
+      type: Array as PropType<EpisodeDate[]>,
       required: true,
     },
     showSeason: {
@@ -142,8 +150,14 @@ export default Vue.extend({
     };
   },
   computed: {
-    datePickerState(): true | null {
-      return (this.editingEpisode > 0 && this.isIrregularlyScheduledEpisode(this.editingEpisode)) || null
+    datePickerState(): boolean | null {
+      if (this.conflictingIrregularEpisodes.length > 0) {
+        return false
+      }
+      if (this.editingEpisode > 0 && this.isIrregularlyScheduledEpisode(this.editingEpisode)) {
+        return true
+      }
+      return null
     },
     isEditingDateChanged(): boolean {
       return this.editingEpisode > 0 &&
@@ -156,6 +170,17 @@ export default Vue.extend({
     isLoading(): boolean {
       return this.$store.state.watchlist.isUpdatingSeason
     },
+    conflictingIrregularEpisodes(): number[] {
+      if (this.editingEpisode > 0 && this.showSeason.irregularDates) {
+        return this.showSeason.irregularDates
+          .filter((d: RawEpisodeDate) => {
+            return (d.episode < this.editingEpisode && d.date > this.editingDate) ||
+                   (d.episode > this.editingEpisode && d.date < this.editingDate)
+          })
+          .map((d: RawEpisodeDate) => d.episode)
+      }
+      return []
+    },
   },
   methods: {
     formatReleaseDate(date: DateTime) {
@@ -164,10 +189,13 @@ export default Vue.extend({
     isIrregularlyScheduledEpisode(episodeNumber: number): boolean {
       return this.showSeason.irregularDates?.some((d: RawEpisodeDate) => d.episode === episodeNumber) ?? false
     },
+    isConflictingIrregularDate(episodeNumber: number): boolean {
+      return this.conflictingIrregularEpisodes.includes(episodeNumber)
+    },
     editEpisodeDate(episodeDate: EpisodeDate) {
-      if (!this.isLoading) {
+      if (!this.isLoading && episodeDate.episode !== 1) {
         this.editingEpisode = episodeDate.episode
-        this.editingDate = episodeDate.date.toISODate() ?? DateTime.now().toISODate()
+        this.editingDate = episodeDate.date.toISODate()
       }
     },
     closeDateEditor() {
@@ -244,6 +272,10 @@ export default Vue.extend({
   color: #555;
   font-style: italic;
 }
+#release-schedule-table .schedule-date.invalid-date {
+  border: 4px solid hsla(0, 30%, 40%, 0.5);
+  background-color: hsl(0, 60%, 60%, 0.3);
+}
 #release-schedule-table .schedule-date.clickable:hover {
   background-color: hsl(210, 60%, 60%, 0.5);
 }
@@ -265,5 +297,10 @@ export default Vue.extend({
   border-radius: 0 0 8px 8px;
   background-color: #0004;
   z-index: 100;
+}
+.invalid-entry-message {
+  color: hsl(0, 71%, 40%);
+  font-size: 0.7rem;
+  font-weight: bold;
 }
 </style>
