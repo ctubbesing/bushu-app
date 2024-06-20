@@ -61,6 +61,7 @@
             @add-item="selectCatalogEntry('upcoming')"
             @promote-item="promoteItem"
             @remove-item="promptConfirmRemoveItem"
+            @irregular-seasons-updated="loadWatchlist()"
           />
         </div>
         <div id="backlog-list">

@@ -199,7 +199,7 @@
             {{ seasonView ? 'Drop' : 'Remove' }}
           </b-dropdown-item>
           <b-dropdown-item
-            v-if="parentList === 'live'"
+            v-if="doReleaseSchedule"
             @click="openScheduleModal"
           >
             View Release Schedule
@@ -216,11 +216,11 @@
     </div>
     <!-- Release Schedule Modal -->
     <release-schedule-modal
-      v-if="parentList === 'live' && loadedShowSeason"
+      v-if="doReleaseSchedule && loadedShowSeason"
       :release-schedule="releaseSchedule"
       :show-season="loadedShowSeason"
       :available-episode-count="availableEpisodeCount"
-      :season-view-id="seasonView.id"
+      :parent-list="parentList"
       @irregular-seasons-updated="$emit('irregular-seasons-updated')"
     >
       <template v-slot:item-info>
@@ -398,9 +398,12 @@ export default Vue.extend({
       }
       return false
     },
+    doReleaseSchedule(): boolean {
+      return this.parentList === 'live' || this.parentList === 'upcoming'
+    },
     releaseSchedule(): EpisodeDate[] {
       let episodeDates: EpisodeDate[] = []
-      if (this.parentList === 'live' && this.loadedShowSeason && this.loadedShowSeason.startDate) {
+      if (this.doReleaseSchedule && this.loadedShowSeason && this.loadedShowSeason.startDate) {
         let startDate = DateTime.fromISO(this.loadedShowSeason.startDate)
         if (startDate.isValid)
         {
@@ -572,8 +575,8 @@ export default Vue.extend({
       }
     },
     openScheduleModal() {
-      if (this.seasonView) {
-        this.$bvModal.show(`release-schedule-modal-${this.seasonView.id}`)
+      if (this.loadedShowSeason) {
+        this.$bvModal.show(`release-schedule-modal-${this.parentList}-${this.loadedShowSeason.id}`)
       }
     },
   },

@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-modal
-      :id="`release-schedule-modal-${seasonViewId}`"
+      :id="`release-schedule-modal-${parentList}-${showSeason.id}`"
       title="Projected Release Schedule"
       centered
       ok-title="Done"
@@ -139,7 +139,7 @@ export default Vue.extend({
       type: Number,
       required: true,
     },
-    seasonViewId: {
+    parentList: {
       type: String,
       required: true,
     },
