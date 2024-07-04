@@ -38,12 +38,20 @@
           </b-button>
         </div>
       </template>
+      <div id="catalog-search">
+        <b-form-input
+          v-model="searchString"
+          type="search"
+          debounce="350"
+          placeholder="Search"
+        />
+      </div>
       <div v-if="!catalog || catalog.length === 0">
         There are no items in the catalog.
       </div>
       <div
         class="show-entry"
-        v-for="(show, idx) in catalog"
+        v-for="(show, idx) in filteredCatalog"
         :key="idx"
       >
         <div
@@ -188,6 +196,7 @@ export default Vue.extend({
       editingShowInfo: {} as ShowInfo,
       editingShowId: '' as string,
       selectedItemId: '' as string,
+      searchString: '' as string,
       tools,
     };
   },
@@ -202,6 +211,14 @@ export default Vue.extend({
         return 'show'
       }
       return 'season'
+    },
+    filteredCatalog(): ShowInfo[] {
+      if (this.searchString === '') {
+        return this.catalog
+      }
+      return this.catalog.filter((s: ShowInfo) => {
+        return s.title.toLowerCase().includes(this.searchString.toLowerCase())
+      })
     },
   },
   watch: {
@@ -322,6 +339,9 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+#catalog-search {
+  margin-bottom: 10px;
+}
 .show-info {
   display: flex;
   justify-content: space-between;
