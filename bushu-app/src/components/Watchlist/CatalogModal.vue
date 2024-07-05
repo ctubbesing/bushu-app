@@ -41,6 +41,7 @@
       <div id="catalog-search">
         <b-form-input
           v-model="searchString"
+          @update="searchTMDB"
           type="search"
           debounce="350"
           placeholder="Search"
@@ -87,8 +88,8 @@
             </div>
           </div>
           <div class="show-icons">
-            <div style="font-size: 1.75em; font-weight: bold; text-align: center">
-              {{ show.isAnime ? 'ア' : 'L' }}
+            <div style="font-size: 1.5em; font-weight: bold; text-align: center">
+              {{ show.isAnime ? 'ア' : '&nbsp;' }}
             </div>
             <div @click.stop="editShowEntry(idx)">
               <hover-icon
@@ -158,6 +159,40 @@
           </div>
         </b-collapse>
       </div>
+      <div
+        v-if="tmdbShowResults.length > 0"
+        id="tmdb-results"
+      >
+        <h3>
+          Add from
+          <div style="display: inline-flex">
+            <img
+              src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
+              style="height: 24px"
+            >
+          </div>
+        </h3>
+        <div style="margin: -8px 0 8px; font-size: 7.75px; color: #666">
+          BushuApp uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.
+        </div>
+        <div
+          v-for="show in tmdbShowResults"
+          :key="show.id"
+          class="tmdb-show"
+        >
+          <thumbnail-image
+            :link="show.imgLink"
+            :height="75"
+            :colorSeed="'0d253f'"
+          />
+          <div class="tmdb-show-text">
+            <div>{{ show.title }}</div>
+            <div v-if="show.altTitle">
+              {{ show.altTitle }}
+            </div>
+          </div>
+        </div>
+      </div>
     </b-modal>
     <show-info-edit-modal
       id="editModal"
@@ -175,6 +210,7 @@ import tools from '@/utils/tools'
 import HoverIcon from '@/components/utils/HoverIcon.vue'
 import ShowInfoEditModal from '@/components/Watchlist/ShowInfoEditModal.vue'
 import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
+import TMDBService from '@/utils/services/TMDBService'
 
 export default Vue.extend({
   name: 'CatalogModal',
@@ -197,6 +233,7 @@ export default Vue.extend({
       editingShowId: '' as string,
       selectedItemId: '' as string,
       searchString: '' as string,
+      tmdbShowResults: [] as ShowInfo[],
       tools,
     };
   },
@@ -324,6 +361,13 @@ export default Vue.extend({
       })
       await this.$store.dispatch('updateCatalog', this.catalog)
     },
+    async searchTMDB(searchStr: string) {
+      if (searchStr === '') {
+        this.tmdbShowResults = []
+      } else {
+        this.tmdbShowResults = await TMDBService.searchTVShows(searchStr) 
+      }
+    },
     openEditModal() {
       this.$bvModal.show('editModal')
     },
@@ -332,6 +376,7 @@ export default Vue.extend({
     },
     onModalClose() {
       this.selectedItemId = ''
+      this.searchString = ''
       this.$emit('hidden')
     },
   },
@@ -376,11 +421,10 @@ export default Vue.extend({
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
 }
 .show-icons > div:first-child {
-  margin-top: -7px;
-  margin-bottom: -7px;
+  margin-top: -4px;
+  margin-bottom: -4px;
 }
 .show-info h4 {
   margin-bottom: 4px;
@@ -398,5 +442,29 @@ export default Vue.extend({
   color: #fff;
   outline: 2px solid #007bff;
   outline-offset: 2px;
+}
+#tmdb-results {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: double 3px #888;
+}
+.tmdb-show {
+  display: flex;
+  padding: 5px;
+  border-top: solid 1px #eee;
+  cursor: pointer;
+}
+.tmdb-show:hover {
+  background-color: hsl(192, 71%, 95%);
+}
+.tmdb-show:last-child {
+  border-bottom: solid 1px #eee;
+}
+.tmdb-show > div.tmdb-show-text {
+  padding-left: 10px;
+}
+.tmdb-show > div.tmdb-show-text > div:nth-child(2) {
+  font-size: 0.8em;
+  color: #ccc;
 }
 </style>
