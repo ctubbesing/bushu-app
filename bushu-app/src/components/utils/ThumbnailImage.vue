@@ -1,9 +1,9 @@
 <template>
   <div :style="sizeStyle + colorStyle">
-    <img
+    <b-img-lazy
       :src="link"
       :style="sizeStyle + (doFaded ? 'opacity: 0.6;' : '') + (link ? '' : 'visibility: hidden;')"
-    >
+    />
   </div>
 </template>
 
