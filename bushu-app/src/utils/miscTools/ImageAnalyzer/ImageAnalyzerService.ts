@@ -69,8 +69,6 @@ function getColorData(img: HTMLImageElement, doOpacity = false, doFilters = fals
       ctx.drawImage(img, 0, 0)
       const imageData = ctx.getImageData(0, 0, img.naturalWidth, img.naturalHeight)
       const data = imageData.data
-      console.log(img.naturalWidth + 'x' + img.naturalHeight)
-      console.log(data)
 
       const colorGroups = {} as { [key: string]: ColorData }
       for (let i = 0; i < data.length; i += 4) {
@@ -107,6 +105,9 @@ function getColorData(img: HTMLImageElement, doOpacity = false, doFilters = fals
 }
 
 export default {
+  GetFormattedColor(color: ColorData): string {
+    return `hsl(${color.colorHSL[0]}, ${color.colorHSL[1]}%, ${color.colorHSL[2]}%)`
+  },
   async GetImageColorData(imageURL: string): Promise<ColorData[]> {
     const img = new Image()
     img.crossOrigin = "anonymous"

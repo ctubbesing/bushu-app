@@ -14,9 +14,11 @@
       :src="url"
       style="max-width: 250px; max-height: 250px; margin-top: 20px"
     >
+    <div :style="selectedColorsStyle">&nbsp;</div>
     <div>
       <div>
         <color-histogram
+          v-if="allColors.length > 0"
           :all-colors="allColors"
           style="width: 100%; margin: 20px 0"
         />
@@ -54,9 +56,45 @@ export default Vue.extend({
   },
   data() {
     return {
-      url: 'https://picsum.photos/600/300/?image=655' as string,
+      url: 'https://picsum.photos/600/300/?image=400' as string,
       allColors: [] as ColorData[],
     }
+  },
+  computed: {
+    selectedColorsStyle(): string {
+      if (this.allColors.length === 0) {
+        return 'display: none'
+      } else {
+        const selectedColorLimit = 3
+        const hueBucketRadius = 10
+        let usedHues: number[] = []
+        let selectedColors: string[] = []
+
+        for (let i = 0; i < this.allColors.length; i++) {
+          let currentHue = this.allColors[i].colorHSL[0]
+          if (!usedHues.some((hue) => (hue + hueBucketRadius) > currentHue && (hue - hueBucketRadius) < currentHue)) {
+            selectedColors.push(ImageAnalyzerService.GetFormattedColor(this.allColors[i]))
+            usedHues.push(currentHue)
+
+            if (selectedColors.length >= selectedColorLimit) {
+              break
+            }
+          }
+        }
+
+        let styleString = 'background-image: linear-gradient(to right, '
+        selectedColors.forEach((color: string, idx: number) => {
+          const startPct = idx * 100 / selectedColors.length
+          const endPct = (idx + 1) * 100 / selectedColors.length
+
+          styleString += `${color} ${startPct}%, ${color} ${endPct}%` + (idx === selectedColors.length - 1 ? '' : ', ')
+        })
+
+        styleString += '); height: 20px; width: 100%; margin-top: 5px;'
+        
+        return styleString
+      }
+    },
   },
   methods: {
     getColorString(color: number[]): string {
