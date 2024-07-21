@@ -1,6 +1,6 @@
 <template>
   <div>
-    <canvas-test style="margin-top: 50px"></canvas-test>
+    <canvas-test />
   </div>
 </template>
 

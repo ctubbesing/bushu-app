@@ -2,7 +2,7 @@ import Vue from "vue"
 import VueRouter from "vue-router"
 import Home from "@/views/Home.vue"
 import Watchlist from "@/views/Watchlist.vue"
-import RayTracer from "@/views/RayTracer.vue"
+import MiscTools from "@/views/MiscTools.vue"
 // import About from "@/views/About.vue"
 
 Vue.use(VueRouter);
@@ -27,9 +27,9 @@ export default new VueRouter({
       component: Watchlist,
     },
     {
-      path: "/raytracer",
-      name: "RayTracer",
-      component: RayTracer,
+      path: "/miscTools",
+      name: "MiscTools",
+      component: MiscTools,
     },
   ]
 });
