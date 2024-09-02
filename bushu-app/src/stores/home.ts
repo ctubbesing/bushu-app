@@ -1,47 +1,29 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import Vue from "vue";
-import Vuex from "vuex";
-import dropbox from "./modules/dropbox";
-import watchlist from "./modules/watchlist";
+import { defineStore } from 'pinia'
 
-Vue.use(Vuex);
+export interface State {
+  isLoading: boolean
+  userWidgets: string[]
+  accessTokens: { [name: string]: string }
+}
 
-export default new Vuex.Store({
-  state: {
-    isLoading: false as boolean,
-    userWidgets: [] as string[],
-    accessTokens: {} as { [ name: string ]: string }
-  },
-  mutations: {
-    setIsLoading(state: any, isLoading: boolean) {
-      state.isLoading = isLoading
-    },
-    setUserWidgets(state: any, userWidgets: string[]) {
-      state.userWidgets = userWidgets
-    },
-    setSingleAccessToken(state: any, token: { key: string, value: string }) {
-      state.accessTokens[token.key] = token.value
-    },
-    setAccessTokens(state: any, accessTokens: { [ name: string ]: string }) {
-      state.accessTokens = accessTokens
-    },
-  },
+export const useHomeStore = defineStore('home', {
+  state: (): State => ({
+    isLoading: false,
+    userWidgets: [],
+    accessTokens: {}
+  }),
   actions: {
-    updateIsLoading(context: any, isLoading: boolean) {
-      context.commit('setIsLoading', isLoading)
+    updateIsLoading(isLoading: boolean) {
+      this.isLoading = isLoading
     },
-    updateUserWidgets(context: any, userWidgets: string[]) {
-      context.commit('setUserWidgets', userWidgets)
+    updateUserWidgets(userWidgets: string[]) {
+      this.userWidgets = userWidgets
     },
-    updateSingleAccessToken(context: any, token: { key: string, value: string }) {
-      context.commit('setSingleAccessToken', token)
+    updateSingleAccessToken(token: { key: string; value: string }) {
+      this.accessTokens[token.key] = token.value
     },
-    updateAccessTokens(context: any, accessTokens: { [ name: string ]: string }) {
-      context.commit('setAccessTokens', accessTokens)
-    },
-  },
-  modules: {
-    dropbox,
-    watchlist,
-  },
-});
+    updateAccessTokens(accessTokens: { [name: string]: string }) {
+      this.accessTokens = accessTokens
+    }
+  }
+})

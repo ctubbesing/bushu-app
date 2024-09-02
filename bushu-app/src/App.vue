@@ -1,28 +1,33 @@
 <template>
   <div id="app">
     <div id="nav">
-      <app-header />
+      <!-- <app-header /> -->
     </div>
     <router-view />
   </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue"
-import Header from "@/components/utils/Header.vue"
+// import Header from "@/components/utils/Header.vue"
 import dropbox from '@/utils/dropbox'
+import { mapStores } from 'pinia'
+import { useHomeStore } from './stores/home';
+import { useDropboxStore } from './stores/dropbox';
 
-export default Vue.extend({
+export default {
   name: "App",
   components: {
-    AppHeader: Header,
+    // AppHeader: Header,
+  },
+  computed: {
+    ...mapStores(useHomeStore, useDropboxStore)
   },
   async created() {
-    this.$store.dispatch('updateIsLoading', true)
-
+    this.homeStore.updateIsLoading(true)
+    
     await this.initializeDropbox()
-
-    this.$store.dispatch('updateIsLoading', false)
+    
+    this.homeStore.updateIsLoading(false)
   },
   methods: {
     async initializeDropbox() {
@@ -35,7 +40,7 @@ export default Vue.extend({
       }
 
       // load user settings and data from Dropbox if logged in
-      if (this.$store.state.dropbox.db_accessToken) {
+      if (this.dropboxStore.isReady) {
         await dropbox.reloadAll()
       } else {
         // set up default settings if not logged in
@@ -44,7 +49,7 @@ export default Vue.extend({
           'test',
         ]
 
-        this.$store.dispatch('updateUserWidgets', widgetList)
+        this.homeStore.updateUserWidgets(widgetList)
       }
     },
     async tryHandleOauthRedirect(): Promise<boolean> {
@@ -61,7 +66,7 @@ export default Vue.extend({
       return false
     },
   },
-});
+};
 </script>
 
 <style>

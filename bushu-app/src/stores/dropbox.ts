@@ -1,34 +1,26 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { DBAccountInfo } from "@/types/dropboxTypes";
+import type { DBAccountInfo } from '@/types/dropboxTypes'
+import { defineStore } from 'pinia'
 
-export default {
-  state: {
-    db_accessToken: '' as string,
-    db_userInfo: null as null | DBAccountInfo
-  },
+export interface State {
+  accessToken: string
+  userInfo: null | DBAccountInfo
+}
+
+export const useDropboxStore = defineStore('dropbox', {
+  state: (): State => ({
+    accessToken: '',
+    userInfo: null
+  }),
   getters: {
-    db_isLoggedIn(state: any): boolean {
-      return state.db_userInfo !== null
-    },
-    db_isReady(state: any): boolean {
-      return state.db_accessToken !== ''
-    },
-  },
-  mutations: {
-    setAccessToken(state: any, accessToken: string): void {
-      state.db_accessToken = accessToken
-    },
-    setUserInfo(state: any, userInfo: null | DBAccountInfo): void {
-      state.db_userInfo = userInfo
-    },
+    isLoggedIn: (state: State): boolean => state.userInfo !== null,
+    isReady: (state: State): boolean => state.accessToken !== ''
   },
   actions: {
-    updateAccessToken(context: any, accessToken: string): void {
-      context.commit('setAccessToken', accessToken)
+    updateAccessToken(accessToken: string): void {
+      this.accessToken = accessToken
     },
-    updateUserInfo(context: any, userInfo: null | DBAccountInfo): void {
-      context.commit('setUserInfo', userInfo)
-    },
-  },
-}
+    updateUserInfo(userInfo: null | DBAccountInfo): void {
+      this.userInfo = userInfo
+    }
+  }
+})
