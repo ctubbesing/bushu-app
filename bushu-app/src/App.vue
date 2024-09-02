@@ -1,85 +1,78 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+  <div id="app">
+    <div id="nav">
+      <app-header />
     </div>
-  </header>
-
-  <RouterView />
+    <router-view />
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
+<script lang="ts">
+import Vue from "vue"
+import Header from "@/components/utils/Header.vue"
+import dropbox from '@/utils/dropbox'
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+export default Vue.extend({
+  name: "App",
+  components: {
+    AppHeader: Header,
+  },
+  async created() {
+    this.$store.dispatch('updateIsLoading', true)
 
-nav {
-  width: 100%;
-  font-size: 12px;
+    await this.initializeDropbox()
+
+    this.$store.dispatch('updateIsLoading', false)
+  },
+  methods: {
+    async initializeDropbox() {
+      // update access and refresh tokens if login redirect
+      let isRedirect = await this.tryHandleOauthRedirect()
+
+      // attempt to log in with tokens
+      if (!isRedirect) {
+        await dropbox.tryRefreshAccessToken()
+      }
+
+      // load user settings and data from Dropbox if logged in
+      if (this.$store.state.dropbox.db_accessToken) {
+        await dropbox.reloadAll()
+      } else {
+        // set up default settings if not logged in
+        let widgetList = [
+          'wanikani',
+          'test',
+        ]
+
+        this.$store.dispatch('updateUserWidgets', widgetList)
+      }
+    },
+    async tryHandleOauthRedirect(): Promise<boolean> {
+      // if code query parameter and code_verifier cookie exist, handle as a Dropbox OAuth redirect
+      const params = new URLSearchParams(window.location.search)
+      const authorizationCode = params.get('code')
+      const codeVerifier = this.$cookies.get('code_verifier')
+      this.$cookies.remove('code_verifier')
+
+      if (authorizationCode !== null && codeVerifier !== null) {
+        await dropbox.handleDropboxOAuthRedirect(authorizationCode, codeVerifier)
+        return true
+      }
+      return false
+    },
+  },
+});
+</script>
+
+<style>
+body {
+  background-color: #9de !important;
+}
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+  color: #2c3e50;
 }
 </style>
