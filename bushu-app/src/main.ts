@@ -5,9 +5,10 @@ import { createPinia } from 'pinia'
 import VueCookies from 'vue-cookies'
 
 import 'vuetify/styles'
-// import 'roboto-fontface/css/roboto/roboto-fontface.css'
-// import '@mdi/font/css/materialdesignicons.css'
+import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify } from 'vuetify'
+
+import loadBaseUtils from './plugins/BaseUtils'
 
 import App from './App.vue'
 import router from './router'
@@ -21,5 +22,7 @@ app.use(pinia)
 app.use(router)
 app.use(vuetify)
 app.use(VueCookies)
+
+loadBaseUtils(app)
 
 app.mount('#app')
