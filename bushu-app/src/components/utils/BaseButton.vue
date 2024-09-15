@@ -7,5 +7,5 @@
 </template>
 
 <script lang="ts" setup>
-import { VBtn } from 'vuetify/components'
+import { VBtn } from 'vuetify/components/VBtn'
 </script>

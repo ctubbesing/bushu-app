@@ -23,7 +23,9 @@
 </template>
 
 <script lang="ts" setup>
-import { VIcon, VList, VListItem, VMenu } from 'vuetify/components'
+import { VIcon } from 'vuetify/components/VIcon'
+import { VList, VListItem } from 'vuetify/components/VList'
+import { VMenu } from 'vuetify/components/VMenu'
 import type { BaseDropdownOption } from './types/baseTypes'
 
 defineProps({
@@ -46,7 +48,7 @@ const selectItem = (item: BaseDropdownOption) => {
 .base-dropdown-main {
   display: inline-block;
 }
-::v-deep.v-list {
+:deep(.v-list) {
   padding: 0
 }
 </style>

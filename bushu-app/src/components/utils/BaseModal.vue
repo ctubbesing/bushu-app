@@ -36,7 +36,9 @@
 
 <script lang="ts" setup>
 import { watch } from 'vue';
-import { VBtn, VCard, VDialog } from 'vuetify/components'
+import { VBtn } from 'vuetify/components/VBtn'
+import { VCard } from 'vuetify/components/VCard'
+import { VDialog } from 'vuetify/components/VDialog'
 
 defineProps({
   title: {

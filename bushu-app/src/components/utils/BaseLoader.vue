@@ -6,5 +6,5 @@
 </template>
 
 <script lang="ts" setup>
-import { VProgressCircular } from 'vuetify/components'
+import { VProgressCircular } from 'vuetify/components/VProgressCircular'
 </script>
