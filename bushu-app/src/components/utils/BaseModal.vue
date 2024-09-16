@@ -1,13 +1,10 @@
 <template>
-  <v-dialog
-    v-model="isOpenModel"
-    width="auto"
-  >
+  <v-dialog v-model="isOpenModel">
     <v-card
-      max-width="500"
       :prepend-icon="titleIcon"
       :title="title"
       :subtitle="subtitle"
+      class="base-modal-body"
     >
       <template #actions>
         <slot name="actions">
@@ -39,6 +36,16 @@ import { watch } from 'vue';
 import { VBtn } from 'vuetify/components/VBtn'
 import { VCard } from 'vuetify/components/VCard'
 import { VDialog } from 'vuetify/components/VDialog'
+
+const isOpenModel = defineModel<boolean>()
+
+const emit = defineEmits(['ok', 'cancel', 'hidden'])
+
+watch(isOpenModel, () => {
+  if (!isOpenModel.value) {
+    emit('hidden')
+  }
+})
 
 defineProps({
   title: {
@@ -76,7 +83,7 @@ defineProps({
   okVariant: {
     type: String as () => 'elevated' | 'tonal' | 'flat' | 'text' | 'outlined' | 'plain',
     required: false,
-    default: 'flat'
+    default: 'elevated'
   },
   cancelText: {
     type: String,
@@ -94,14 +101,23 @@ defineProps({
     default: 'tonal'
   },
 })
-
-const emit = defineEmits(['ok', 'cancel', 'hidden'])
-
-const isOpenModel = defineModel<boolean>()
-
-watch(isOpenModel, () => {
-  if (!isOpenModel.value) {
-    emit('hidden')
-  }
-})
 </script>
+
+<style scoped>
+:deep(.v-overlay__content) {
+  width: calc(100% - 16px);
+  max-width: calc(100% - 16px);
+  margin: 8px;
+}
+
+.base-modal-body {
+  margin: auto;
+  max-width: 500px;
+}
+
+@media (min-width: 516px) {
+  .base-modal-body {
+    width: 500px;
+  }
+}
+</style>
