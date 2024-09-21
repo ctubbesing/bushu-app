@@ -1,5 +1,5 @@
 <template>
-  <basic-widget>
+  <basic-widget :options="options">
     <!-- Header -->
     <template v-slot:header>
       <a href="https://www.wanikani.com" target="_blank">
@@ -9,14 +9,9 @@
         >
       </a>
     </template>
-    <!-- Dropdown Items -->
-    <template v-slot:dropdown-items>
-      <b-dropdown-item @click="openLoginModal()">Update access token</b-dropdown-item>
-      <b-dropdown-item @click="openKTListModal()" disabled>Export Kanji Teacher list (WIP)</b-dropdown-item>
-    </template>
     <!-- Content -->
     <div v-if="loading">
-      <b-spinner />
+      <base-loader />
     </div>
     <div
       v-else-if="!isConnected"
@@ -24,12 +19,12 @@
     >
       Could not connect to WaniKani account.
       <div style="margin: 10px 0">
-        <b-button
-          size="sm"
-          @click="openLoginModal()"
+        <base-button
+          size="small"
+          @click="openTokenModal()"
         >
           Update access token
-        </b-button>
+        </base-button>
       </div>
     </div>
     <div
@@ -79,33 +74,23 @@
         </div>
       </div>
     </div>
-    <b-modal
-      id="wk_accessTokenModal"
-      title="Update Access Token"
-      centered
-      ok-variant="success"
-      ok-title="Save"
-      cancel-variant="outline-danger"
+    <base-modal
+      v-model="isTokenModalOpen"
+      :title="'Update Access Token'"
+      :title-icon="'mdi-key'"
+      :ok-text="'Save'"
       @ok="saveTokenUpdate()"
       @cancel="cancelTokenUpdate()"
-      @hidden="onLoginModalClose()"
+      @hidden="onTokenModalClose()"
     >
-      <!-- hide-footer -->
       Edit access token for your WaniKani account:
-      <b-input-group>
-        <b-form-input
-          type="text"
-          v-model="modeledTokenString"
-        />
-        <b-input-group-append>
-          <b-button
-            variant="warning"
-            @click="testNewToken()"
-          >
-            Test
-          </b-button>
-        </b-input-group-append>
-      </b-input-group>
+      <base-text-field
+        v-model="modeledTokenString"
+        doOkButton
+        :okText="'Test'"
+        :okColor="'yellow'"
+        @ok="testNewToken()"
+      />
       <div
         v-if="newTokenResult"
         :class="[
@@ -118,7 +103,7 @@
       >
         {{ newTokenResult }}
       </div>
-    </b-modal>
+    </base-modal>
     <!-- <b-modal
       id="ktListModal"
       title="Export list for Kanji Teacher"
@@ -156,11 +141,10 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
 import axios, { AxiosError } from 'axios'
 import dropbox from '@/utils/dropbox'
-import BasicWidget from '@/components/BasicWidget.vue'
-import {
+import BasicWidget from '@/components/Home/BasicWidget.vue'
+import type {
   Resource,
   Collection,
   WKUserData,
@@ -168,14 +152,29 @@ import {
   SubjectResource,
   KTListCollection,
 } from '@/types/wanikaniTypes'
+import { mapStores } from 'pinia'
+import { useDropboxStore } from '@/stores/dropbox'
+import { useHomeStore } from '@/stores/home'
+import type { BaseDropdownOption } from '@/components/utils/types/baseTypes'
 
-export default Vue.extend({
+export default {
   name: 'WanikaniWidget',
   components: {
     BasicWidget: BasicWidget,
   },
   data() {
     return {
+      options: [
+        {
+          title: 'Update access token',
+          clickEvent: this.openTokenModal
+        },
+        {
+          title: 'Export Kanji Teacher list (WIP)',
+          disabled: true,
+          clickEvent: this.openKTListModal
+        },
+      ] as BaseDropdownOption[],
       loading: false as boolean,
       isConnected: false as boolean,
       userLevel: 0 as number,
@@ -189,6 +188,7 @@ export default Vue.extend({
       newAccessToken: '' as string,
       isNewTokenValid: true as boolean,
       newTokenResult: '' as string,
+      isTokenModalOpen: false as boolean,
     };
   },
   async created() {
@@ -206,9 +206,10 @@ export default Vue.extend({
     },
   },
   computed: {
+    ...mapStores(useHomeStore, useDropboxStore),
     apiAccessToken(): string {
-      if (this.$store.getters.db_isLoggedIn) {
-        return this.$store.state.accessTokens?.wanikani || ''
+      if (this.dropboxStore.isLoggedIn) {
+        return this.homeStore.accessTokens?.wanikani || ''
       }
       return this.newAccessToken || ''
     },
@@ -305,32 +306,31 @@ export default Vue.extend({
         key: 'wanikani',
         value: this.newAccessToken,
       }
-      this.$store.dispatch('updateSingleAccessToken', token)
-      if (this.$store.getters.db_isLoggedIn) {
+      this.homeStore.updateSingleAccessToken(token)
+      if (this.dropboxStore.isLoggedIn) {
         await dropbox.saveTokens()
       }
-      // await this.loadData()
-      this.closeLoginModal()
+      this.closeTokenModal()
     },
     cancelTokenUpdate() {
       this.modeledTokenString = this.apiAccessToken
-      this.closeLoginModal()
+      this.closeTokenModal()
     },
-    openLoginModal() {
-      this.$bvModal.show('wk_accessTokenModal')
+    openTokenModal() {
+      this.isTokenModalOpen = true
     },
-    closeLoginModal() {
-      this.$bvModal.hide('wk_accessTokenModal')
+    closeTokenModal() {
+      this.isTokenModalOpen = false
     },
-    onLoginModalClose() {
+    onTokenModalClose() {
       this.newTokenResult = ''
     },
-    // openKTListModal() {
-    //   this.$bvModal.show('ktListModal')
-    // },
-    // closeKTListModal() {
-    //   this.$bvModal.hide('ktListModal')
-    // },
+    openKTListModal() {
+      // this.$bvModal.show('ktListModal')
+    },
+    closeKTListModal() {
+      // this.$bvModal.hide('ktListModal')
+    },
     async getPaginatedResourceData(url: string | null): Promise<Resource[]> {
       let allResources: Resource[] = []
       while (url !== null) {
@@ -420,7 +420,7 @@ export default Vue.extend({
       // }
     // },
   },
-})
+}
 </script>
 
 <style scoped>

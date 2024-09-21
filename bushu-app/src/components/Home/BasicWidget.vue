@@ -5,18 +5,11 @@
       <h3>
         <slot name="header"></slot>
       </h3>
-      <b-dropdown
-        right
-        variant="transparent-secondary"
-        style="height:25px; padding-left:50px"
-      >
-        <slot name="dropdown-items">
-          <b-dropdown-item>Test item 1</b-dropdown-item>
-          <b-dropdown-item>Test item 2</b-dropdown-item>
-        </slot>
-      </b-dropdown>
+      <base-dropdown
+        :options="options"
+        style="padding-left: 50px"
+      />
     </div>
-    <!-- maybe add options list here -->
     <!-- Body -->
     <div class="main-body">
       <slot></slot>
@@ -24,11 +17,18 @@
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
+import type { BaseDropdownOption } from '@/components/utils/types/baseTypes'
 
-export default Vue.extend({
-  name: 'BasicWidget'
+defineProps({
+  options: {
+    type: Array as () => BaseDropdownOption[],
+    required: false,
+    default: () => [
+      { title: "Test item 1" },
+      { title: "Test item 2" },
+    ],
+  },
 })
 </script>
 
@@ -50,7 +50,7 @@ export default Vue.extend({
 .main-body {
   margin-top: 5px;
 }
-.widget-section {
+:slotted(.widget-section) {
   flex-grow: 1;
   display: inline-block;
   margin: 5px;

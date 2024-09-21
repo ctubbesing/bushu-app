@@ -1,7 +1,7 @@
 <template>
   <div class="all-widgets">
-    <b-spinner
-      v-if="$store.state.isLoading"
+    <base-loader
+      v-if="homeStore.isLoading"
       variant="secondary"
     />
     <template v-else>
@@ -25,7 +25,7 @@
           <div>
             test content b
           </div>
-          <b-button>Test Button</b-button>
+          <base-button>Test Button</base-button>
         </basic-widget>
         <!-- Sample widget 2 -->
         <basic-widget
@@ -44,20 +44,20 @@
           <div>
             test content bc
           </div>
-          <b-button>Test Button #2</b-button>
+          <base-button>Test Button #2</base-button>
         </basic-widget>
       </template>
     </template>
     <div style="margin: 5px 0 0">
-      <hover-icon
+      <!-- <hover-icon
         icon="gear"
         scale="1.5"
         variant="secondary"
         @click="openModal()"
-      />
+      /> -->
     </div>
     <!-- Settings Modal -->
-    <b-modal
+    <!-- <b-modal
       id="settingsModal"
       title="Edit Widget Layout"
       size="lg"
@@ -133,19 +133,20 @@
           </b-button>
         </b-col>
       </b-row>
-    </b-modal>
+    </b-modal> -->
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
 import WanikaniWidget from './WanikaniWidget.vue'
 import BasicWidget from './BasicWidget.vue'
-import HoverIcon from '@/components/utils/HoverIcon.vue'
-import { WidgetData } from '@/types/generalTypes'
+// import HoverIcon from '@/components/utils/HoverIcon.vue'
+import { mapStores } from 'pinia'
+import { useHomeStore } from '@/stores/home'
 import dropbox from '@/utils/dropbox'
+import type { WidgetData } from '@/types/generalTypes'
 
-export default Vue.extend({
+export default {
   name: 'WidgetList',
   props: {
     refreshTrigger: String,
@@ -153,7 +154,7 @@ export default Vue.extend({
   components: {
     wanikaniWidget: WanikaniWidget,
     basicWidget: BasicWidget,
-    hoverIcon: HoverIcon,
+    // hoverIcon: HoverIcon,
   },
   data() {
     return {
@@ -161,7 +162,7 @@ export default Vue.extend({
         {
           id: 'wanikani',
           name: 'WaniKani',
-          description: 'Do your reviews!'
+          description: 'Keep up with ur reviews pls'
         },
         {
           id: 'test',
@@ -177,8 +178,14 @@ export default Vue.extend({
       displayedWidgets: [] as WidgetData[],
     }
   },
+  computed: {
+    ...mapStores(useHomeStore),
+    storeUserWidgets(): string[] {
+      return this.homeStore.userWidgets
+    }
+  },
   watch: {
-    '$store.state.userWidgets': function() {
+    storeUserWidgets() {
       this.syncWithStore()
     }
   },
@@ -187,7 +194,7 @@ export default Vue.extend({
   },
   methods: {
     syncWithStore() {
-      this.displayedWidgets = this.$store.state.userWidgets.map((id: string): WidgetData | undefined => {
+      this.displayedWidgets = this.homeStore.userWidgets.map((id: string): WidgetData | undefined => {
         return this.allWidgets.find((w: WidgetData) => w.id === id)
       }).filter((w: WidgetData | undefined) => w !== undefined)
     },
@@ -202,18 +209,19 @@ export default Vue.extend({
       this.closeModal()
     },
     openModal() {
-      this.$bvModal.show('settingsModal')
+      // this.$bvModal.show('settingsModal')
     },
     closeModal() {
-      this.$bvModal.hide('settingsModal')
+      // this.$bvModal.hide('settingsModal')
     },
     async onModalClose() {
       // update store and save changes to Dropbox
-      this.$store.dispatch('updateUserWidgets', this.displayedWidgets.map(w => w.id))
+      this.homeStore.updateUserWidgets(this.displayedWidgets.map(w => w.id))
+      // this.$store.dispatch('updateUserWidgets', this.displayedWidgets.map(w => w.id))
       await dropbox.saveSettings()
     },
   },
-})
+}
 </script>
 
 <style scoped>

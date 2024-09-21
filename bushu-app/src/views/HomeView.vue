@@ -9,19 +9,19 @@
       alt="bushu314 logo"
       style="margin: 50px 0 30px; max-width: 200px"
     />
-    <!-- <widget-list :refreshTrigger="refreshKey" /> -->
+    <widget-list :refreshTrigger="refreshKey" />
   </div>
 </template>
 
 <script lang="ts">
 // import ScrollToRefresh from '@/components/utils/ScrollToRefresh.vue'
-// import WidgetList from '@/components/WidgetList.vue'
+import WidgetList from '@/components/Home/WidgetList.vue'
 import dropbox from '@/utils/dropbox'
 
 export default {
   name: "HomeView",
   components: {
-    // widgetList: WidgetList,
+    widgetList: WidgetList,
     // scrollToRefresh: ScrollToRefresh,
   },
   data() {

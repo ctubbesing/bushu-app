@@ -1,7 +1,5 @@
 <template>
-  <v-btn
-    @click="$emit($event)"
-  >
+  <v-btn>
     <slot></slot>
   </v-btn>
 </template>
