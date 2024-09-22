@@ -194,9 +194,12 @@ export default {
   },
   methods: {
     syncWithStore() {
-      this.displayedWidgets = this.homeStore.userWidgets.map((id: string): WidgetData | undefined => {
-        return this.allWidgets.find((w: WidgetData) => w.id === id)
-      }).filter((w: WidgetData | undefined) => w !== undefined)
+      this.homeStore.userWidgets.forEach((id: string) => {
+        let widget = this.allWidgets.find((w: WidgetData) => w.id === id)
+        if (widget !== undefined) {
+          this.displayedWidgets.push(widget)
+        }
+      })
     },
     addWidget(idx: number) {
       this.displayedWidgets.push(this.allWidgets[idx])
