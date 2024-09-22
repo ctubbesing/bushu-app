@@ -1,34 +1,44 @@
 <template>
-  <b-icon
-    :icon="icon + getSuffix()"
-    :font-scale="scale ? scale : '1'"
-    :variant="variant"
+  <v-icon
+    :icon="iconName"
+    :size="size"
+    :color="color"
     style="cursor: pointer"
     @mouseenter="isHovering = true"
     @mouseleave="isHovering = false"
-    @click="$emit('click')"
   />
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
+import { VIcon } from 'vuetify/components/VIcon'
 
-export default Vue.extend({
-  props: {
-    icon: String,
-    scale: String,
-    variant: String,
+const props = defineProps({
+  icon: {
+    type: String,
+    required: true,
   },
-  name: 'HoverIcon',
-  data() {
-    return {
-      isHovering: false as boolean,
-    }
+  doHover: {
+    type: Boolean,
+    required: false,
+    default: true,
   },
-  methods: {
-    getSuffix(): string {
-      return (!this.isHovering || this.icon.slice(-5) === '-fill') ? '' : '-fill'
-    },
-  },
+  size: String,
+  color: String,
+})
+
+const isHovering = ref(false)
+
+const iconName = computed((): string => {
+  let name: string = props.icon
+  if (name.slice(3) !== 'mdi-') {
+    name = 'mdi-' + name
+  }
+
+  if (props.doHover && !isHovering.value) {
+    name = name + '-outline'
+  }
+  
+  return name
 })
 </script>

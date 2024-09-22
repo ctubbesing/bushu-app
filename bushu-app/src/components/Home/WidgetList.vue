@@ -49,12 +49,12 @@
       </template>
     </template>
     <div style="margin: 5px 0 0">
-      <!-- <hover-icon
-        icon="gear"
-        scale="1.5"
-        variant="secondary"
+      <base-icon
+        icon="cog"
+        size="large"
+        color="grey-darken-1"
         @click="openModal()"
-      /> -->
+      />
     </div>
     <!-- Settings Modal -->
     <!-- <b-modal
