@@ -254,6 +254,9 @@ export default Vue.extend({
           this.watchlist[listName].push(newSeasonView)
         } else if (listName === 'upcoming') {
           this.watchlist.upcoming.push(item as ShowSeason)
+          this.watchlist.upcoming.sort((a, b) => {
+            return (a.startDate ?? 'z').localeCompare(b.startDate ?? 'z')
+          })
         } else if (listName === 'backlog') {
           this.watchlist.backlog.push(item as ShowInfo)
         }
