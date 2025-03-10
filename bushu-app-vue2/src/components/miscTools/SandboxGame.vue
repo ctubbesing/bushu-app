@@ -16,24 +16,15 @@
           {{ element ? element.name : 'Eraser' }}
         </div>
       </div>
-      <div>
-        <input
-          v-model="pen.size"
-          type="number"
-          min="1"
-          step="2"
-          style="border: 1px solid #ddd; border-radius: 2px; margin: 3px; width: 70px"
-        >
-      </div>
     </div>
     <div style="position: relative">
       <canvas
         id="c"
         :width="canvasWidth"
         :height="canvasHeight"
-        style="border:1px solid #000000"
-        @click="draw($event)"
-        @mousemove="pen.isDrawing ? draw($event) : null"
+        style="margin-left: 10px; border:1px solid #000000"
+        @click="drawMouseEvent($event)"
+        @mousemove="pen.isDrawing ? drawMouseEvent($event) : null"
         @mousedown="pen.isDrawing = true"
         @mouseup="pen.isDrawing = false"
         @mouseleave="pen.isDrawing = false"
@@ -84,6 +75,15 @@
       <div>
         Tick: {{ scene.tick }}
       </div>
+      Pen size:
+      <b-form-spinbutton
+        v-model="pen.size"
+        min="1"
+        max="20"
+        wrap
+        inline
+        style="margin:10px 5px;"
+      />
       <!-- <div>
         <button
           style="background-color: #5bc"
@@ -668,8 +668,8 @@ export default Vue.extend({
       vueCanvas: {} as CanvasRenderingContext2D,
       imgRows: 50,
       imgCols: 50,
-      canvasWidth: 150,
-      canvasHeight: 150,
+      canvasWidth: 250,
+      canvasHeight: 250,
       interval: null as any,
       doAutoTick: false as boolean,
     }
@@ -699,6 +699,7 @@ export default Vue.extend({
       // bind vueCanvas to canvas element
       let c = document.getElementById('c') as HTMLCanvasElement
       let ctx = c.getContext('2d')
+      c.addEventListener('touchmove', this.drawTouchEvent);
       if (ctx !== null) {
         this.vueCanvas = ctx
         this.renderScene()
@@ -766,11 +767,21 @@ export default Vue.extend({
         this.scene.particles[row][col] = null
       }
     },
-    draw(evt: MouseEvent) {
+    drawMouseEvent(evt: MouseEvent) {
       let canvas = document.getElementById('c')
       let rect = canvas!.getBoundingClientRect()
       let x = evt.clientX - rect.left - 1
       let y = evt.clientY - rect.top - 1
+      this.draw(x, y)
+    },
+    drawTouchEvent(evt: TouchEvent) {
+      let canvas = document.getElementById('c')
+      let rect = canvas!.getBoundingClientRect()
+      let x = evt.touches[0].clientX - rect.left - 1
+      let y = evt.touches[0].clientY - rect.top - 1
+      this.draw(x, y)
+    },
+    draw(x: number, y: number) {
       let particleRow = Math.floor(y * this.imgRows / this.canvasHeight)
       let particleCol = Math.floor(x * this.imgCols / this.canvasWidth)
       let maxOffset = Math.floor(this.pen.size / 2) // /////////////////////////////////////////////////// pen sizing doesn't work

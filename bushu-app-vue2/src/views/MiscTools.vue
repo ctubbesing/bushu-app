@@ -15,9 +15,15 @@
         <b-tab title="Ray Tracer">
           <canvas-test />
         </b-tab>
+        <b-tab title="Curve Creator">
+          <curve-creator />
+        </b-tab>
         <b-tab title="Sandbox">
           <sandbox-game />
         </b-tab>
+        <!-- <b-tab title="TouchDragCanvasTest">
+          <TouchDragCanvasTest />
+        </b-tab> -->
       </b-tabs>
     </b-card>
   </div>
@@ -27,13 +33,16 @@
 import Vue from 'vue'
 import ImageAnalyzer from '@/components/miscTools/ImageAnalyzer/ImageAnalyzer.vue'
 import CanvasTest from '@/components/CanvasTest.vue'
+import CurveCreator from '@/components/miscTools/CurveCreator.vue'
 import SandboxGame from '@/components/miscTools/SandboxGame.vue'
+// import TouchDragCanvasTest from '@/components/miscTools/TouchDragCanvasTest.vue'
 
 export default Vue.extend({
   name: "MiscTools",
   components: {
     canvasTest: CanvasTest,
     imageAnalyzer: ImageAnalyzer,
+    curveCreator: CurveCreator,
     sandboxGame: SandboxGame,
   },
 });
