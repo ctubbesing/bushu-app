@@ -670,7 +670,7 @@ export default Vue.extend({
       imgCols: 50,
       canvasWidth: 250,
       canvasHeight: 250,
-      interval: null as any,
+      interval: undefined as number | undefined,
       doAutoTick: false as boolean,
     }
   },
@@ -699,7 +699,14 @@ export default Vue.extend({
       // bind vueCanvas to canvas element
       let c = document.getElementById('c') as HTMLCanvasElement
       let ctx = c.getContext('2d')
+
+      const handleTap = (e: TouchEvent) => {
+        e.preventDefault()
+        this.drawTouchEvent(e)
+      }
+      c.addEventListener('touchstart', handleTap, {passive: false});
       c.addEventListener('touchmove', this.drawTouchEvent);
+
       if (ctx !== null) {
         this.vueCanvas = ctx
         this.renderScene()
