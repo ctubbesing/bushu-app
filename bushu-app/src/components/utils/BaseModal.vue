@@ -1,12 +1,18 @@
 <template>
-  <v-dialog v-model="isOpenModel">
+  <v-dialog
+    v-model="isOpenModel"
+    max-width="800"
+  >
     <v-card
       :prepend-icon="titleIcon"
       :title="title"
       :subtitle="subtitle"
       class="base-modal-body"
     >
-      <template #actions>
+      <template
+        v-if="doCancel || doOk"
+        #actions
+      >
         <slot name="actions">
           <v-btn
             v-if="doCancel"
@@ -47,6 +53,8 @@ watch(isOpenModel, () => {
   }
 })
 
+// !!! should make the width (currently 800) a prop
+// small: 500, med: 800, etc
 defineProps({
   title: {
     type: String,
@@ -110,14 +118,18 @@ defineProps({
   margin: 8px;
 }
 
+:deep(.v-card-text) {
+  padding: 14px !important;
+}
+
 .base-modal-body {
   margin: auto;
-  max-width: 500px;
+  max-width: 800px;
 }
 
 @media (min-width: 516px) {
   .base-modal-body {
-    width: 500px;
+    width: 800px;
   }
 }
 </style>

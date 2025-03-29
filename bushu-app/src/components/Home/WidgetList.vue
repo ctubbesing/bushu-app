@@ -57,16 +57,18 @@
       />
     </div>
     <!-- Settings Modal -->
-    <!-- <b-modal
-      id="settingsModal"
+    <base-modal
+      v-model="isSettingsModalOpen"
       title="Edit Widget Layout"
-      size="lg"
-      centered
-      hide-footer
+      titleIcon="mdi-widgets"
+      @ok="closeModal()"
+      @cancel="undoChanges()"
       @hidden="onModalClose()"
     >
-      <b-row style="margin-bottom: 10px">
-        <b-col sm="7">
+      <!-- don't be dumb this is a base-row make it a base-row -->
+      <div style="display: flex; flex-wrap: wrap; margin-bottom: 10px">
+        <!-- same but base-col -->
+        <div style="flex: 7; min-width: 300px; margin: 0 5px">
           <small>Displayed Widgets:</small>
           <div>
             <div
@@ -79,68 +81,47 @@
                 <small>{{ w.description }}</small>
               </div>
               <div>
-                <hover-icon
-                  icon="trash"
-                  scale="1.5"
-                  variant="danger"
+                <base-icon
+                  icon="trash-can"
+                  size="large"
+                  color="red-darken-1"
                   @click="removeWidget(idx)"
                 />
               </div>
             </div>
           </div>
-        </b-col>
-        <b-col>
+        </div>
+        <div style="flex: 5; margin: 0 5px">
           <small>All Widgets:</small>
-          <b-card no-body>
-            <b-list-group flush>
-              <b-list-group-item
-                v-for="(w, idx) in allWidgets"
-                :key="w.id"
-                class="d-flex justify-content-between align-items-center"
-              >
-                <div style="display: inline-block">
-                  <h5>{{ w.name }}</h5>
-                  <small>{{ w.description }}</small>
-                </div>
-                <hover-icon
-                  icon="plus-circle"
-                  scale="1.5"
-                  variant="primary"
-                  @click="addWidget(idx)"
-                />
-              </b-list-group-item>
-            </b-list-group>
-          </b-card>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col sm="4">
-          <b-button
-            variant="outline-danger"
-            style="width: 100%; margin-bottom: 5px"
-            @click="undoChanges()"
-          >
-            Cancel
-          </b-button>
-        </b-col>
-        <b-col>
-          <b-button
-            variant="outline-secondary"
-            style="width: 100%"
-            @click="closeModal()"
-          >
-            Done
-          </b-button>
-        </b-col>
-      </b-row>
-    </b-modal> -->
+          <!-- this is a base-list-group -->
+          <div class="all-widgets-list">
+            <!-- and a base-list-group-item -->
+            <div
+              v-for="(w, idx) in allWidgets"
+              :key="w.id"
+              class="all-widgets-list-item"
+            >
+              <div style="display: inline-block">
+                <h5>{{ w.name }}</h5>
+                <small>{{ w.description }}</small>
+              </div>
+              <base-icon
+                icon="plus-circle"
+                size="large"
+                color="blue-darken-1"
+                @click="addWidget(idx)"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </base-modal>
   </div>
 </template>
 
 <script lang="ts">
 import WanikaniWidget from './WanikaniWidget.vue'
 import BasicWidget from './BasicWidget.vue'
-// import HoverIcon from '@/components/utils/HoverIcon.vue'
 import { mapStores } from 'pinia'
 import { useHomeStore } from '@/stores/home'
 import dropbox from '@/utils/dropbox'
@@ -154,7 +135,6 @@ export default {
   components: {
     wanikaniWidget: WanikaniWidget,
     basicWidget: BasicWidget,
-    // hoverIcon: HoverIcon,
   },
   data() {
     return {
@@ -175,52 +155,42 @@ export default {
           description: 'Another sample widget. Doesn\'t do much'
         },
       ] as WidgetData[],
-      displayedWidgets: [] as WidgetData[],
+      isSettingsModalOpen: false as boolean,
+      originalStoreUserWidgets: [] as string[],
     }
   },
   computed: {
     ...mapStores(useHomeStore),
-    storeUserWidgets(): string[] {
+    displayedWidgets(): WidgetData[] {
       return this.homeStore.userWidgets
-    }
-  },
-  watch: {
-    storeUserWidgets() {
-      this.syncWithStore()
-    }
-  },
-  created() {
-    this.syncWithStore()
+        .map((widgetId: string) => {
+          return this.allWidgets.find((w: WidgetData) => w.id === widgetId)
+        })
+        .filter((w: WidgetData | undefined) => !!w)
+    },
   },
   methods: {
-    syncWithStore() {
-      this.homeStore.userWidgets.forEach((id: string) => {
-        let widget = this.allWidgets.find((w: WidgetData) => w.id === id)
-        if (widget !== undefined) {
-          this.displayedWidgets.push(widget)
-        }
-      })
-    },
     addWidget(idx: number) {
-      this.displayedWidgets.push(this.allWidgets[idx])
+      const widgetId = this.allWidgets[idx]?.id
+      if (widgetId) {
+        this.homeStore.userWidgets.push(widgetId)
+      }
     },
     removeWidget(idx: number) {
-      this.displayedWidgets.splice(idx, 1)
+      this.homeStore.userWidgets.splice(idx, 1)
     },
     undoChanges() {
-      this.syncWithStore()
+      this.homeStore.userWidgets = this.originalStoreUserWidgets.map((w) => w)
       this.closeModal()
     },
     openModal() {
-      // this.$bvModal.show('settingsModal')
+      this.isSettingsModalOpen = true
+      this.originalStoreUserWidgets = this.homeStore.userWidgets.map((w) => w)
     },
     closeModal() {
-      // this.$bvModal.hide('settingsModal')
+      this.isSettingsModalOpen = false
     },
     async onModalClose() {
-      // update store and save changes to Dropbox
-      this.homeStore.updateUserWidgets(this.displayedWidgets.map(w => w.id))
-      // this.$store.dispatch('updateUserWidgets', this.displayedWidgets.map(w => w.id))
       await dropbox.saveSettings()
     },
   },
@@ -233,6 +203,20 @@ export default {
   padding: 10px 10px 5px;
   border-radius: 10px;
   background-color: #fff5;
+}
+.all-widgets-list {
+  border: 0.8px solid #0002;
+  border-radius: 10px;
+}
+.all-widgets-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 0.8px solid #0002;
+}
+.all-widgets-list-item:last-child {
+  border-bottom: none;
 }
 .displayed-widget-list-item {
   display: flex;
