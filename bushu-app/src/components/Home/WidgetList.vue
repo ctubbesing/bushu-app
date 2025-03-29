@@ -164,7 +164,7 @@ export default {
     displayedWidgets(): WidgetData[] {
       return this.homeStore.userWidgets
         .map((widgetId: string) => {
-          return this.allWidgets.find((w: WidgetData) => w.id === widgetId)
+          return this.allWidgets.find((w: WidgetData) => w.id === widgetId)!
         })
         .filter((w: WidgetData | undefined) => !!w)
     },
