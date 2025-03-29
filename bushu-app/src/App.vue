@@ -1,26 +1,24 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <!-- <app-header /> -->
-    </div>
-    <router-view />
-  </div>
-  <!-- <v-app>
-    <v-app-bar></v-app-bar>
-  </v-app> -->
+  <v-app>
+    <AppNavigation />
+
+    <v-main>
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 
 <script lang="ts">
-// import Header from "@/components/utils/Header.vue"
 import dropbox from '@/utils/dropbox'
 import { mapStores } from 'pinia'
-import { useHomeStore } from './stores/home';
-import { useDropboxStore } from './stores/dropbox';
+import { useHomeStore } from './stores/home'
+import { useDropboxStore } from './stores/dropbox'
+import AppNavigation from './components/AppNavigation.vue'
 
 export default {
   name: "App",
   components: {
-    // AppHeader: Header,
+    AppNavigation,
   },
   computed: {
     ...mapStores(useHomeStore, useDropboxStore)

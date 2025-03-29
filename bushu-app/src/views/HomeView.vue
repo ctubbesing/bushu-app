@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <v-container>
     <!-- <scroll-to-refresh
       :is-loading="isLoading"
       @refresh="handleRefresh"
@@ -9,8 +9,8 @@
       alt="bushu314 logo"
       style="margin: 50px 0 30px; max-width: 200px"
     />
-    <widget-list :refreshTrigger="refreshKey" />
-  </div>
+    <WidgetList :refreshTrigger="refreshKey" />
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -21,7 +21,7 @@ import dropbox from '@/utils/dropbox'
 export default {
   name: "HomeView",
   components: {
-    widgetList: WidgetList,
+    WidgetList,
     // scrollToRefresh: ScrollToRefresh,
   },
   data() {
