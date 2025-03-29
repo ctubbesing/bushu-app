@@ -5,6 +5,9 @@
     </div>
     <router-view />
   </div>
+  <!-- <v-app>
+    <v-app-bar></v-app-bar>
+  </v-app> -->
 </template>
 
 <script lang="ts">

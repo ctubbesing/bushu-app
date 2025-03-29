@@ -17,6 +17,7 @@
     "axios": "^1.7.7",
     "js-cookie": "^3.0.5",
     "pinia": "^2.1.7",
+    "vite-plugin-vuetify": "^2.1.0",
     "vue": "^3.4.29",
     "vue-cookies": "^1.8.4",
     "vue-router": "^4.3.3",

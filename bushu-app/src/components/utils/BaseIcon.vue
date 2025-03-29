@@ -11,7 +11,7 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import { VIcon } from 'vuetify/components/VIcon'
+// import { VIcon } from 'vuetify/components/VIcon'
 
 const props = defineProps({
   icon: {
