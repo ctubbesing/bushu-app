@@ -4,7 +4,7 @@
     <template v-slot:header>
       <a href="https://www.wanikani.com" target="_blank">
         <img
-          src="https://assets.wanikani.com/assets/logo--retro-colors-a26916b67c16d2015df41458d869bf37151dea58d10bab76d218199b498b4f42.png"
+          src="https://assets.wanikani.com/assets/logo--retro-colors-9b88dd59.png"
           style="height: 30px"
         >
       </a>
