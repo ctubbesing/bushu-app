@@ -33,6 +33,11 @@ const vuetify = createVuetify({
       darkTheme,
     },
   },
+  defaults: {
+    global: {
+      hideDetails: 'auto',
+    },
+  },
 })
 
 export default vuetify

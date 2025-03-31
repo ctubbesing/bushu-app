@@ -1,144 +1,103 @@
 <template>
-  <div>
-    <div
-      class="sign-in-button"
-      @click="openModal()"
-    >
-      <b-spinner
-        v-if="$store.state.isLoading"
-        variant="secondary"
-        style="margin: 5px"
+  <v-btn
+    icon
+    :loading="homeStore.isLoading"
+    @click="showModal = true"
+  >
+    <v-avatar color="app-header">
+      <v-img
+        v-if="dropboxStore.userInfo"
+        :src="dropboxStore.userInfo.profile_photo_url"
       />
-      <div v-else-if="isSignedIn">
-        <b-avatar
-          style="margin-right: 10px"
-          size="34"
-          :src="imgLink"
+      <v-icon
+        v-else
+        icon="mdi-account-circle"
+      />
+    </v-avatar>
+  </v-btn>
+
+  <BaseModal
+    v-model="showModal"
+    :do-ok="false"
+    :do-cancel="false"
+  >
+    <div class="text-center">
+      <p v-if="dropboxStore.isLoggedIn">
+        Currently signed in as {{ dropboxStore.userInfo?.name.display_name }}.
+      </p>
+      <p v-else>
+        Sign in with your Dropbox account to be able to
+        load and save custom user data and settings.
+      </p>
+      <!-- <div> -->
+      <div class="d-inline-block text-center">
+        <v-checkbox
+          v-if="!dropboxStore.isLoggedIn"
+          v-model="doRememberMe"
+          label="Remember Me"
         />
-        Hi {{ userShortName }}
-        <!-- TODO: add logout option to clear access & refresh tokens -->
       </div>
-      <div v-else>
-        Sign in with Dropbox
+      <div>
+        <v-btn
+          @click="closeModal"
+          variant="tonal"
+          class="mx-1"
+        >
+          Cancel
+        </v-btn>
+        <v-btn
+          v-if="dropboxStore.isLoggedIn"
+          @click="signOut"
+          variant="elevated"
+          color="error"
+          class="mx-1"
+        >
+          Disconnect Account
+        </v-btn>
+        <v-btn
+          v-else
+          @click="openSignInScreen"
+          variant="elevated"
+          color="success"
+          class="mx-1"
+        >
+          Sign In
+        </v-btn>
       </div>
     </div>
-    <b-modal
-      id="loginModal"
-      title="Dropbox Sign In"
-      hide-footer
-      centered
-    >
-      <div class="sign-in-modal-content">
-        <p v-if="isSignedIn">
-          Currently signed in as {{ userFullName }}.
-        </p>
-        <p v-else>
-          Sign in with your Dropbox account to be able to
-          load and save custom user data and settings.
-        </p>
-        <div>
-          <b-form-checkbox
-            v-if="!isSignedIn"
-            v-model="doRememberMe"
-          >
-            Remember Me
-          </b-form-checkbox>
-          <b-button
-            @click="closeModal()"
-            variant="outline-secondary"
-          >
-            Cancel
-          </b-button>
-          <b-button
-            v-if="isSignedIn"
-            @click="signOut()"
-            variant="danger"
-          >
-            Disconnect Account
-          </b-button>
-          <b-button
-            v-else
-            @click="openSignInScreen()"
-            variant="success"
-          >
-            Sign In
-          </b-button>
-        </div>
-      </div>
-    </b-modal>
-  </div>
+    <!-- TODO: add logout option to clear access & refresh tokens -->
+  </BaseModal>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup>
 import dropbox from '@/utils/dropbox'
+import { useHomeStore } from '@/stores/home'
+import { useDropboxStore } from '@/stores/dropbox'
+import BaseModal from './utils/BaseModal.vue'
+import { ref } from 'vue'
 
-export default Vue.extend({
-  name: 'DropboxSignIn',
-  data() {
-    return {
-      doRememberMe: false as boolean,
-    }
-  },
-  computed: {
-    isSignedIn(): boolean {
-      return this.$store.getters.db_isLoggedIn
-    },
-    userShortName(): string {
-      return this.$store.state.dropbox.db_userInfo.name.familiar_name
-    },
-    userFullName(): string {
-      return this.$store.state.dropbox.db_userInfo.name.display_name
-    },
-    imgLink(): string {
-      return this.$store.state.dropbox.db_userInfo.profile_photo_url
-    },
-  },
-  methods: {
-    openModal() {
-      this.$bvModal.show('loginModal')
-    },
-    closeModal() {
-      this.$bvModal.hide('loginModal')
-    },
-    signOut() {
-      dropbox.disconnectAccount()
-      this.closeModal()
-    },
-    async openSignInScreen() {
-      await dropbox.authorizeWithDropbox(this.doRememberMe)
-      this.closeModal()
-    },
-  },
-})
+const homeStore = useHomeStore()
+const dropboxStore = useDropboxStore()
+
+const showModal = ref(false)
+
+const doRememberMe = ref(false)
+
+const closeModal = () => showModal.value = false
+
+const signOut = () => {
+  dropbox.disconnectAccount()
+  closeModal()
+}
+
+const openSignInScreen = async () => {
+  await dropbox.authorizeWithDropbox(doRememberMe.value)
+  closeModal()
+}
 </script>
 
 <style scoped>
-.sign-in-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 42px;
-  background-color: #F7F5F2;
-  color: #1E1919;
-  /* font-family: "Atlas Grotesk"; */
-  padding: 1px 4px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-.sign-in-button:hover {
-  background-color: #E8E4DC;
-  box-shadow: 0 0 0 2px #0061FE;
-}
-.sign-in-button > div {
-  display: inline-flex;
-  align-items: center;
-  padding: 5px;
-}
-.sign-in-modal-content {
-  text-align: center;
-}
-.sign-in-modal-content button {
-  margin: 5px;
+.v-checkbox :deep(label) {
+  opacity: 1;   
 }
 </style>

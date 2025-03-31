@@ -31,7 +31,9 @@
         </slot>
       </template>
       <template #text>
-        <slot></slot>
+        <v-card-text>
+          <slot></slot>
+        </v-card-text>
       </template>
     </v-card>
   </v-dialog>
