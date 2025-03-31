@@ -39,18 +39,11 @@
       </div>
       <div>
         <v-btn
-          @click="closeModal"
-          variant="tonal"
-          class="mx-1"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
           v-if="dropboxStore.isLoggedIn"
           @click="signOut"
           variant="elevated"
           color="error"
-          class="mx-1"
+          class="ma-1"
         >
           Disconnect Account
         </v-btn>
@@ -59,9 +52,16 @@
           @click="openSignInScreen"
           variant="elevated"
           color="success"
-          class="mx-1"
+          class="ma-1"
         >
           Sign In
+        </v-btn>
+        <v-btn
+          @click="closeModal"
+          variant="tonal"
+          class="ma-1"
+        >
+          Cancel
         </v-btn>
       </div>
     </div>
