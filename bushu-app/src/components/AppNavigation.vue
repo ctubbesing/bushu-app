@@ -38,10 +38,10 @@
         prepend-icon="mdi-television-guide"
         title="Watchlist"
       />
-      <!-- :to="{ name: 'gallery' }" -->
       <v-list-item
-        prepend-icon="mdi-collage"
-        title="Tools Gallery"
+      prepend-icon="mdi-collage"
+      title="Gallery"
+      :to="{ name: 'gallery' }"
       />
     </v-list>
     <v-list nav>

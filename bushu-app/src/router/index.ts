@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '@/views/HomeView.vue'
 // import Watchlist from "@/views/Watchlist.vue"
-// import MiscTools from "@/views/MiscTools.vue"
+import Gallery from "@/views/GalleryView.vue"
 // import About from "@/views/About.vue"
 
 const router = createRouter({
@@ -11,7 +11,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home
-    }
+    },
     // {
     //   path: "/about",
     //   name: "About",
@@ -22,11 +22,11 @@ const router = createRouter({
     //   name: "Watchlist",
     //   component: Watchlist,
     // },
-    // {
-    //   path: "/miscTools",
-    //   name: "MiscTools",
-    //   component: MiscTools,
-    // },
+    {
+      path: "/gallery",
+      name: "gallery",
+      component: Gallery,
+    },
   ]
 })
 
