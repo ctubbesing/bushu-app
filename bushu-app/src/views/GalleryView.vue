@@ -28,6 +28,7 @@
 
 <script setup lang="ts">
 import DropletWrapper from '@/components/gallery/DropletWrapper.vue'
+import SandboxGame from '@/components/gallery/SandboxGame.vue'
 import { ref } from 'vue'
 
 const tab = ref(null)
@@ -45,9 +46,13 @@ const components: ComponentSummary[] = [
     name: 'Droplet Ring',
     component: DropletWrapper,
   },
+  {
+    id: 'sandbox',
+    name: 'Sandbox',
+    component: SandboxGame,
+  },
   // canvasTest
   // imageAnalyzer
-  // sandboxGame
   // alethi thing
   // ...
 ]
