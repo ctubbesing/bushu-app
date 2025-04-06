@@ -10,7 +10,10 @@
     </v-tabs>
 
     <v-card-text>
-      <v-tabs-window v-model="tab">
+      <v-tabs-window 
+        v-model="tab"
+        class="pa-1"
+      >
         <v-tabs-window-item
           v-for="c in components"
           :key="c.id"
@@ -28,6 +31,7 @@
 
 <script setup lang="ts">
 import DropletWrapper from '@/components/gallery/DropletWrapper.vue'
+import ImageAnalyzer from '@/components/gallery/ImageAnalyzer/ImageAnalyzer.vue'
 import SandboxGame from '@/components/gallery/SandboxGame.vue'
 import { ref } from 'vue'
 
@@ -51,8 +55,12 @@ const components: ComponentSummary[] = [
     name: 'Sandbox',
     component: SandboxGame,
   },
+  {
+    id: 'imageAnalyzer',
+    name: 'Image Analyzer',
+    component: ImageAnalyzer,
+  },
   // canvasTest
-  // imageAnalyzer
   // alethi thing
   // ...
 ]
