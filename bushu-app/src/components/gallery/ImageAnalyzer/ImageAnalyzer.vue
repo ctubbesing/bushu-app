@@ -30,14 +30,11 @@
       style="max-width: 250px; max-height: 250px; margin-top: 20px"
     >
     <div :style="selectedColorsStyle">&nbsp;</div>
-    <div>
-      <div>
-        <ColorHistogram
-          v-if="allColors.length > 0"
-          :all-colors="allColors"
-          style="width: 100%; margin: 20px 0"
-        />
-      </div>
+    <div v-if="allColors.length > 0">
+      <ColorHistogram
+        :all-colors="allColors"
+        style="width: 100%; margin: 20px 0"
+      />
       <div id="color-samples">
         <div
           v-for="(color, idx) in displayedColors"
