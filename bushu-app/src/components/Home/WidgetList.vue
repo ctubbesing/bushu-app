@@ -25,7 +25,7 @@
           <div>
             test content b
           </div>
-          <base-button>Test Button</base-button>
+          <v-btn>Test Button</v-btn>
         </basic-widget>
         <!-- Sample widget 2 -->
         <basic-widget
@@ -44,15 +44,16 @@
           <div>
             test content bc
           </div>
-          <base-button>Test Button #2</base-button>
+          <v-btn>Test Button #2</v-btn>
         </basic-widget>
       </template>
     </template>
     <div style="margin: 5px 0 0">
-      <base-icon
-        icon="cog"
-        size="large"
-        color="grey-darken-1"
+      <v-btn
+        icon="mdi-cog"
+        size="x-small"
+        color="grey"
+        class="color-on-hover"
         @click="openModal()"
       />
     </div>
@@ -81,10 +82,11 @@
                 <small>{{ w.description }}</small>
               </div>
               <div>
-                <base-icon
-                  icon="trash-can"
-                  size="large"
+                <v-btn
+                  icon="mdi-trash-can"
+                  size="small"
                   color="red-darken-1"
+                  class="color-on-hover"
                   @click="removeWidget(idx)"
                 />
               </div>
@@ -105,10 +107,11 @@
                 <h5>{{ w.name }}</h5>
                 <small>{{ w.description }}</small>
               </div>
-              <base-icon
-                icon="plus-circle"
-                size="large"
-                color="blue-darken-1"
+              <v-btn
+                icon="mdi-plus-circle-outline"
+                size="small"
+                color="white"
+                class="ml-1"
                 @click="addWidget(idx)"
               />
             </div>

@@ -19,12 +19,12 @@
     >
       Could not connect to WaniKani account.
       <div style="margin: 10px 0">
-        <base-button
+        <v-btn
           size="small"
           @click="openTokenModal()"
         >
           Update access token
-        </base-button>
+        </v-btn>
       </div>
     </div>
     <div

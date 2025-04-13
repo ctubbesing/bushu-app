@@ -41,3 +41,7 @@ h5 {
 h6 {
   font-size: 1rem;
 }
+
+.color-on-hover:not(:hover) {
+  background-color: #aaa !important;
+}
