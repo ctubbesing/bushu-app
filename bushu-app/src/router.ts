@@ -1,7 +1,10 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '@/views/HomeView.vue'
 // import Watchlist from "@/views/Watchlist.vue"
-import Gallery from "@/views/GalleryView.vue"
+import DropletWrapper from './components/gallery/DropletWrapper.vue'
+import GalleryView from './views/GalleryView.vue'
+import ImageAnalyzer from './components/gallery/ImageAnalyzer/ImageAnalyzer.vue'
+import SandboxGame from './components/gallery/SandboxGame.vue'
 // import About from "@/views/About.vue"
 
 const router = createRouter({
@@ -23,11 +26,32 @@ const router = createRouter({
     //   component: Watchlist,
     // },
     {
-      path: "/gallery",
-      name: "gallery",
-      component: Gallery,
+      path: '/gallery',
+      name: 'gallery',
+      component: GalleryView,
+      redirect: { name: 'DropletRing' },
       children: [
-        
+        {
+          path: 'dropletRing',
+          name: 'DropletRing',
+          component: DropletWrapper,
+          meta: {
+            title: 'Droplet Ring',
+          },
+        },
+        {
+          path: 'sandbox',
+          name: 'Sandbox',
+          component: SandboxGame,
+        },
+        {
+          path: 'imageAnalyzer',
+          name: 'ImageAnalyzer',
+          component: ImageAnalyzer,
+          meta: {
+            title: 'Image Analyzer',
+          },
+        },
       ],
     },
   ]
