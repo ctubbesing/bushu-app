@@ -7,7 +7,10 @@
       <v-app-bar-nav-icon @click="showDrawer = !showDrawer" />
     </template>
 
-    <v-app-bar-title class="text-left">
+    <!-- to="home" -->
+    <v-app-bar-title
+      class="text-left"
+    >
       <div class="d-flex align-items-center">
         <img
           src="@/assets/b_favicon.svg"
@@ -39,9 +42,9 @@
         title="Watchlist"
       />
       <v-list-item
-      prepend-icon="mdi-collage"
-      title="Gallery"
-      :to="{ name: 'gallery' }"
+        prepend-icon="mdi-collage"
+        title="Gallery"
+        :to="{ name: 'gallery' }"
       />
     </v-list>
     <v-list nav>

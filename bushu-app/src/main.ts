@@ -10,7 +10,7 @@ import '@mdi/font/css/materialdesignicons.css'
 import loadBaseUtils from './plugins/BaseUtils'
 
 import App from './App.vue'
-import router from './router'
+import router from '@/router'
 import vuetify from './plugins/vuetify'
 
 const app = createApp(App)

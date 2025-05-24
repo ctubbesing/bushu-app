@@ -30,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import CanvasTest from '@/components/gallery/CanvasTest.vue'
 import DropletWrapper from '@/components/gallery/DropletWrapper.vue'
 import ImageAnalyzer from '@/components/gallery/ImageAnalyzer/ImageAnalyzer.vue'
 import SandboxGame from '@/components/gallery/SandboxGame.vue'
@@ -60,7 +61,11 @@ const components: ComponentSummary[] = [
     name: 'Image Analyzer',
     component: ImageAnalyzer,
   },
-  // canvasTest
+  {
+    id: 'rayTracer',
+    name: 'Ray Tracer',
+    component: CanvasTest,
+  },
   // alethi thing
   // ...
 ]

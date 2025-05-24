@@ -26,6 +26,9 @@ const router = createRouter({
       path: "/gallery",
       name: "gallery",
       component: Gallery,
+      children: [
+        
+      ],
     },
   ]
 })
