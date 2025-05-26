@@ -1,8 +1,41 @@
 <template>
   <div>
     <div>
-      <b style="margin-right:10px">Scene:</b>
-      <b-form-spinbutton
+      <!-- <v-number-input
+        label="Scene"
+        v-model="mainSceneIdx"
+        control-variant="split"
+      /> -->
+      <!-- {{ `mainSceneIdx ${printInfo(mainSceneIdx)}` }}<br> -->
+      <!-- {{ `loading ${printInfo(loading)}` }}<br> -->
+      <!-- {{ `captureTimes ${printInfo(captureTimes)}` }}<br> -->
+      <!-- {{ `vueCanvas ${printInfo(vueCanvas)}` }}<br> -->
+      <!-- <v-btn @click="refreshCanvas">refreshCanvas</v-btn> -->
+      <v-btn-toggle
+        v-model="mainSceneIdx"
+        color="app-header"
+        group
+        mandatory
+        variant="outlined"
+        divided
+        @update:model-value="generateCanvasImage()"
+      >
+        <v-btn
+          v-for="n in 5"
+          :key="n"
+          :value="n - 1"
+        >
+          Scene {{ n - 1 }}
+        </v-btn>
+        <!-- //////////////////// prolly start from basics to figure out how to get it to draw stuff /////////////////////////// -->
+        <!-- <v-btn value="1">
+          Small
+        </v-btn>
+        <v-btn value="2">
+          Large
+        </v-btn> -->
+      </v-btn-toggle>
+      <!-- <b-form-spinbutton
         v-model="mainSceneIdx"
         min="0"
         max="4"
@@ -10,11 +43,28 @@
         inline
         @change="generateCanvasImage()"
         style="margin:10px auto; width:200px"
-      />
+      /> -->
     </div>
-    <div>
-      <b style="margin-right:10px">Size:</b>
-      <b-form-radio-group
+    <div class="ma-3">
+      <!-- <b style="margin-right:10px">Size:</b> -->
+      <!-- {{canvasSettingsControl.size}} -->
+      <v-btn-toggle
+        v-model="canvasSettingsControl.size"
+        color="app-header"
+        group
+        mandatory
+        variant="outlined"
+        @update:model-value="generateCanvasImage()"
+      >
+        <!-- divided -->
+        <v-btn :value="1">
+          Small
+        </v-btn>
+        <v-btn :value="2">
+          Large
+        </v-btn>
+      </v-btn-toggle>
+      <!-- <b-form-radio-group
         v-model="canvasSettingsControl.size"
         :options="[
           { text: 'Small', value: 1 },
@@ -23,15 +73,17 @@
         buttons
         @change="generateCanvasImage()"
         style="margin:10px auto; width:200px"
+      /> -->
+    </div>
+    <div style="overflow-x: auto">
+      <canvas
+        id="c"
+        :width="canvasWidth"
+        :height="canvasHeight"
+        :style="getWidthInfo + 'border:1px solid #000000'"
+        @click="look($event)"
       />
     </div>
-    <canvas
-      id="c"
-      :width="canvasWidth"
-      :height="canvasHeight"
-      :style="getWidthInfo + 'border:1px solid #000000'"
-      @click="look($event)"
-    />
     <!-- <div>
       <span
         v-if="!isKeydownListenerCreated"
@@ -43,8 +95,9 @@
         Movement enabled
       </span>
     </div> -->
-    <div v-if="loading">
-      <b-spinner variant="secondary" />
+    <div v-if="false">
+      <!-- TODO: fix loading status -->
+      <BaseLoader />
     </div>
     <div v-else>
       <div>
@@ -55,7 +108,7 @@
       </div>
     </div>
     <br>
-    <div v-if="startTime">
+    <!-- <div v-if="startTime">
       Start: {{ startTime.format('h:mm:ss') }}
     </div>
     <div v-if="endTime">
@@ -63,24 +116,26 @@
     </div>
     <div v-if="totalRuntime">
       {{ totalRuntime }} seconds total
-    </div>
+    </div> -->
     <div
       v-for="(data, idx) in captureTimes"
       :key="idx"
       style="margin-left: 10px"
     >
       Scene {{ data.sceneIdx }}:
-      ({{ data.sceneSettings.pxRows }}x{{ data.sceneSettings.pxCols }},
+      {{ data.sceneSettings.pxRows }}x{{ data.sceneSettings.pxCols }},
       {{ data.sceneSettings.reflectLimit }} ref,
-      {{ data.sceneSettings.superSampleLvl }}xSS):
-      <b>{{ getRuntime(data.start, data.end) }} s</b>
+      {{ data.sceneSettings.superSampleLvl }}xSS
+      <!-- <b>{{ getRuntime(data.start, data.end) }} s</b> -->
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import moment from 'moment'
+import BaseLoader from '../utils/BaseLoader.vue'
+
+// import Vue from 'vue'
+// import moment from 'moment'
 
 interface vec3 {
   x: number
@@ -190,13 +245,16 @@ interface Scene {
 interface TimingData {
   sceneIdx: number,
   sceneSettings: ImageSettings,
-  start: moment.Moment,
-  end: moment.Moment,
+  // start: moment.Moment,
+  // end: moment.Moment,
 }
 
 
-export default Vue.extend({
+export default {
   name: 'CanvasTest',
+  components: {
+    BaseLoader,
+  },
   data() {
     return {
       vueCanvas: {} as CanvasRenderingContext2D,
@@ -209,13 +267,13 @@ export default Vue.extend({
       cMat: [] as number[][][], /////////////////// outdated
 
       doOut: false,
-      startTime: null as null | moment.Moment,
-      endTime: null as null | moment.Moment,
+      // startTime: null as null | moment.Moment,
+      // endTime: null as null | moment.Moment,
       captureTimes: [] as TimingData[],
       subSceneCount: null as null | number,
 
       allScenes: [] as Scene[],
-      mainSceneIdx: 0 as number,
+      mainSceneIdx: 4 as number,
       doGlobalCameraSettings: true as boolean,
     }
   },
@@ -1204,9 +1262,9 @@ export default Vue.extend({
     })
   },
   computed: {
-    totalRuntime() : null | string {
-      return this.getRuntime(this.startTime, this.endTime)
-    },
+    // totalRuntime() : null | string {
+    //   return this.getRuntime(this.startTime, this.endTime)
+    // },
     getWidthInfo() : string {
       return window.innerWidth < this.canvasWidth ? 'max-width:' + this.canvasWidth + 'px;' : ''
     },
@@ -1225,18 +1283,20 @@ export default Vue.extend({
         superSampleLvl: 1,
       } as ImageSettings
     },
-    loading() : boolean {
-      if (this.captureTimes.length === 0) {
-        return true
-      }
-      let currentSceneShown = this.captureTimes[this.captureTimes.length - 1] as TimingData
-      return this.mainSceneIdx !== currentSceneShown.sceneIdx
-    },
+    // loading() : boolean {
+    //   console.log('loading aaa')
+    //   if (this.captureTimes.length === 0) {
+    //     return true
+    //   }
+    //   let currentSceneShown = this.captureTimes[this.captureTimes.length - 1] as TimingData
+    //   console.log('loading zzz')
+    //   return this.mainSceneIdx !== currentSceneShown.sceneIdx
+    // },
   },
   methods: {
-    getRuntime(start: null | moment.Moment, end: null | moment.Moment) : null | string {
-      return (start && end) ? end.diff(start, 'seconds', true).toFixed(1) : null
-    },
+    // getRuntime(start: null | moment.Moment, end: null | moment.Moment) : null | string {
+    //   return (start && end) ? end.diff(start, 'seconds', true).toFixed(1) : null
+    // },
     keyboardResponder(e: KeyboardEvent) {
       if (e.key === 'W') {
         this.move('up')
@@ -1339,6 +1399,7 @@ export default Vue.extend({
             )
           )
           scene.camera.dir = targetDir
+          // console.log(`zzz capturing ${this.mainSceneIdx}`)
           this.capture(this.mainSceneIdx)
           this.refreshCanvas()
         }
@@ -1388,10 +1449,17 @@ export default Vue.extend({
       let img = this.allScenes[this.mainSceneIdx].camera.image
       let imgPxRows = img.length
       let imgPxCols = img.length > 0 ? img[0].length : 0
+      // console.log(`img:`)
+      // console.log(img)
       // let imgPxRows = this.cMat.length
       // let imgPxCols = this.cMat.length > 0 ? this.cMat[0].length : 0
       let pxWidth = this.canvasWidth / imgPxCols
       let pxHeight = this.canvasHeight / imgPxRows
+      // console.log(`imgPxRows: ${imgPxRows}`)
+      // console.log(`imgPxCols: ${imgPxCols}`)
+      // console.log(`pxWidth: ${pxWidth}`)
+      // console.log(`pxHeight: ${pxHeight}`)
+      // console.log(this.vueCanvas)
       for (let row = 0; row < imgPxRows; row++) {
         for (let col = 0; col < imgPxCols; col++) {
           let colorString = 'rgb(' +
@@ -1402,6 +1470,7 @@ export default Vue.extend({
           this.vueCanvas.fillRect(col * pxWidth, row * pxHeight, pxWidth, pxHeight)
         }
       }
+      // console.log(this.vueCanvas)
     },
     getAvgColor(colors: vec3[]) : vec3 {
       return this.vScale(
@@ -1959,29 +2028,48 @@ export default Vue.extend({
 
       return color
     },
+    ///////////////////////////////////
+    // printInfo(data: any): string {
+    //   return `[${typeof(data)}] ${JSON.stringify(data)}`
+    // },
+    ///////////////////////////////////
     async generateCanvasImage() {
-      this.startTime = moment()
+      // this.startTime = moment()
+
+      // console.log('aaa')
 
       // first generate any images used by main scene
       let mainScene = this.allScenes[this.mainSceneIdx]
       let scenesNeeded = new Set<number>()
-      mainScene.items.forEach((item: Item) => {
+      mainScene.items.forEach((item: Item, idx) => {
+        // console.log('bbb ' + idx)
         if (item.type === 'parallelogram' && item.material.imgSrcSceneIdx != null) {
           scenesNeeded.add(item.material.imgSrcSceneIdx)
         }
       })
+      // console.log('ccc')
       this.subSceneCount = scenesNeeded.size
-      scenesNeeded.forEach((sceneIdx: number) => this.capture(sceneIdx))
+      scenesNeeded.forEach((sceneIdx: number) => {
+        // console.log(`yyy${sceneIdx} capturing ${sceneIdx}`)
+        this.capture(sceneIdx)
+      })
+
+      // console.log('ddd')
 
       // capture main scene
+      // console.log(`xxx capturing ${this.mainSceneIdx}`)
       this.capture(this.mainSceneIdx)
 
+      // console.log('eee')
+
       this.refreshCanvas()
-      this.endTime = moment()
+      // this.endTime = moment()
+      // console.log('fff')
     },
     capture(sceneIdx: number) {
+      // console.log(`capture ${sceneIdx}: Start.`)
       let timingData = {} as TimingData
-      timingData.start = moment()
+      // timingData.start = moment()
       // this.startTime = moment()
       // sceneIdx = (sceneIdx === -1) ? this.mainSceneIdx : sceneIdx
       let scene = this.allScenes[sceneIdx]
@@ -2051,10 +2139,11 @@ export default Vue.extend({
 
       // this.refreshCanvas()
       // this.endTime = moment()
-      timingData.end = moment()
+      // timingData.end = moment()
       timingData.sceneIdx = sceneIdx
       timingData.sceneSettings = scene.camera.settings
       this.captureTimes.push(timingData)
+      // console.log(`capture ${sceneIdx}: End.`)
     },
     unpackCompound(item: Item, sceneIdx = -1) {
       sceneIdx = (sceneIdx === -1) ? this.mainSceneIdx : sceneIdx
@@ -2219,7 +2308,7 @@ export default Vue.extend({
       return '{ ' + v.x.toFixed(2) + ', ' + v.y.toFixed(2) + ', ' + v.z.toFixed(2) + ' }'
     },
   },
-})
+}
 </script>
 
 <style scoped>
