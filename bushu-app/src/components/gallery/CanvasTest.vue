@@ -1293,6 +1293,10 @@ export default {
     //   return this.mainSceneIdx !== currentSceneShown.sceneIdx
     // },
   },
+  beforeRouteLeave() {
+    console.log('leaving route; removing keyboard listener')
+    window.removeEventListener('keydown', this.keyboardResponder)
+  },
   methods: {
     // getRuntime(start: null | moment.Moment, end: null | moment.Moment) : null | string {
     //   return (start && end) ? end.diff(start, 'seconds', true).toFixed(1) : null
