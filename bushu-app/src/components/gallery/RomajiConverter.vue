@@ -1,35 +1,24 @@
 <template>
   <div>
-    <div style="font-size: 16px; text-align: right !important">
-      <input type="number" v-model="unicodeVal"/>
-      <br>
-      <br>
-      <h3 style="display: inline-block" v-html="'&' + '#' + unicodeVal + ';'"></h3>
-      <!-- 12353 -->
-    </div>
-    <div style="font-size: 14px; text-align: right !important; margin-top: 20px">
-      <input v-model="inputStr" @input="updateString()"/>
-      <br>
-      <br>
-      <h3 style="display: inline-block">{{ inputStr }}</h3>
-    </div>
+    <v-text-field
+      v-model="inputStr"
+      label="Enter text"
+      @input="updateString()"
+      style="max-width: 500px; margin-bottom: 20px;"
+    />
+    <h3 style="display: inline-block">
+      {{ inputStr }}
+    </h3>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
-  name: 'RomajiConverter',
-  props: {
-    title: {
-      type: String,
-      default: 'Tab'
-    }
-  },
-  data () {
+  data() {
     return {
       unicodeVal: 12353,
       inputStr: '',
-      hgMap: {},
+      hgMap: {} as { [key: string]: number },
       romajiVals: [
         '_a',
         'a',
@@ -135,7 +124,7 @@ export default {
     this.hgMap['tu'] = this.hgMap['tsu']
   },
   methods: {
-    isMatch (str, regex) {
+    isMatch (str: string, regex: RegExp) {
       return str.search(regex) !== -1
     },
     updateString () {
@@ -195,6 +184,3 @@ export default {
   }
 }
 </script>
-
-<style lang="css">
-</style>
