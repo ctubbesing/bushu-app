@@ -2045,7 +2045,7 @@ export default {
       // first generate any images used by main scene
       let mainScene = this.allScenes[this.mainSceneIdx]
       let scenesNeeded = new Set<number>()
-      mainScene.items.forEach((item: Item, idx) => {
+      mainScene.items.forEach((item: Item) => {
         // console.log('bbb ' + idx)
         if (item.type === 'parallelogram' && item.material.imgSrcSceneIdx != null) {
           scenesNeeded.add(item.material.imgSrcSceneIdx)
