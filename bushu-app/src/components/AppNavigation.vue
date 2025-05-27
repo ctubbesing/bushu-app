@@ -11,15 +11,20 @@
     <v-app-bar-title
       class="text-left"
     >
-      <div class="d-flex align-items-center">
-        <img
-          src="@/assets/b_favicon.svg"
-          alt="B icon"
-          class="mr-2"
-          style="height: 30px"
-        />
-        BushuApp
-      </div>
+      <router-link
+        :to="{ name: 'home' }"
+        style="text-decoration: none; color: inherit;"
+      >
+        <div class="d-flex align-items-center">
+          <img
+            src="@/assets/b_favicon.svg"
+            alt="B icon"
+            class="mr-2"
+            style="height: 30px"
+          />
+          BushuApp
+        </div>
+      </router-link>
     </v-app-bar-title>
 
     <DropboxSignIn />
@@ -40,6 +45,7 @@
       <v-list-item
         prepend-icon="mdi-television-guide"
         title="Watchlist"
+        disabled
       />
       <v-list-item
         prepend-icon="mdi-collage"
