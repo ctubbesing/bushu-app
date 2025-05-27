@@ -11,30 +11,39 @@
       <!-- {{ `captureTimes ${printInfo(captureTimes)}` }}<br> -->
       <!-- {{ `vueCanvas ${printInfo(vueCanvas)}` }}<br> -->
       <!-- <v-btn @click="refreshCanvas">refreshCanvas</v-btn> -->
-      <v-btn-toggle
+       <v-select
         v-model="mainSceneIdx"
-        color="app-header"
-        group
-        mandatory
-        variant="outlined"
-        divided
+        label="Select Scene"
+        :items="[0, 1, 2, 3, 4]"
         @update:model-value="generateCanvasImage()"
-      >
-        <v-btn
-          v-for="n in 5"
-          :key="n"
-          :value="n - 1"
+       />
+      <!-- <div style="overflow-x: auto;">
+        <v-btn-toggle
+          v-model="mainSceneIdx"
+          color="app-header"
+          group
+          vertical
+          mandatory
+          variant="outlined"
+          divided
+          @update:model-value="generateCanvasImage()"
         >
-          Scene {{ n - 1 }}
-        </v-btn>
-        <!-- //////////////////// prolly start from basics to figure out how to get it to draw stuff /////////////////////////// -->
-        <!-- <v-btn value="1">
-          Small
-        </v-btn>
-        <v-btn value="2">
-          Large
-        </v-btn> -->
-      </v-btn-toggle>
+          <v-btn
+            v-for="n in 5"
+            :key="n"
+            :value="n - 1"
+          >
+            Scene {{ n - 1 }}
+          </v-btn> -->
+          <!-- //////////////////// prolly start from basics to figure out how to get it to draw stuff /////////////////////////// -->
+          <!-- <v-btn value="1">
+            Small
+          </v-btn>
+          <v-btn value="2">
+            Large
+          </v-btn> -->
+        <!-- </v-btn-toggle> -->
+      <!-- </div> -->
       <!-- <b-form-spinbutton
         v-model="mainSceneIdx"
         min="0"
@@ -1294,7 +1303,6 @@ export default {
     // },
   },
   beforeRouteLeave() {
-    console.log('leaving route; removing keyboard listener')
     window.removeEventListener('keydown', this.keyboardResponder)
   },
   methods: {
