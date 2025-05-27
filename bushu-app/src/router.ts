@@ -6,6 +6,7 @@ import GalleryView from './views/GalleryView.vue'
 import ImageAnalyzer from './components/gallery/ImageAnalyzer/ImageAnalyzer.vue'
 import SandboxGame from './components/gallery/SandboxGame.vue'
 import CanvasTest from './components/gallery/CanvasTest.vue'
+import AlethiWrapper from './components/gallery/AlethiWrapper.vue'
 // import About from "@/views/About.vue"
 
 const router = createRouter({
@@ -47,18 +48,19 @@ const router = createRouter({
         },
         {
           path: 'imageAnalyzer',
-          name: 'ImageAnalyzer',
+          name: 'Image Analyzer',
           component: ImageAnalyzer,
-          meta: {
-            title: 'Image Analyzer',
-          },
         },
         {
           path: 'rayTracer',
           name: 'Ray Tracer',
           component: CanvasTest,
         },
-        // // alethi thing
+        {
+          path: 'alethiScript',
+          name: 'Alethi Script',
+          component: AlethiWrapper,
+        },
         // // ...
       ],
     },

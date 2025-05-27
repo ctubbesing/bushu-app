@@ -1,15 +1,15 @@
 <template>
   <svg
-    viewBox="0 0 80 12"
+    viewBox="0 0 60 12"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <!-- <rect
+    <rect
       x="0"
       y="0"
       width="100%"
       height="100%"
-      fill="#888"
-    /> -->
+      fill="hsl(60, 70%, 95%)"
+    />
     <path
       :d="generatedPath"
       stroke="black"
@@ -115,8 +115,6 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-
 const spacer = 0.5
 
 const diamond = {
@@ -161,8 +159,7 @@ const crab = {
   span: [ 4, 0 ],
 }
 
-export default Vue.extend({
-  name: 'AlethiScript',
+export default {
   props: {
     text: {
       type: String,
@@ -170,6 +167,7 @@ export default Vue.extend({
     },
   },
   computed: {
+    // TODO: handle special characters in text like 'th', 'sh', etc
     generatedPath(): string {
       let path = 'M 0 6 l 2 0'
       this.text.toLowerCase().split('').forEach((char: string) => {
@@ -365,5 +363,11 @@ export default Vue.extend({
       //  'l ' + spacer + ' 0'
     },
   },
-})
+}
 </script>
+
+<style scoped>
+div {
+  color: hsl(60, 80%, 90%);
+}
+</style>
