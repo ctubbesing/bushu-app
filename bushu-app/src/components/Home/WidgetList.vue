@@ -127,7 +127,7 @@ import WanikaniWidget from './WanikaniWidget.vue'
 import BasicWidget from './BasicWidget.vue'
 import { mapStores } from 'pinia'
 import { useHomeStore } from '@/stores/home'
-import dropbox from '@/utils/dropbox'
+import dropbox from '@/translators/dropbox'
 import type { WidgetData } from '@/types/generalTypes'
 
 export default {

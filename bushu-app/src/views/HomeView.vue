@@ -16,7 +16,7 @@
 <script lang="ts">
 // import ScrollToRefresh from '@/components/utils/ScrollToRefresh.vue'
 import WidgetList from '@/components/Home/WidgetList.vue'
-import dropbox from '@/utils/dropbox'
+import dropbox from '@/translators/dropbox'
 
 export default {
   name: "HomeView",

@@ -142,7 +142,7 @@
 
 <script lang="ts">
 import axios, { AxiosError } from 'axios'
-import dropbox from '@/utils/dropbox'
+import dropbox from '@/translators/dropbox'
 import BasicWidget from '@/components/Home/BasicWidget.vue'
 import type {
   Resource,

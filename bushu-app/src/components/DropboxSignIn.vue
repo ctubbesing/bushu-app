@@ -70,7 +70,7 @@
 </template>
 
 <script lang="ts" setup>
-import dropbox from '@/utils/dropbox'
+import dropbox from '@/translators/dropbox'
 import { useHomeStore } from '@/stores/home'
 import { useDropboxStore } from '@/stores/dropbox'
 import BaseModal from './utils/BaseModal.vue'

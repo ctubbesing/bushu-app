@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import dropbox from '@/utils/dropbox'
+import dropbox from '@/translators/dropbox'
 import { mapStores } from 'pinia'
 import { useHomeStore } from './stores/home'
 import { useDropboxStore } from './stores/dropbox'
