@@ -20,7 +20,7 @@
       <!-- <div style="overflow-x: auto;">
         <v-btn-toggle
           v-model="mainSceneIdx"
-          color="app-header"
+          color="app-gray"
           group
           vertical
           mandatory
@@ -59,7 +59,7 @@
       <!-- {{canvasSettingsControl.size}} -->
       <v-btn-toggle
         v-model="canvasSettingsControl.size"
-        color="app-header"
+        color="app-gray"
         group
         mandatory
         variant="outlined"

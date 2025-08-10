@@ -1,6 +1,6 @@
 <template>
   <v-app-bar
-    color="app-header"
+    color="app-gray"
     elevation="2"
   >
     <template #prepend>
@@ -32,7 +32,7 @@
 
   <v-navigation-drawer
     v-model="showDrawer"
-    color="app-header"
+    color="app-gray"
   >
     <v-list nav>
       <v-list-item

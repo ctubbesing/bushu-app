@@ -8,7 +8,7 @@
         >
           <template #append>
             <v-btn
-              color="app-header"
+              color="app-gray"
               @click="initImage"
             >
               Analyze Image

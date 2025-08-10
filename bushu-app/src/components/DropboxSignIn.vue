@@ -4,7 +4,7 @@
     :loading="homeStore.isLoading"
     @click="showModal = true"
   >
-    <v-avatar color="app-header">
+    <v-avatar color="app-gray">
       <v-img
         v-if="dropboxStore.userInfo"
         :src="dropboxStore.userInfo.profile_photo_url"
