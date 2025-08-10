@@ -1,17 +1,25 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
-import watchlistService from '@/utils/services/WatchlistService'
+import type {
+  ShowInfo,
+  ShowSeason
+} from '@/types/watchlistTypes'
+import WatchlistService from '@/utils/services/WatchlistService'
 import tools from '@/utils/tools'
+import { defineStore } from 'pinia'
 
-export default {
-  state: {
-    isLoading: false as boolean,
-    isUpdatingSeason: false as boolean,
-    catalog: [] as ShowInfo[],
-  },
+export interface State {
+  isLoading: boolean
+  isUpdatingSeason: boolean
+  catalog: ShowInfo[]
+}
+
+export const useWatchlistStore = defineStore('watchlist', {
+  state: (): State => ({
+    isLoading: false ,
+    isUpdatingSeason: false ,
+    catalog: [] ,
+  }),
   getters: {
-    getShowInfoById: (state: any) => (showId: string): ShowInfo | undefined => {
+    getShowInfoById: (state: State) => (showId: string): ShowInfo | undefined => {
       return state.catalog.find((show: ShowInfo) => show.id === showId)
     },
     getShowImageLink: () => (show: ShowInfo): string => {
@@ -22,62 +30,50 @@ export default {
       const latestSznImgLinkIdx = seasons.reverse().findIndex((s: ShowSeason) => s.imgLink)
       return latestSznImgLinkIdx === -1 ? '' : seasons[latestSznImgLinkIdx].imgLink!
     },
-    getImageLink: (state: any, getters: any) => (showId: string, seasonId: string | null = null): string => {
-      const show: ShowInfo | undefined = getters.getShowInfoById(showId)
-      if (show) {
-        const season: ShowSeason | undefined = show.seasons.find((season: ShowSeason) => season.id === seasonId)
-        if (season && season.imgLink) {
-          return season.imgLink
-        }
-        return getters.getShowImageLink(show)
-      }
+    getImageLink: (state: State) => (showId: string, seasonId: string | null = null): string => {
       return ''
-    },
-  },
-  mutations: {
-    setIsLoading(state: any, isLoading: boolean) {
-      state.isLoading = isLoading
-    },
-    setIsUpdatingSeason(state: any, isUpdatingSeason: boolean) {
-      state.isUpdatingSeason = isUpdatingSeason
-    },
-    setCatalog(state: any, catalog: ShowInfo[]) {
-      state.catalog = catalog
-    },
-    setCatalogShowSeason(state: any, season: ShowSeason) {
-      const showIdx: number = state.catalog.findIndex((s: ShowInfo) => s.id === season.showId)
-      if (showIdx !== -1) {
-        const sznIdx: number = state.catalog[showIdx].seasons.findIndex((s: ShowSeason) => s.id === season.id)
-        if (sznIdx !== -1) {
-          state.catalog[showIdx].seasons[sznIdx] = season
-        }
-      }
+      /////////// TODO: rewrite these stores in normal Vue 3 pinia store syntax bc the older stuff isn't doing great
+      // const show: ShowInfo | undefined = getters.getShowInfoById(showId)
+      // if (show) {
+      //   const season: ShowSeason | undefined = show.seasons.find((season: ShowSeason) => season.id === seasonId)
+      //   if (season && season.imgLink) {
+      //     return season.imgLink
+      //   }
+      //   return getters.getShowImageLink(show)
+      // }
+      // return ''
     },
   },
   actions: {
-    async updateCatalog(context: any, newCatalogData: ShowInfo[]) {
-      context.commit('setIsLoading', true)
+    async updateCatalog(newCatalogData: ShowInfo[]) {
+      this.isLoading = true
 
-      await watchlistService.SaveCatalog(newCatalogData)
-      context.commit('setCatalog', newCatalogData)
+      await WatchlistService.SaveCatalog(newCatalogData)
+      this.catalog = newCatalogData
       
-      context.commit('setIsLoading', false)
+      this.isLoading = false
     },
-    async updateCatalogShowSeason(context: any, newSeasonData: ShowSeason) {
-      context.commit('setIsUpdatingSeason', true)
+    async updateCatalogShowSeason(newSeasonData: ShowSeason) {
+      this.isUpdatingSeason = true
       
-      await watchlistService.UpdateShowSeason(newSeasonData)
-      context.commit('setCatalogShowSeason', newSeasonData)
+      await WatchlistService.UpdateShowSeason(newSeasonData)
+      const showIdx: number = this.catalog.findIndex((s: ShowInfo) => s.id === newSeasonData.showId)
+      if (showIdx !== -1) {
+        const sznIdx: number = this.catalog[showIdx].seasons.findIndex((s: ShowSeason) => s.id === newSeasonData.id)
+        if (sznIdx !== -1) {
+          this.catalog[showIdx].seasons[sznIdx] = newSeasonData
+        }
+      }
       
-      context.commit('setIsUpdatingSeason', false)
+      this.isUpdatingSeason = false
     },
-    async loadCatalogFromDropbox(context: any) {
-      context.commit('setIsLoading', true)
-
-      const catalogData: ShowInfo[] = await watchlistService.GetCatalog()
-      context.commit('setCatalog', catalogData)
-  
-      context.commit('setIsLoading', false)
+    async loadCatalogFromDropbox() {
+      this.isLoading = true
+      
+      const catalogData: ShowInfo[] = await WatchlistService.GetCatalog()
+      this.catalog = catalogData
+      
+      this.isLoading = false
     },
-  },
-}
+  }
+})

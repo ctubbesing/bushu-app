@@ -1,10 +1,10 @@
-import {
+import type {
   ShowInfo,
   ShowSeason,
   WatchlistData,
   SeasonView,
 } from '@/types/watchlistTypes'
-import dropbox from '@/utils/dropbox'
+import dropbox from '@/translators/dropbox'
 import tools from '../tools'
 
 interface DataStore<T> {
