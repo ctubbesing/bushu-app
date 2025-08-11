@@ -11,8 +11,8 @@
 <script lang="ts">
 import dropbox from '@/translators/dropbox'
 import { mapStores } from 'pinia'
-import { useHomeStore } from './stores/home'
-import { useDropboxStore } from './stores/dropbox'
+import { useHome } from './stores/home'
+import { useDropbox } from './stores/dropbox'
 import AppNavigation from './components/AppNavigation.vue'
 
 export default {
@@ -21,7 +21,7 @@ export default {
     AppNavigation,
   },
   computed: {
-    ...mapStores(useHomeStore, useDropboxStore)
+    ...mapStores(useHome, useDropbox)
   },
   async created() {
     this.homeStore.updateIsLoading(true)

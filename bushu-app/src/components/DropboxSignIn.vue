@@ -71,13 +71,13 @@
 
 <script lang="ts" setup>
 import dropbox from '@/translators/dropbox'
-import { useHomeStore } from '@/stores/home'
-import { useDropboxStore } from '@/stores/dropbox'
+import { useHome } from '@/stores/home'
+import { useDropbox } from '@/stores/dropbox'
 import BaseModal from './utils/BaseModal.vue'
 import { ref } from 'vue'
 
-const homeStore = useHomeStore()
-const dropboxStore = useDropboxStore()
+const homeStore = useHome()
+const dropboxStore = useDropbox()
 
 const showModal = ref(false)
 

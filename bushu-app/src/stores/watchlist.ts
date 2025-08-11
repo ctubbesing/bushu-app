@@ -12,7 +12,7 @@ export interface State {
   catalog: ShowInfo[]
 }
 
-export const useWatchlistStore = defineStore('watchlist', {
+export const useWatchlist = defineStore('watchlist', {
   state: (): State => ({
     isLoading: false ,
     isUpdatingSeason: false ,

@@ -6,7 +6,7 @@ export interface State {
   userInfo: null | DBAccountInfo
 }
 
-export const useDropboxStore = defineStore('dropbox', {
+export const useDropbox = defineStore('dropbox', {
   state: (): State => ({
     accessToken: '',
     userInfo: null

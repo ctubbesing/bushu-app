@@ -6,7 +6,7 @@ export interface State {
   accessTokens: { [name: string]: string }
 }
 
-export const useHomeStore = defineStore('home', {
+export const useHome = defineStore('home', {
   state: (): State => ({
     isLoading: false,
     userWidgets: [],

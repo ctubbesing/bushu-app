@@ -153,8 +153,8 @@ import type {
   KTListCollection,
 } from '@/types/wanikaniTypes'
 import { mapStores } from 'pinia'
-import { useDropboxStore } from '@/stores/dropbox'
-import { useHomeStore } from '@/stores/home'
+import { useDropbox } from '@/stores/dropbox'
+import { useHome } from '@/stores/home'
 import type { BaseDropdownOption } from '@/components/utils/types/baseTypes'
 
 export default {
@@ -206,7 +206,7 @@ export default {
     },
   },
   computed: {
-    ...mapStores(useHomeStore, useDropboxStore),
+    ...mapStores(useHome, useDropbox),
     apiAccessToken(): string {
       if (this.dropboxStore.isLoggedIn) {
         return this.homeStore.accessTokens?.wanikani || ''

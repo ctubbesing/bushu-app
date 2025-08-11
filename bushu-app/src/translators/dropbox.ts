@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import Cookies from 'js-cookie'
-import { useHomeStore } from '@/stores/home'
-import { useDropboxStore } from '@/stores/dropbox'
+import { useHome } from '@/stores/home'
+import { useDropbox } from '@/stores/dropbox'
 import tools from '@/utils/tools'
 import type { TokenResponse, AppSettings } from '@/types/dropboxTypes'
 
@@ -13,7 +13,7 @@ const paths = {
 }
 
 function getBearerToken(): string {
-  const dropboxStore = useDropboxStore()
+  const dropboxStore = useDropbox()
   return `Bearer ${dropboxStore.accessToken === '' ? 'invalidToken' : dropboxStore.accessToken}`
 }
 
@@ -56,13 +56,13 @@ export default {
       Cookies.remove('db_refresh')
     }
 
-    const dropboxStore = useDropboxStore()
+    const dropboxStore = useDropbox()
     dropboxStore.updateAccessToken(tokenData.access_token)
   },
 
   // delete tokens and user account data
   disconnectAccount(): void {
-    const dropboxStore = useDropboxStore()
+    const dropboxStore = useDropbox()
     dropboxStore.updateAccessToken('')
     dropboxStore.updateUserInfo(null)
 
@@ -71,7 +71,7 @@ export default {
 
   // refresh access token with refresh token if available
   async tryRefreshAccessToken(): Promise<boolean> {
-    const dropboxStore = useDropboxStore()
+    const dropboxStore = useDropbox()
     const refreshToken: string | undefined = Cookies.get('db_refresh')
     if (refreshToken) {
       const tokenRequestURL =
@@ -171,7 +171,7 @@ export default {
         }
       })
 
-      const dropboxStore = useDropboxStore()
+      const dropboxStore = useDropbox()
       dropboxStore.updateUserInfo(response.data)
     } catch (error) {
       const e = error as AxiosError
@@ -214,14 +214,14 @@ export default {
     const tokens = await this.getData<{ [name: string]: string }>(paths.tokensPath)
 
     if (tokens) {
-      const homeStore = useHomeStore()
+      const homeStore = useHome()
       homeStore.updateAccessTokens(tokens)
     }
   },
 
   // save API tokens
   async saveTokens(): Promise<void> {
-    const homeStore = useHomeStore()
+    const homeStore = useHome()
 
     await this.saveData(paths.tokensPath, homeStore.accessTokens)
   },
@@ -231,13 +231,13 @@ export default {
     const settings: AppSettings | null = await this.getData<AppSettings>(paths.settingsPath)
     const widgetList = settings?.widgetList || []
 
-    const homeStore = useHomeStore()
+    const homeStore = useHome()
     homeStore.updateUserWidgets(widgetList)
   },
 
   // save all general settings
   async saveSettings(): Promise<void> {
-    const homeStore = useHomeStore()
+    const homeStore = useHome()
     const settings: AppSettings = {
       widgetList: homeStore.userWidgets
     }
