@@ -19,8 +19,8 @@ export const useWatchlist = defineStore('watchlist', {
     catalog: [] ,
   }),
   getters: {
-    getShowInfoById: (state: State) => (showId: string): ShowInfo | undefined => {
-      return state.catalog.find((show: ShowInfo) => show.id === showId)
+    getShowInfoById: (state: State) => (showId: string): ShowInfo | null => {
+      return state.catalog.find((show: ShowInfo) => show.id === showId) ?? null
     },
     getShowImageLink: () => (show: ShowInfo): string => {
       if (show.imgLink) {

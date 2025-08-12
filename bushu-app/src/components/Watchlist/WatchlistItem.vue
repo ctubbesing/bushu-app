@@ -13,7 +13,7 @@
             id="item-name"
           >
             <span>{{ loadedShowInfo.title }}</span>
-            <template v-if="parentList !== 'backlog'">
+            <template v-if="parentList !== 'backlog' && loadedShowSeason">
               <span v-if="loadedShowSeason.name">
                 {{ loadedShowSeason.name }}
               </span>
@@ -27,17 +27,17 @@
             id="viewed-dates"
           >
             <div v-if="editedSeasonView.beganDate">
-              Started {{ editedSeasonView.beganDate | formatDate }}
+              Started {{ formatDate(editedSeasonView.beganDate) }}
             </div>
             <div v-if="editedSeasonView.completedDate">
-              Completed {{ editedSeasonView.completedDate | formatDate }}
+              Completed {{ formatDate(editedSeasonView.completedDate) }}
             </div>
           </div>
           <div
             v-if="parentList === 'upcoming' && loadedShowSeason"
             id="release-date"
           >
-            Airing {{ loadedShowSeason.startDate | formatDate }}
+            Airing {{ formatDate(loadedShowSeason.startDate) }}
           </div>
         </div>
       </div>
@@ -110,7 +110,7 @@
           <span
             v-if="doEpisodeCountUnitsLabel"
             class="episode-count-units"
-            :key="doEpisodeCountOverall"
+            :key="`${doEpisodeCountOverall}`"
           >
             ({{ doEpisodeCountOverall ? 'Overall' : 'This season' }})
           </span>
@@ -126,12 +126,11 @@
             Begin watching
           </div>
         </div>
-        <hover-icon
-          v-else-if="!isSeasonProgressComplete && !isUpToDateWithLiveSeason"
-          id="increment-button"
-          icon="plus-circle"
-          scale="1.3"
-          variant="light"
+        <v-btn
+          icon="mdi-plus"
+          variant="tonal"
+          class="my-1 mx-2"
+          style="height: 20px; width: 20px;"
           @click="incrementProgress()"
         />
       </div>
@@ -158,54 +157,10 @@
       v-if="!isReadOnly"
       id="side-info"
     >
-      <b-dropdown
-        right
-        no-caret
-        toggle-class="text-decoration-none"
-        variant="transparent"
-        size="sm"
-      >
-        <template #button-content>
-          <b-icon icon="three-dots-vertical" />
-        </template>
-        <slot name="dropdown-items">
-          <b-dropdown-item
-            v-if="isPromotable"
-            @click="promoteItem()"
-          >
-            Promote to {{ parentList === 'queue' ? 'Main' : 'Queue' }}
-          </b-dropdown-item>
-          <template v-if="parentList === 'upcoming'">
-            <b-dropdown-item @click="promoteItem('live')">
-              Promote to Live
-            </b-dropdown-item>
-            <b-dropdown-item @click="promoteItem('main')">
-              Promote to Main
-            </b-dropdown-item>
-          </template>
-          <b-dropdown-item
-            v-if="parentList === 'live'"
-            @click="promoteItem()"
-          >
-            Move to Main
-          </b-dropdown-item>
-          <b-dropdown-item
-            v-if="isDemotable"
-            @click="demoteItem"
-          >
-            Demote to Queue
-          </b-dropdown-item>
-          <b-dropdown-item @click="removeItem">
-            {{ seasonView ? 'Drop' : 'Remove' }}
-          </b-dropdown-item>
-          <b-dropdown-item
-            v-if="doReleaseSchedule"
-            @click="openScheduleModal"
-          >
-            View Release Schedule
-          </b-dropdown-item>
-        </slot>
-      </b-dropdown>
+      <base-dropdown 
+        icon="mdi-dots-vertical"
+        :options="dropdownOptions"
+      />
       <div style="text-align: center">
         <img
           v-if="isReorderable"
@@ -215,7 +170,7 @@
       </div>
     </div>
     <!-- Release Schedule Modal -->
-    <release-schedule-modal
+    <!-- <release-schedule-modal
       v-if="doReleaseSchedule && loadedShowSeason"
       :release-schedule="releaseSchedule"
       :show-season="loadedShowSeason"
@@ -229,32 +184,34 @@
           :is-read-only="true"
         />
       </template>
-    </release-schedule-modal>
+    </release-schedule-modal> -->
   </div>
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
-import { DateTime } from 'luxon'
-import {
+import { useWatchlist } from '@/stores/watchlist'
+import type {
+  EpisodeDate,
+  RawEpisodeDate,
   SeasonView,
   ShowInfo,
-  ShowSeason,
-  RawEpisodeDate,
-  EpisodeDate,
+  ShowSeason
 } from '@/types/watchlistTypes'
-import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
-import ReleaseScheduleModal from '@/components/Watchlist/ReleaseScheduleModal.vue'
-import HoverIcon from '@/components/utils/HoverIcon.vue'
-import watchlistService from '@/utils/services/WatchlistService'
+import formatDate from '@/utils/formatDate'
+import WatchlistService from '@/utils/services/WatchlistService'
 import tools from '@/utils/tools'
+import { DateTime } from 'luxon'
+import { mapStores } from 'pinia'
+import type { PropType } from 'vue'
+import ThumbnailImage from '../ThumbnailImage.vue'
+import BaseDropdown from '../utils/BaseDropdown.vue'
+import type { BaseDropdownOption } from '../utils/types/baseTypes'
 
-export default Vue.extend({
-  name: 'WatchlistItem',
+export default {
   components: {
-    releaseScheduleModal: ReleaseScheduleModal,
-    thumbnailImage: ThumbnailImage,
-    hoverIcon: HoverIcon,
+    // releaseScheduleModal: ReleaseScheduleModal,
+    ThumbnailImage,
+    BaseDropdown,
   },
   props: {
     parentList: {
@@ -296,12 +253,13 @@ export default Vue.extend({
     }
   },
   computed: {
+    ...mapStores(useWatchlist),
     loadedShowInfo(): ShowInfo | null {
       if (this.showInfo) {
         return this.showInfo
       }
       const showSeasonData = this.editedSeasonView ? this.editedSeasonView.seasonInfo : this.showSeason
-      return showSeasonData ? this.$store.getters.getShowInfoById(showSeasonData.showId) : null
+      return showSeasonData ? this.watchlistStore.getShowInfoById(showSeasonData.showId) : null
     },
     loadedShowSeason(): ShowSeason | null {
       if (this.showSeason) {
@@ -318,10 +276,10 @@ export default Vue.extend({
         if (showSeasonData?.imgLink) {
           return showSeasonData.imgLink
         } else if (showSeasonData != undefined) {
-          return this.$store.getters.getImageLink(showSeasonData.showId, showSeasonData.id)
+          return this.watchlistStore.getImageLink(showSeasonData.showId, showSeasonData.id)
         }
       } else if (this.showInfo) {
-        return this.$store.getters.getShowImageLink(this.showInfo)
+        return this.watchlistStore.getShowImageLink(this.showInfo)
       }
       return ''
     },
@@ -466,7 +424,7 @@ export default Vue.extend({
       }
       return messages
     },
-    itemButton(): { label: string, action: () => void, args: unknown[] } | null {
+    itemButton(): { label: string, action: (...args: string[]) => void, args: string[] } | null {
       if (this.isSeasonProgressComplete && !this.isReadOnly) {
         return {
           label: 'Mark season completed',
@@ -483,6 +441,54 @@ export default Vue.extend({
       }
       return null
     },
+    dropdownOptions(): BaseDropdownOption[] {
+      let options: BaseDropdownOption[] = []
+
+      if (this.isPromotable) {
+        options.push({
+          title: `Promote to ${this.parentList === 'queue' ? 'Main' : 'Queue'}`,
+        })
+      }
+
+      if (this.parentList === 'upcoming') {
+        options.push({
+          title: 'Promote to Live',
+          clickEvent: () => this.promoteItem('live'),
+        })
+        options.push({
+          title: 'Promote to Main',
+          clickEvent: () => this.promoteItem('main'),
+        })
+      }
+
+      if (this.parentList === 'live') {
+        options.push({
+          title: 'Move to Main',
+          clickEvent: this.promoteItem,
+        })
+      }
+
+      if (this.isDemotable) {
+        options.push({
+          title: 'Demote to Queue',
+          clickEvent: this.demoteItem,
+        })
+      }
+
+      options.push({
+        title: this.seasonView ? 'Drop' : 'Remove',
+        clickEvent: this.removeItem,
+      })
+
+      if (this.doReleaseSchedule) {
+        options.push({
+          title: 'View Release Schedule',
+          clickEvent: this.openScheduleModal,
+        })
+      }
+
+      return options
+    },
   },
   created() {
     if (this.seasonView) {
@@ -496,6 +502,9 @@ export default Vue.extend({
     },
   },
   methods: {
+    formatDate(dateStr: string | undefined) {
+      return formatDate(dateStr)
+    },
     formatReleaseDate(date: DateTime) {
       return date.toFormat('EEEE, M/d/yyyy')
     },
@@ -570,17 +579,18 @@ export default Vue.extend({
     },
     saveChanges() {
       if (this.editedSeasonView) {
-        watchlistService.SaveSeasonViewDebounced(this.editedSeasonView)
+        WatchlistService.SaveSeasonViewDebounced(this.editedSeasonView)
         this.$emit('season-view-updated', this.editedSeasonView)
       }
     },
     openScheduleModal() {
       if (this.loadedShowSeason) {
-        this.$bvModal.show(`release-schedule-modal-${this.parentList}-${this.loadedShowSeason.id}`)
+        console.log('TODO: schedule modal')
+        // this.$bvModal.show(`release-schedule-modal-${this.parentList}-${this.loadedShowSeason.id}`)
       }
     },
   },
-});
+}
 </script>
 
 <style scoped>
@@ -662,6 +672,7 @@ export default Vue.extend({
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   padding: 8px 0;
   background-color: #0002;
   border-radius: 0 8px 8px 0;

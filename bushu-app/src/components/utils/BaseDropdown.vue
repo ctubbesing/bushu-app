@@ -2,7 +2,7 @@
   <div class="base-dropdown-main">
     <v-icon
       :id="dropdownId"
-      icon="mdi-menu-down"
+      :icon
       style="cursor: pointer"
     />
     <v-menu
@@ -32,6 +32,11 @@ defineProps({
   options: {
     type: Array as () => BaseDropdownOption[],
     required: true,
+  },
+  icon: {
+    type: String,
+    required: false,
+    default: 'mdi-menu-down',
   },
 })
 
