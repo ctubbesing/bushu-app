@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-modal
+    <!-- <b-modal
       v-bind="$attrs"
       :title="modalTitle"
       centered
@@ -259,116 +259,116 @@
           </div>
         </b-form>
       </div>
-    </b-modal>
+    </b-modal> -->
   </div>
 </template>
 
-<script lang="ts">
-import Vue, { PropType } from 'vue'
-import tools from '@/utils/tools';
-import { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
-import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
+<script lang="ts"> /////////////// TODO: uncomment everything & fix
+// import Vue, { PropType } from 'vue'
+// import tools from '@/utils/tools';
+// import { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
+// import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
 
-export default Vue.extend({
-  name: 'ShowInfoEditModal',
-  components: {
-    thumbnailImage: ThumbnailImage,
-  },
-  props: {
-    value: {
-      required: true,
-      type: Object as PropType<ShowInfo>,
-    },
-    isNewShow: {
-      required: true,
-      type: Boolean,
-    },
-  },
-  data() {
-    return {
-      showData: {} as ShowInfo,
-      originalData: {} as ShowInfo,
-    };
-  },
-  watch: {
-    value() {
-      this.loadValue()
-    },
-  },
-  computed: {
-    modalTitle(): string {
-      if (this.isNewShow) {
-        return 'Create New Show'
-      }
-      return 'Edit Show Info' + (this.showData.title ? (': ' + this.showData.title) : '')
-    },
-    isChanged(): boolean {
-      let isShowDataChanged = this.showData.id !== this.originalData.id ||
-                              this.showData.title !== this.originalData.title ||
-                              this.showData.altTitle !== this.originalData.altTitle ||
-                              this.showData.imgLink !== this.originalData.imgLink ||
-                              this.showData.isAnime !== this.originalData.isAnime ||
-                              this.showData.doEpisodeCountOverall !== this.originalData.doEpisodeCountOverall ||
-                              this.showData.seasonCount !== this.originalData.seasonCount
-      let isSznDataChanged = false
-      if (this.showData.seasons && this.originalData.seasons) {
-        isSznDataChanged = this.showData.seasons.length !== this.originalData.seasons.length ||
-                           this.showData.seasons.some((szn: ShowSeason, idx: number) => {
-                             return szn.id !== this.originalData.seasons[idx].id ||
-                                    szn.showId !== this.originalData.seasons[idx].showId ||
-                                    szn.seasonNumber !== this.originalData.seasons[idx].seasonNumber ||
-                                    szn.name !== this.originalData.seasons[idx].name ||
-                                    szn.totalEpisodeCount !== this.originalData.seasons[idx].totalEpisodeCount ||
-                                    szn.startDate !== this.originalData.seasons[idx].startDate ||
-                                    szn.endDate !== this.originalData.seasons[idx].endDate ||
-                                    szn.airingSeason !== this.originalData.seasons[idx].airingSeason ||
-                                    szn.airingYear !== this.originalData.seasons[idx].airingYear ||
-                                    szn.imgLink !== this.originalData.seasons[idx].imgLink
-                           })
-      }
-      return isShowDataChanged || isSznDataChanged
-    },
-  },
-  methods: {
-    deleteSeason(idx: number) {
-      this.showData.seasons.splice(idx, 1)
-    },
-    addSeason() {
-      let previousSznNumber = 0
-      if (this.showData.seasons.length > 0) {
-        previousSznNumber = this.showData.seasons[this.showData.seasons.length - 1].seasonNumber
-      }
-      this.showData.seasons.push({
-        id: tools.getGUID(),
-        showId: this.showData.id,
-        seasonNumber: Math.floor(previousSznNumber + 1)
-      })
-    },
-    loadValue() {
-      this.showData = tools.deepClone(this.value)
-      this.originalData = tools.deepClone(this.value)
-    },
-    syncModel() {
-      this.$emit('input', this.showData)
-    },
-    checkValidity() {
-      let form = document.getElementById('show-info-form') as HTMLFormElement
-      let isValid = form.reportValidity()
-      if (isValid) {
-        this.saveChanges()
-      }
-    },
-    saveChanges() {
-      this.showData.seasons.sort((a, b) => a.seasonNumber - b.seasonNumber)
-      this.syncModel()
-      this.$emit('save-changes')
-      this.closeModal()
-    },
-    closeModal() {
-      this.$bvModal.hide('editModal')
-    },
-  },
-});
+export default {
+  // name: 'ShowInfoEditModal',
+  // components: {
+  //   thumbnailImage: ThumbnailImage,
+  // },
+  // props: {
+  //   value: {
+  //     required: true,
+  //     type: Object as PropType<ShowInfo>,
+  //   },
+  //   isNewShow: {
+  //     required: true,
+  //     type: Boolean,
+  //   },
+  // },
+  // data() {
+  //   return {
+  //     showData: {} as ShowInfo,
+  //     originalData: {} as ShowInfo,
+  //   };
+  // },
+  // watch: {
+  //   value() {
+  //     this.loadValue()
+  //   },
+  // },
+  // computed: {
+  //   modalTitle(): string {
+  //     if (this.isNewShow) {
+  //       return 'Create New Show'
+  //     }
+  //     return 'Edit Show Info' + (this.showData.title ? (': ' + this.showData.title) : '')
+  //   },
+  //   isChanged(): boolean {
+  //     let isShowDataChanged = this.showData.id !== this.originalData.id ||
+  //                             this.showData.title !== this.originalData.title ||
+  //                             this.showData.altTitle !== this.originalData.altTitle ||
+  //                             this.showData.imgLink !== this.originalData.imgLink ||
+  //                             this.showData.isAnime !== this.originalData.isAnime ||
+  //                             this.showData.doEpisodeCountOverall !== this.originalData.doEpisodeCountOverall ||
+  //                             this.showData.seasonCount !== this.originalData.seasonCount
+  //     let isSznDataChanged = false
+  //     if (this.showData.seasons && this.originalData.seasons) {
+  //       isSznDataChanged = this.showData.seasons.length !== this.originalData.seasons.length ||
+  //                          this.showData.seasons.some((szn: ShowSeason, idx: number) => {
+  //                            return szn.id !== this.originalData.seasons[idx].id ||
+  //                                   szn.showId !== this.originalData.seasons[idx].showId ||
+  //                                   szn.seasonNumber !== this.originalData.seasons[idx].seasonNumber ||
+  //                                   szn.name !== this.originalData.seasons[idx].name ||
+  //                                   szn.totalEpisodeCount !== this.originalData.seasons[idx].totalEpisodeCount ||
+  //                                   szn.startDate !== this.originalData.seasons[idx].startDate ||
+  //                                   szn.endDate !== this.originalData.seasons[idx].endDate ||
+  //                                   szn.airingSeason !== this.originalData.seasons[idx].airingSeason ||
+  //                                   szn.airingYear !== this.originalData.seasons[idx].airingYear ||
+  //                                   szn.imgLink !== this.originalData.seasons[idx].imgLink
+  //                          })
+  //     }
+  //     return isShowDataChanged || isSznDataChanged
+  //   },
+  // },
+  // methods: {
+  //   deleteSeason(idx: number) {
+  //     this.showData.seasons.splice(idx, 1)
+  //   },
+  //   addSeason() {
+  //     let previousSznNumber = 0
+  //     if (this.showData.seasons.length > 0) {
+  //       previousSznNumber = this.showData.seasons[this.showData.seasons.length - 1].seasonNumber
+  //     }
+  //     this.showData.seasons.push({
+  //       id: tools.getGUID(),
+  //       showId: this.showData.id,
+  //       seasonNumber: Math.floor(previousSznNumber + 1)
+  //     })
+  //   },
+  //   loadValue() {
+  //     this.showData = tools.deepClone(this.value)
+  //     this.originalData = tools.deepClone(this.value)
+  //   },
+  //   syncModel() {
+  //     this.$emit('input', this.showData)
+  //   },
+  //   checkValidity() {
+  //     let form = document.getElementById('show-info-form') as HTMLFormElement
+  //     let isValid = form.reportValidity()
+  //     if (isValid) {
+  //       this.saveChanges()
+  //     }
+  //   },
+  //   saveChanges() {
+  //     this.showData.seasons.sort((a, b) => a.seasonNumber - b.seasonNumber)
+  //     this.syncModel()
+  //     this.$emit('save-changes')
+  //     this.closeModal()
+  //   },
+  //   closeModal() {
+  //     this.$bvModal.hide('editModal')
+  //   },
+  // },
+}
 </script>
 
 <style scoped>

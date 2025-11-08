@@ -1,8 +1,8 @@
 <template>
   <div id="section">
-    <div id="header">
+    <!-- <div id="header">
       <div id="header-title">
-        <div> {{ listType | toTitleCase }} </div>
+        <div> {{ toTitleCase(listType) }} </div>
         <div> {{ items.length + ' item' + (items.length === 1 ? '' : 's') }} </div>
       </div>
       <b-button
@@ -45,27 +45,32 @@
           />
         </transition-group>
       </draggable>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
-import WatchlistItem from '@/components/Watchlist/WatchlistItem.vue'
+import type { SeasonView, ShowInfo, ShowSeason } from '@/types/watchlistTypes'
 import tools from '@/utils/tools'
-import Draggable from 'vuedraggable'
-import {
-  SeasonView,
-  ShowInfo,
-  ShowSeason
-} from '@/types/watchlistTypes'
+import toTitleCase from '@/utils/toTitleCase'
+import type { PropType } from 'vue'
+// import WatchlistItem from './WatchlistItem.vue'
 
-export default Vue.extend({
-  name: 'WatchlistSection',
-  components: {
-    watchlistItem: WatchlistItem,
-    draggable: Draggable,
-  },
+// import Vue, { PropType } from 'vue'
+// import WatchlistItem from '@/components/Watchlist/WatchlistItem.vue'
+// import tools from '@/utils/tools'
+// import Draggable from 'vuedraggable'
+// import {
+//   SeasonView,
+//   ShowInfo,
+//   ShowSeason
+// } from '@/types/watchlistTypes'
+
+export default {
+  // components: { /////////////// TODO: uncomment everything & fix
+  //   watchlistItem: WatchlistItem,
+  //   draggable: Draggable,
+  // },
   props: {
     listType: {
       type: String,
@@ -110,6 +115,9 @@ export default Vue.extend({
     this.loadValue()
   },
   methods: {
+    toTitleCase(s: string): string {
+      return toTitleCase(s)
+    },
     loadValue() {
       this.items = tools.deepClone(this.value)
     },
@@ -130,7 +138,7 @@ export default Vue.extend({
       }
     },
   },
-});
+}
 </script>
 
 <style scoped>

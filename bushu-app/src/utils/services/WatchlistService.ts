@@ -190,8 +190,8 @@ export default {
       showInfoData[show.id] = rawShow
     })
 
-    await dropbox.saveData(showInfoPath, showInfoData)
-    await dropbox.saveData(showSeasonsPath, showSeasonData)
+    // await dropbox.saveData(showInfoPath, showInfoData)///////temporarily disabled
+    // await dropbox.saveData(showSeasonsPath, showSeasonData)///////temporarily disabled
     ShowInfoCache = showInfoData
     ShowSeasonCache = showSeasonData
   },
@@ -200,7 +200,7 @@ export default {
 
     showSeasonData[season.id] = season
 
-    await dropbox.saveData(showSeasonsPath, showSeasonData)
+    // await dropbox.saveData(showSeasonsPath, showSeasonData)///////temporarily disabled
     ShowSeasonCache = showSeasonData
   },
   async GetWatchlistData(doForceReload = false): Promise<WatchlistData> {
@@ -240,7 +240,7 @@ export default {
       backlogShowInfoIds: watchlist.backlog.map((show: ShowInfo) => show.id),
     }
 
-    await dropbox.saveData(watchlistDataPath, rawData)
+    // await dropbox.saveData(watchlistDataPath, rawData)///////temporarily disabled
   },
   async SaveSeasonViews(seasonViews: SeasonView[]): Promise<void> {
     const allViews: DataStore<RawSeasonView> = await LoadSeasonViews()
@@ -258,7 +258,7 @@ export default {
     })
 
     SeasonViewCache = newViews
-    await dropbox.saveData(seasonViewsPath, newViews)
+    // await dropbox.saveData(seasonViewsPath, newViews)///////temporarily disabled
   },
   SaveSeasonViewDebounced(view: SeasonView): void {
     const debounceSeconds = 3

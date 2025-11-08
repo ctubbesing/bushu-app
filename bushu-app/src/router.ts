@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '@/views/HomeView.vue'
-// import Watchlist from "@/views/Watchlist.vue"
 import DropletWrapper from './components/gallery/DropletWrapper.vue'
 import GalleryView from './views/GalleryView.vue'
 import ImageAnalyzer from './components/gallery/ImageAnalyzer/ImageAnalyzer.vue'
@@ -8,6 +7,7 @@ import SandboxGame from './components/gallery/SandboxGame.vue'
 import CanvasTest from './components/gallery/CanvasTest.vue'
 import AlethiWrapper from './components/gallery/AlethiWrapper.vue'
 import RomajiConverter from './components/gallery/RomajiConverter.vue'
+import WatchlistView from './views/WatchlistView.vue'
 // import About from "@/views/About.vue"
 
 const router = createRouter({
@@ -23,11 +23,11 @@ const router = createRouter({
     //   name: "About",
     //   component: About,
     // },
-    // {
-    //   path: "/watchlist",
-    //   name: "Watchlist",
-    //   component: Watchlist,
-    // },
+    {
+      path: "/watchlist",
+      name: "watchlist",
+      component: WatchlistView,
+    },
     {
       path: '/gallery',
       name: 'gallery',

@@ -41,11 +41,11 @@
         :to="{ name: 'home' }"
       />
       <v-divider />
-      <!-- :to="{ name: 'watchlist' }" -->
+      <!-- disabled -->
       <v-list-item
         prepend-icon="mdi-television-guide"
         title="Watchlist"
-        disabled
+        :to="{ name: 'watchlist' }"
       />
       <v-list-item
         prepend-icon="mdi-collage"

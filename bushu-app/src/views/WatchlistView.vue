@@ -1,16 +1,18 @@
 <template>
   <div>
-    <scroll-to-refresh
+    <!-- <scroll-to-refresh
       :is-loading="isLoading"
       @refresh="handleRefresh"
-    />
+    /> -->
     <div
       v-if="watchlist"
       id="all-sections-container"
     >
       <div id="buttons-container">
-        <icon-button
-          :icon="'collection'"
+        <v-btn
+          icon="mdi-television-guide"
+          color="app-gray"
+          variant="outlined"
           @click="openCatalog()"
         />
       </div>
@@ -20,17 +22,17 @@
         </div>
         <div id="main-live-container">
           <div id="main-list">
-            <watchlist-section
+            <!-- <watchlist-section /////////////// TODO: fix
               v-model="watchlist.main"
               :list-type="'main'"
               @add-item="selectCatalogEntry('main')"
               @mark-item-completed="showMarkCompletedOptions"
               @demote-item="demoteItem"
               @remove-item="promptConfirmRemoveItem"
-            />
+            /> -->
           </div>
           <div id="live-list">
-            <watchlist-section
+            <!-- <watchlist-section /////////////// TODO: fix
               v-model="watchlist.live"
               :list-type="'live'"
               @add-item="selectCatalogEntry('live')"
@@ -39,52 +41,52 @@
               @demote-item="demoteItem"
               @remove-item="promptConfirmRemoveItem"
               @irregular-seasons-updated="loadWatchlist()"
-            />
+            /> -->
           </div>
         </div>
       </div>
       <div id="inactive-sections-container">
         <div id="queue-list">
-          <watchlist-section
+          <!-- <watchlist-section /////////////// TODO: fix
             v-model="watchlist.queue"
             :list-type="'queue'"
             @add-item="selectCatalogEntry('queue')"
             @promote-item="promoteItem"
             @remove-item="promptConfirmRemoveItem"
             @reorder="onReorderList"
-          />
+          /> -->
         </div>
         <div id="upcoming-list">
-          <watchlist-section
+          <!-- <watchlist-section /////////////// TODO: fix
             v-model="watchlist.upcoming"
             :list-type="'upcoming'"
             @add-item="selectCatalogEntry('upcoming')"
             @promote-item="promoteItem"
             @remove-item="promptConfirmRemoveItem"
             @irregular-seasons-updated="loadWatchlist()"
-          />
+          /> -->
         </div>
         <div id="backlog-list">
-          <watchlist-section
+          <!-- <watchlist-section /////////////// TODO: fix
             v-model="watchlist.backlog"
             :list-type="'backlog'"
             @add-item="selectCatalogEntry('backlog')"
             @promote-item="promoteItem"
             @remove-item="promptConfirmRemoveItem"
             @reorder="onReorderList"
-          />
+          /> -->
         </div>
       </div>
     </div>
     <!-- Catalog Modal -->
-    <catalog-modal
+    <!-- <catalog-modal
       id="catalogModal"
       :selection-target-list="targetListName"
       @item-selected="addCatalogItemToList"
       @hidden="resetTargets()"
-    />
+    /> -->
     <!-- Mark Completed Modal -->
-    <b-modal
+    <!-- <b-modal
       id="markCompletedModal"
       title="Marking Season Completed"
       size="md"
@@ -126,9 +128,10 @@
           />
         </li>
       </ul>
-    </b-modal>
+    </b-modal> -->
     <!-- Confirm Drop Modal -->
-    <b-modal
+    <!-- <b-modal
+      v-if="targetListName"
       id="confirmRemoveModal"
       :title="'Drop ' + (targetListName === 'backlog' ? 'show' : 'season') + '?'"
       size="md"
@@ -146,36 +149,35 @@
         :is-read-only="true"
       />
       The season will be {{ targetSeasonView ? 'marked as Dropped and' : '' }} removed from
-      {{ targetListName === 'queue' || targetListName === 'backlog' ? 'the ' : '' }}{{ targetListName | toTitleCase }}.
-    </b-modal>
+      {{ targetListName === 'queue' || targetListName === 'backlog' ? 'the ' : '' }}{{ toTitleCase(targetListName) }}.
+    </b-modal> -->
   </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue"
-import { BvModalEvent } from 'bootstrap-vue'
-import {
+// import WatchlistSection from '@/components/Watchlist/WatchlistSection.vue'
+import { useDropbox } from '@/stores/dropbox'
+import { useHome } from '@/stores/home'
+import { useWatchlist } from '@/stores/watchlist'
+import type {
   SeasonView,
   ShowInfo,
   ShowSeason,
   WatchlistData,
 } from '@/types/watchlistTypes'
-import watchlistService from '@/utils/services/WatchlistService'
-import tools from '@/utils/tools';
-import CatalogModal from '@/components/Watchlist/CatalogModal.vue'
-import IconButton from '@/components/utils/IconButton.vue'
-import ScrollToRefresh from '@/components/utils/ScrollToRefresh.vue'
-import WatchlistItem from '@/components/Watchlist/WatchlistItem.vue'
-import WatchlistSection from '@/components/Watchlist/WatchlistSection.vue'
+import WatchlistService from '@/utils/services/WatchlistService'
+import tools from '@/utils/tools'
+import toTitleCase from '@/utils/toTitleCase'
+import { mapStores } from 'pinia'
 
-export default Vue.extend({
-  name: "Watchlist",
+export default {
   components: {
-    catalogModal: CatalogModal,
-    watchlistSection: WatchlistSection,
-    watchlistItem: WatchlistItem,
-    iconButton: IconButton,
-    scrollToRefresh: ScrollToRefresh,
+    // WatchlistSection,
+    // CatalogModal,
+    // WatchlistSection,
+    // WatchlistItem,
+    // IconButton,
+    // ScrollToRefresh,
   },
   data() {
     return {
@@ -191,8 +193,9 @@ export default Vue.extend({
     };
   },
   computed: {
+    ...mapStores(useHome, useDropbox, useWatchlist),
     isReady(): boolean {
-      return this.$store.getters.db_isReady
+      return this.dropboxStore.isReady
     },
   },
   watch: {
@@ -208,6 +211,9 @@ export default Vue.extend({
     }
   },
   methods: {
+    toTitleCase(s: string): string {
+      return toTitleCase(s)
+    },
     resetTargets() {
       this.targetListName = null
       this.targetSeasonView = null
@@ -216,17 +222,17 @@ export default Vue.extend({
       this.targetNextQueueItem = null
     },
     async loadWatchlist(doForceReload = false) {
-      this.watchlist = await watchlistService.GetWatchlistData(doForceReload)
+      this.watchlist = await WatchlistService.GetWatchlistData(doForceReload)
     },
     async saveWatchlist() {
       if (this.watchlist) {
-        await watchlistService.SaveWatchlistData(this.watchlist)
+        await WatchlistService.SaveWatchlistData(this.watchlist)
       }
     },
     async loadData(doForceReload = false) {
       this.isLoading = true
 
-      await this.$store.dispatch('loadCatalogFromDropbox')
+      await this.watchlistStore.loadCatalogFromDropbox()
       await this.loadWatchlist(doForceReload)
 
       this.isLoading = false
@@ -234,7 +240,7 @@ export default Vue.extend({
     async handleRefresh() {
       this.isLoading = true
 
-      await watchlistService.ForceSaveSeasonViews()
+      await WatchlistService.ForceSaveSeasonViews()
       await this.loadData(true)
 
       this.isLoading = false
@@ -277,11 +283,13 @@ export default Vue.extend({
             // find next season of show, if any
             this.targetShowSeason = null
             const seasonInfo = this.targetSeasonView.seasonInfo
-            const seasonShowInfo: ShowInfo = this.$store.getters.getShowInfoById(seasonInfo.showId)
-            let seasonIdx = seasonShowInfo.seasons.findIndex((season: ShowSeason) => season.id === seasonInfo.id)
-            if (seasonIdx < seasonShowInfo.seasons.length - 1) {
-              this.targetShowSeason = seasonShowInfo.seasons[seasonIdx + 1]
-              this.doNextSeasonToQueue = true
+            const seasonShowInfo = this.watchlistStore.getShowInfoById(seasonInfo.showId)
+            if (seasonShowInfo) {
+              let seasonIdx = seasonShowInfo.seasons.findIndex((season: ShowSeason) => season.id === seasonInfo.id)
+              if (seasonIdx < seasonShowInfo.seasons.length - 1) {
+                this.targetShowSeason = seasonShowInfo.seasons[seasonIdx + 1]
+                this.doNextSeasonToQueue = true
+              }
             }
 
             // find next item in Queue, if any
@@ -291,7 +299,7 @@ export default Vue.extend({
               this.doPopQueueToMain = true
             }
 
-            this.$bvModal.show('markCompletedModal')
+            // this.$bvModal.show('markCompletedModal') /////////////// TODO: fix
           }
         } else if (sourceList === 'live') {
           let seasonViewIdx = this.watchlist.live.findIndex((view: SeasonView) => view.id === seasonViewId)
@@ -303,7 +311,7 @@ export default Vue.extend({
 
             this.targetSeasonView = this.watchlist.live[seasonViewIdx]
 
-            this.$bvModal.show('markCompletedModal')
+            // this.$bvModal.show('markCompletedModal') /////////////// TODO: fix
           }
         }
       }
@@ -313,7 +321,7 @@ export default Vue.extend({
         // set date completed, save, & remove from source list
         // TODO: eventually should move completed SVs to new save file but for now this works fine
         this.targetSeasonView.completedDate = tools.getTimestamp()
-        await watchlistService.SaveSeasonViews([ this.targetSeasonView ])
+        await WatchlistService.SaveSeasonViews([ this.targetSeasonView ])
 
         if (this.targetListName === 'main' || this.targetListName === 'live') {
           const completedViewId = this.targetSeasonView.id
@@ -358,7 +366,7 @@ export default Vue.extend({
           let showInfoIdx = this.watchlist.backlog.findIndex((show: ShowInfo) => show.id === itemId)
           this.targetShowInfo = this.watchlist.backlog[showInfoIdx]
         }
-        this.$bvModal.show('confirmRemoveModal')
+        // this.$bvModal.show('confirmRemoveModal') /////////////// TODO: fix
       }
     },
     async promoteItem(itemId: string, sourceList: string, destinationList: string | undefined = undefined) {
@@ -431,7 +439,7 @@ export default Vue.extend({
       if (this.watchlist) {
         if ((this.targetListName === 'main' || this.targetListName === 'live' || this.targetListName === 'queue') && this.targetSeasonView) {
           this.targetSeasonView.droppedDate = tools.getTimestamp()
-          await watchlistService.SaveSeasonViews([ this.targetSeasonView ])
+          await WatchlistService.SaveSeasonViews([ this.targetSeasonView ])
 
           const droppedViewId = this.targetSeasonView.id
           const droppedViewIdx = this.watchlist[this.targetListName].findIndex((view: SeasonView) => view.id === droppedViewId)
@@ -460,18 +468,18 @@ export default Vue.extend({
       await this.saveWatchlist()
     },
     openCatalog() {
-      this.$bvModal.show('catalogModal')
+      // this.$bvModal.show('catalogModal') /////////////// TODO: fix
     },
     closeCatalog() {
-      this.$bvModal.hide('catalogModal')
+      // this.$bvModal.hide('catalogModal') /////////////// TODO: fix
     },
-    onModalHide(event: BvModalEvent) {
-      if (event.trigger !== 'ok') {
-        this.resetTargets()
-      }
-    },
+    // onModalHide(event: BvModalEvent) { /////////////// TODO: fix
+    //   if (event.trigger !== 'ok') {
+    //     this.resetTargets()
+    //   }
+    // },
   },
-});
+};
 </script>
 
 <style scoped>

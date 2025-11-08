@@ -19,11 +19,11 @@
             :text="cancelText"
             :color="cancelColor"
             :variant="cancelVariant"
-            @click="$emit('cancel')"
+            @click="cancel()"
           />
           <v-btn
             v-if="doOk"
-            :text="okText"
+            :text="okTitle"
             :color="okColor"
             :variant="okVariant"
             @click="$emit('ok')"
@@ -31,9 +31,9 @@
         </slot>
       </template>
       <template #text>
-        <v-card-text>
+        <!-- <v-card-text> -->
           <slot></slot>
-        </v-card-text>
+        <!-- </v-card-text> -->
       </template>
     </v-card>
   </v-dialog>
@@ -57,7 +57,7 @@ watch(isOpenModel, () => {
 
 // !!! should make the width (currently 800) a prop
 // small: 500, med: 800, etc
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     required: false,
@@ -80,37 +80,54 @@ defineProps({
     required: false,
     default: true,
   },
-  okText: {
+  okTitle: {
     type: String,
     required: false,
-    default: 'Ok'
+    default: 'Ok',
   },
   okColor: {
     type: String,
     required: false,
-    default: 'green'
+    default: 'green',
   },
   okVariant: {
     type: String as () => 'elevated' | 'tonal' | 'flat' | 'text' | 'outlined' | 'plain',
     required: false,
-    default: 'elevated'
+    default: 'elevated',
+  },
+  okOnly: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
   cancelText: {
     type: String,
     required: false,
-    default: 'Cancel'
+    default: 'Cancel',
   },
   cancelColor: {
     type: String,
     required: false,
-    default: 'red'
+    default: 'red',
   },
   cancelVariant: {
     type: String as () => 'elevated' | 'tonal' | 'flat' | 'text' | 'outlined' | 'plain',
     required: false,
-    default: 'tonal'
+    default: 'tonal',
+  },
+  hideOnCancel: {
+    type: Boolean,
+    required: false,
+    default: true,
   },
 })
+
+const cancel = () => {
+  emit('cancel')
+  if (props.hideOnCancel) {
+    isOpenModel.value = false
+  }
+}
 </script>
 
 <style scoped>

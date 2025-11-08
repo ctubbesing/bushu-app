@@ -76,9 +76,9 @@
     </div>
     <base-modal
       v-model="isTokenModalOpen"
-      :title="'Update Access Token'"
-      :title-icon="'mdi-key'"
-      :ok-text="'Save'"
+      title="Update Access Token"
+      title-icon="mdi-key"
+      ok-title="Save"
       @ok="saveTokenUpdate()"
       @cancel="cancelTokenUpdate()"
       @hidden="onTokenModalClose()"

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-modal
+    <!-- <b-modal
       v-bind="$attrs"
       :title="selectMode ? ('Select a ' + selectMode + ':') : 'Catalog'"
       centered
@@ -199,188 +199,188 @@
       v-model="editingShowInfo"
       :isNewShow="editingShowId === ''"
       @save-changes="saveShowEntry"
-    />
+    /> -->
   </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue';
-import { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
-import tools from '@/utils/tools'
-import HoverIcon from '@/components/utils/HoverIcon.vue'
-import ShowInfoEditModal from '@/components/Watchlist/ShowInfoEditModal.vue'
-import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
-import TMDBService from '@/utils/services/TMDBService'
+<script lang="ts"> /////////////// TODO: uncomment everything & fix
+// import Vue from 'vue';
+// import { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
+// import tools from '@/utils/tools'
+// import HoverIcon from '@/components/utils/HoverIcon.vue'
+// import ShowInfoEditModal from '@/components/Watchlist/ShowInfoEditModal.vue'
+// import ThumbnailImage from '@/components/utils/ThumbnailImage.vue'
+// import TMDBService from '@/utils/services/TMDBService'
 
-export default Vue.extend({
-  name: 'CatalogModal',
-  components: {
-    showInfoEditModal: ShowInfoEditModal,
-    hoverIcon: HoverIcon,
-    thumbnailImage: ThumbnailImage,
-  },
-  props: {
-    selectionTargetList: {
-      type: String,
-      required: false,
-    },
-  },
-  data() {
-    return {
-      catalog: [] as ShowInfo[],
-      expandedShowId: '' as string,
-      editingShowInfo: {} as ShowInfo,
-      editingShowId: '' as string,
-      selectedItemId: '' as string,
-      searchString: '' as string,
-      tmdbShowResults: [] as ShowInfo[],
-      tools,
-    };
-  },
-  computed: {
-    isReady(): boolean {
-      return !this.$store.state.watchlist.isLoading
-    },
-    selectMode(): string | null {
-      if (this.selectionTargetList == undefined) {
-        return null
-      } else if (this.selectionTargetList === 'backlog') {
-        return 'show'
-      }
-      return 'season'
-    },
-    filteredCatalog(): ShowInfo[] {
-      if (this.searchString === '') {
-        return this.catalog
-      }
-      return this.catalog.filter((s: ShowInfo) => {
-        return s.title.toLowerCase().includes(this.searchString.toLowerCase())
-      })
-    },
-  },
-  watch: {
-    isReady(isReady: boolean) {
-      if (isReady) {
-        this.loadData()
-      }
-    },
-  },
-  created() {
-    this.loadData()
+export default {
+  // name: 'CatalogModal',
+  // components: {
+  //   showInfoEditModal: ShowInfoEditModal,
+  //   hoverIcon: HoverIcon,
+  //   thumbnailImage: ThumbnailImage,
+  // },
+  // props: {
+  //   selectionTargetList: {
+  //     type: String,
+  //     required: false,
+  //   },
+  // },
+  // data() {
+  //   return {
+  //     catalog: [] as ShowInfo[],
+  //     expandedShowId: '' as string,
+  //     editingShowInfo: {} as ShowInfo,
+  //     editingShowId: '' as string,
+  //     selectedItemId: '' as string,
+  //     searchString: '' as string,
+  //     tmdbShowResults: [] as ShowInfo[],
+  //     tools,
+  //   };
+  // },
+  // computed: {
+  //   isReady(): boolean {
+  //     return !this.$store.state.watchlist.isLoading
+  //   },
+  //   selectMode(): string | null {
+  //     if (this.selectionTargetList == undefined) {
+  //       return null
+  //     } else if (this.selectionTargetList === 'backlog') {
+  //       return 'show'
+  //     }
+  //     return 'season'
+  //   },
+  //   filteredCatalog(): ShowInfo[] {
+  //     if (this.searchString === '') {
+  //       return this.catalog
+  //     }
+  //     return this.catalog.filter((s: ShowInfo) => {
+  //       return s.title.toLowerCase().includes(this.searchString.toLowerCase())
+  //     })
+  //   },
+  // },
+  // watch: {
+  //   isReady(isReady: boolean) {
+  //     if (isReady) {
+  //       this.loadData()
+  //     }
+  //   },
+  // },
+  // created() {
+  //   this.loadData()
 
-    this.$root.$on('bv::collapse::state', (showId: string, isShown: boolean) => {
-      if (isShown) {
-        this.expandedShowId = showId
-      } else if (this.expandedShowId === showId) {
-        this.expandedShowId = '';
-      }
-    })
-  },
-  methods: {
-    loadData() {
-      if (this.isReady) {
-        this.catalog = this.$store.state.watchlist.catalog
-      }
-    },
-    toggleShow(showId: string) {
-      this.$root.$emit('bv::toggle::collapse', showId)
-    },
-    selectShow(showId: string) {
-      if (this.selectMode === 'show') {
-        this.selectedItemId = (this.selectedItemId === showId) ? '' : showId
-      } else {
-        this.toggleShow(showId)
-      }
-    },
-    selectSeason(seasonId: string) {
-      if (this.selectMode === 'season') {
-        this.selectedItemId = (this.selectedItemId === seasonId) ? '' : seasonId
-      }
-    },
-    chooseItem() {
-      if (this.selectMode === 'show') {
-        const selectedShow = this.catalog.find((show: ShowInfo) => show.id === this.selectedItemId)
-        if (selectedShow) {
-          this.$emit('item-selected', selectedShow, this.selectionTargetList)
-        }
-      } else if (this.selectMode === 'season') {
-        for (let i = 0; i < this.catalog.length; i++) {
-          let show = this.catalog[i]
-          for (let j = 0; j < show.seasons.length; j++) {
-            if (show.seasons[j].id === this.selectedItemId) {
-              const selectedSeason = show.seasons[j]
-              this.$emit('item-selected', selectedSeason, this.selectionTargetList)
-              return
-            }
-          }
-        }
-      }
+  //   this.$root.$on('bv::collapse::state', (showId: string, isShown: boolean) => {
+  //     if (isShown) {
+  //       this.expandedShowId = showId
+  //     } else if (this.expandedShowId === showId) {
+  //       this.expandedShowId = '';
+  //     }
+  //   })
+  // },
+  // methods: {
+  //   loadData() {
+  //     if (this.isReady) {
+  //       this.catalog = this.$store.state.watchlist.catalog
+  //     }
+  //   },
+  //   toggleShow(showId: string) {
+  //     this.$root.$emit('bv::toggle::collapse', showId)
+  //   },
+  //   selectShow(showId: string) {
+  //     if (this.selectMode === 'show') {
+  //       this.selectedItemId = (this.selectedItemId === showId) ? '' : showId
+  //     } else {
+  //       this.toggleShow(showId)
+  //     }
+  //   },
+  //   selectSeason(seasonId: string) {
+  //     if (this.selectMode === 'season') {
+  //       this.selectedItemId = (this.selectedItemId === seasonId) ? '' : seasonId
+  //     }
+  //   },
+  //   chooseItem() {
+  //     if (this.selectMode === 'show') {
+  //       const selectedShow = this.catalog.find((show: ShowInfo) => show.id === this.selectedItemId)
+  //       if (selectedShow) {
+  //         this.$emit('item-selected', selectedShow, this.selectionTargetList)
+  //       }
+  //     } else if (this.selectMode === 'season') {
+  //       for (let i = 0; i < this.catalog.length; i++) {
+  //         let show = this.catalog[i]
+  //         for (let j = 0; j < show.seasons.length; j++) {
+  //           if (show.seasons[j].id === this.selectedItemId) {
+  //             const selectedSeason = show.seasons[j]
+  //             this.$emit('item-selected', selectedSeason, this.selectionTargetList)
+  //             return
+  //           }
+  //         }
+  //       }
+  //     }
       
-    },
-    getTotalEpisodeCount(show: ShowInfo): number {
-      return show.seasons.reduce((sum: number, s: ShowSeason) => {
-        return sum + (s.totalEpisodeCount ? s.totalEpisodeCount : 0)
-      }, 0)
-    },
-    getShowImageLink(show: ShowInfo): string {
-      return this.$store.getters.getShowImageLink(show)
-    },
-    getSeasonImageLink(show: ShowInfo, sznIdx: number): string {
-      if (show.seasons[sznIdx].imgLink) {
-        return show.seasons[sznIdx].imgLink!
-      }
-      return this.getShowImageLink(show)
-    },
-    createNewEntry() {
-      this.editingShowId = ''
-      this.editingShowInfo = {
-        id: tools.getGUID(),
-        title: '',
-        seasons: [],
-      }
-      this.openEditModal()
-    },
-    editShowEntry(idx: number) {
-      this.editingShowInfo = tools.deepClone<ShowInfo>(this.filteredCatalog[idx])
-      this.editingShowId = this.editingShowInfo.id
-      this.openEditModal()
-    },
-    async saveShowEntry() {
-      let updatedShowIdx = this.catalog.findIndex((s: ShowInfo) => s.id === this.editingShowId)
-      if (updatedShowIdx === -1) {
-        // add data as new entry
-        this.catalog.push(this.editingShowInfo)
-      } else {
-        // update existing entry
-        this.catalog[updatedShowIdx] = this.editingShowInfo
-      }
-      this.catalog.sort((a, b) => {
-        const titleA = a.title.toLowerCase().split(/^the /).reverse()[0]
-        const titleB = b.title.toLowerCase().split(/^the /).reverse()[0]
-        return titleA.localeCompare(titleB)
-      })
-      await this.$store.dispatch('updateCatalog', this.catalog)
-    },
-    async searchTMDB(searchStr: string) {
-      if (searchStr === '') {
-        this.tmdbShowResults = []
-      } else {
-        this.tmdbShowResults = await TMDBService.searchTVShows(searchStr) 
-      }
-    },
-    openEditModal() {
-      this.$bvModal.show('editModal')
-    },
-    closeEditModal() {
-      this.$bvModal.hide('editModal')
-    },
-    onModalClose() {
-      this.selectedItemId = ''
-      this.searchString = ''
-      this.$emit('hidden')
-    },
-  },
-});
+  //   },
+  //   getTotalEpisodeCount(show: ShowInfo): number {
+  //     return show.seasons.reduce((sum: number, s: ShowSeason) => {
+  //       return sum + (s.totalEpisodeCount ? s.totalEpisodeCount : 0)
+  //     }, 0)
+  //   },
+  //   getShowImageLink(show: ShowInfo): string {
+  //     return this.$store.getters.getShowImageLink(show)
+  //   },
+  //   getSeasonImageLink(show: ShowInfo, sznIdx: number): string {
+  //     if (show.seasons[sznIdx].imgLink) {
+  //       return show.seasons[sznIdx].imgLink!
+  //     }
+  //     return this.getShowImageLink(show)
+  //   },
+  //   createNewEntry() {
+  //     this.editingShowId = ''
+  //     this.editingShowInfo = {
+  //       id: tools.getGUID(),
+  //       title: '',
+  //       seasons: [],
+  //     }
+  //     this.openEditModal()
+  //   },
+  //   editShowEntry(idx: number) {
+  //     this.editingShowInfo = tools.deepClone<ShowInfo>(this.filteredCatalog[idx])
+  //     this.editingShowId = this.editingShowInfo.id
+  //     this.openEditModal()
+  //   },
+  //   async saveShowEntry() {
+  //     let updatedShowIdx = this.catalog.findIndex((s: ShowInfo) => s.id === this.editingShowId)
+  //     if (updatedShowIdx === -1) {
+  //       // add data as new entry
+  //       this.catalog.push(this.editingShowInfo)
+  //     } else {
+  //       // update existing entry
+  //       this.catalog[updatedShowIdx] = this.editingShowInfo
+  //     }
+  //     this.catalog.sort((a, b) => {
+  //       const titleA = a.title.toLowerCase().split(/^the /).reverse()[0]
+  //       const titleB = b.title.toLowerCase().split(/^the /).reverse()[0]
+  //       return titleA.localeCompare(titleB)
+  //     })
+  //     await this.$store.dispatch('updateCatalog', this.catalog)
+  //   },
+  //   async searchTMDB(searchStr: string) {
+  //     if (searchStr === '') {
+  //       this.tmdbShowResults = []
+  //     } else {
+  //       this.tmdbShowResults = await TMDBService.searchTVShows(searchStr) 
+  //     }
+  //   },
+  //   openEditModal() {
+  //     this.$bvModal.show('editModal')
+  //   },
+  //   closeEditModal() {
+  //     this.$bvModal.hide('editModal')
+  //   },
+  //   onModalClose() {
+  //     this.selectedItemId = ''
+  //     this.searchString = ''
+  //     this.$emit('hidden')
+  //   },
+  // },
+}
 </script>
 
 <style scoped>

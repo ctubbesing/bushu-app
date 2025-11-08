@@ -65,7 +65,8 @@
             v-else
             style="display: inline-block"
           >
-            <b-form-input
+            [number input]
+            <!-- <b-form-input
               type="number"
               v-model.number="editedProgress"
               :max="maxValidProgress"
@@ -78,7 +79,7 @@
               autofocus
               @blur="saveManualProgressEdit"
               @keyup.enter="saveManualProgressEdit"
-            />
+            /> -->
           </span>
           <span> / </span>
           <span v-if="!releaseSchedule || releaseSchedule.length === 0">
@@ -130,6 +131,7 @@
           icon="mdi-plus"
           variant="tonal"
           class="my-1 mx-2"
+          size="x-small"
           style="height: 20px; width: 20px;"
           @click="incrementProgress()"
         />
@@ -170,8 +172,9 @@
       </div>
     </div>
     <!-- Release Schedule Modal -->
-    <!-- <release-schedule-modal
+    <release-schedule-modal
       v-if="doReleaseSchedule && loadedShowSeason"
+      v-model="showReleaseScheduleModal"
       :release-schedule="releaseSchedule"
       :show-season="loadedShowSeason"
       :available-episode-count="availableEpisodeCount"
@@ -184,7 +187,7 @@
           :is-read-only="true"
         />
       </template>
-    </release-schedule-modal> -->
+    </release-schedule-modal>
   </div>
 </template>
 
@@ -204,12 +207,13 @@ import { DateTime } from 'luxon'
 import { mapStores } from 'pinia'
 import type { PropType } from 'vue'
 import ThumbnailImage from '../ThumbnailImage.vue'
+import ReleaseScheduleModal from './ReleaseScheduleModal.vue'
 import BaseDropdown from '../utils/BaseDropdown.vue'
 import type { BaseDropdownOption } from '../utils/types/baseTypes'
 
 export default {
   components: {
-    // releaseScheduleModal: ReleaseScheduleModal,
+    ReleaseScheduleModal,
     ThumbnailImage,
     BaseDropdown,
   },
@@ -250,6 +254,7 @@ export default {
       doManualProgressEdit: false as boolean,
       editedProgress: 0 as number,
       rerenderKey: '' as string,
+      showReleaseScheduleModal: false as boolean,
     }
   },
   computed: {
@@ -585,7 +590,8 @@ export default {
     },
     openScheduleModal() {
       if (this.loadedShowSeason) {
-        console.log('TODO: schedule modal')
+        console.log('TODO: schedule modal') //// copy RSM file & port to Vue 3
+        this.showReleaseScheduleModal = true
         // this.$bvModal.show(`release-schedule-modal-${this.parentList}-${this.loadedShowSeason.id}`)
       }
     },
