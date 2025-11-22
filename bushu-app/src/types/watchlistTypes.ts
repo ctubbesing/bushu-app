@@ -1,56 +1,62 @@
+import * as z from 'zod'
 import { DateTime } from "luxon"
 
-export interface ShowInfo {
-  id: string
-  title: string
-  altTitle?: string
-  isAnime?: boolean
-  doEpisodeCountOverall?: boolean
-  seasonCount?: number
-  seasons: ShowSeason[]
-  imgLink?: string
-}
+export const RawEpisodeDate = z.object({
+  episode: z.number(),
+  date: z.string(),
+})
+export type RawEpisodeDate = z.infer<typeof RawEpisodeDate>
 
-export interface ShowSeason {
-  id: string
-  showId: string
-  seasonNumber: number
-  name?: string
-  totalEpisodeCount?: number | null
-  irregularDates?: RawEpisodeDate[]
-  startDate?: string
-  endDate?: string
-  airingSeason?: string
-  airingYear?: number
-  infoLink?: string
-  imgLink?: string
-}
+export const ShowSeason = z.object({
+  id: z.string(),
+  showId: z.string(),
+  seasonNumber: z.number(),
+  name: z.string().optional(),
+  totalEpisodeCount: z.number().nullable().optional(),
+  irregularDates: z.array(RawEpisodeDate),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  airingSeason: z.string().optional(),
+  airingYear: z.number().optional(),
+  infoLink: z.string().optional(),
+  imgLink: z.string().optional(),
+})
+export type ShowSeason = z.infer<typeof ShowSeason>
 
-export interface RawEpisodeDate {
-  episode: number
-  date: string
-}
+export const ShowInfo = z.object({
+  id: z.string(),
+  title: z.string(),
+  altTitle: z.string().optional(),
+  isAnime: z.boolean().optional(),
+  doEpisodeCountOverall: z.boolean().optional(),
+  seasonCount: z.number().optional(),
+  seasons: z.array(ShowSeason),
+  imgLink: z.string().optional(),
+})
+export type ShowInfo = z.infer<typeof ShowInfo>
 
-export interface EpisodeDate {
-  episode: number
-  date: DateTime<true>
-}
+export const SeasonView = z.object({
+  id: z.string(),
+  seasonInfo: ShowSeason,
+  watchedEpisodes: z.number(),
+  currentEpisodeCount: z.number().optional(),
+  beganDate: z.string().optional(),
+  completedDate: z.string().optional(),
+  droppedDate: z.string().optional(),
+})
+export type SeasonView = z.infer<typeof SeasonView>
 
-export interface SeasonView {
-  id: string
-  seasonInfo: ShowSeason
-  watchedEpisodes: number
-  currentEpisodeCount?: number
-  beganDate?: string
-  completedDate?: string
-  droppedDate?: string
-  // notes: string[]
-}
+export const WatchlistData = z.object({
+  main: z.array(SeasonView),
+  live: z.array(SeasonView),
+  queue: z.array(SeasonView),
+  upcoming: z.array(ShowSeason),
+  backlog: z.array(ShowInfo),
+})
+export type WatchlistData = z.infer<typeof WatchlistData>
 
-export interface WatchlistData {
-  main: SeasonView[]
-  live: SeasonView[]
-  queue: SeasonView[]
-  upcoming: ShowSeason[]
-  backlog: ShowInfo[]
-}
+export const EpisodeDate = z.object({
+  episode: z.number(),
+  date: z.custom<DateTime>(arg => arg instanceof DateTime),
+})
+export type EpisodeDate = z.infer<typeof EpisodeDate>
