@@ -1,12 +1,15 @@
-export interface TokenResponse {
-  access_token: string
-  expires_in: number
-  token_type: string
-  scope?: string
-  account_id?: string
-  uid?: string
-  refresh_token?: string
-}
+import * as z from 'zod'
+
+export const TokenResponse = z.object({
+  access_token: z.string(),
+  expires_in: z.number(),
+  token_type: z.string(),
+  scope: z.string().optional(),
+  account_id: z.string().optional(),
+  uid: z.string().optional(),
+  refresh_token: z.string().optional(),
+})
+export type TokenResponse = z.infer<typeof TokenResponse>
 
 export interface DBAccountInfo {
   account_id: string
@@ -33,6 +36,7 @@ export interface DBAccountInfo {
   }
 }
 
-export interface AppSettings {
-  widgetList: string[]
-}
+export const AppSettings = z.object({
+  widgetList: z.array(z.string()),
+})
+export type AppSettings = z.infer<typeof AppSettings>

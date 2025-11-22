@@ -22,7 +22,8 @@
     "vue": "^3.4.29",
     "vue-cookies": "^1.8.4",
     "vue-router": "^4.3.3",
-    "vuetify": "^3.10.9"
+    "vuetify": "^3.10.9",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
