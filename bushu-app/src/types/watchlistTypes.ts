@@ -1,6 +1,15 @@
 import * as z from 'zod'
 import { DateTime } from "luxon"
 
+export const ListType = z.enum([
+  'Main',
+  'Live',
+  'Queue',
+  'Upcoming',
+  'Backlog',
+])
+export type ListType = z.infer<typeof ListType>
+
 export const RawEpisodeDate = z.object({
   episode: z.number(),
   date: z.string(),
