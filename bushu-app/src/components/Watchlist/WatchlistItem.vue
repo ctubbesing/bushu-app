@@ -2,7 +2,7 @@
   <div id="full-item">
     <div id="item-details">
       <div id="info-section">
-        <thumbnail-image
+        <ThumbnailImage
           :link="imageLink"
           :height="100"
           style="margin-right: 5px"
@@ -13,7 +13,7 @@
             id="item-name"
           >
             <span>{{ loadedShowInfo.title }}</span>
-            <template v-if="parentList !== 'backlog' && loadedShowSeason">
+            <template v-if="parentList !== 'Backlog' && loadedShowSeason">
               <span v-if="loadedShowSeason.name">
                 {{ loadedShowSeason.name }}
               </span>
@@ -23,18 +23,18 @@
             </template>
           </div>
           <div
-            v-if="editedSeasonView"
+            v-if="seasonView"
             id="viewed-dates"
           >
-            <div v-if="editedSeasonView.beganDate">
-              Started {{ formatDate(editedSeasonView.beganDate) }}
+            <div v-if="seasonView.beganDate">
+              Started {{ formatDate(seasonView.beganDate) }}
             </div>
-            <div v-if="editedSeasonView.completedDate">
-              Completed {{ formatDate(editedSeasonView.completedDate) }}
+            <div v-if="seasonView.completedDate">
+              Completed {{ formatDate(seasonView.completedDate) }}
             </div>
           </div>
           <div
-            v-if="parentList === 'upcoming' && loadedShowSeason"
+            v-if="parentList === 'Upcoming' && loadedShowSeason"
             id="release-date"
           >
             Airing {{ formatDate(loadedShowSeason.startDate) }}
@@ -42,13 +42,14 @@
         </div>
       </div>
       <div
-        v-if="doProgressBar && editedSeasonView && !isReadOnly"
+        v-if="doProgressBar && seasonView && !isReadOnly"
         id="progress-section"
         :style="getProgressBar()"
-        :key="rerenderKey"
-      >
+        >
+        <!-- /////////////// TODO: still need this? -->
+        <!-- :key="rerenderKey" -->
         <div
-          v-if="editedSeasonView.beganDate"
+          v-if="seasonView.beganDate"
           class="counts"
         >
           <span @click="toggleEpisodeCountUnits">
@@ -65,21 +66,20 @@
             v-else
             style="display: inline-block"
           >
-            [number input]
-            <!-- <b-form-input
-              type="number"
-              v-model.number="editedProgress"
+            <v-number-input
+              v-model="editedProgress"
               :max="maxValidProgress"
               :min="minValidProgress"
-              :state="isEditedProgressValid ? null : false"
-              size="sm"
-              style="width: 75px; font-size: 0.8em"
-              inputmode="numeric"
-              pattern="[0-9]*"
+              :rules="[isEditedProgressValid]"
+              density="compact"
+              style="height: 32px"
+              class="episode-count-input"
+              variant="solo"
+              inset
               autofocus
               @blur="saveManualProgressEdit"
               @keyup.enter="saveManualProgressEdit"
-            /> -->
+            />
           </span>
           <span> / </span>
           <span v-if="!releaseSchedule || releaseSchedule.length === 0">
@@ -117,7 +117,7 @@
           </span>
         </div>
         <div
-          v-if="!editedSeasonView.beganDate"
+          v-if="!seasonView.beganDate"
           style="width: 100%; text-align: center"
         >
           <div
@@ -159,443 +159,341 @@
       v-if="!isReadOnly"
       id="side-info"
     >
-      <base-dropdown 
+      <BaseDropdown
         icon="mdi-dots-vertical"
         :options="dropdownOptions"
       />
-      <div style="text-align: center">
+      <!-- //////// TODO: draggable items are disabled for now until a better draggable system is made -->
+      <!-- <div style="text-align: center">
         <img
           v-if="isReorderable"
           src="@/assets/dragHandle.svg"
           class="drag-handle"
         >
-      </div>
+      </div> -->
     </div>
     <!-- Release Schedule Modal -->
-    <release-schedule-modal
-      v-if="doReleaseSchedule && loadedShowSeason"
-      v-model="showReleaseScheduleModal"
-      :release-schedule="releaseSchedule"
+    <ReleaseScheduleModal
+      v-if="!isReadOnly && doReleaseSchedule && loadedShowSeason"
       :show-season="loadedShowSeason"
       :available-episode-count="availableEpisodeCount"
-      :parent-list="parentList"
-      @irregular-seasons-updated="$emit('irregular-seasons-updated')"
-    >
-      <template v-slot:item-info>
-        <watchlist-item
-          :show-season="loadedShowSeason"
-          :is-read-only="true"
-        />
-      </template>
-    </release-schedule-modal>
+      :value="showReleaseScheduleModal"
+      @input="(e: boolean) => showReleaseScheduleModal = e"
+    />
+    <!-- TODO: clean up this v-model once RSM is updated to composition API -->
+    <!-- v-model="showReleaseScheduleModal" -->
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { useWatchlist } from '@/stores/watchlist'
-import type {
-  EpisodeDate,
-  RawEpisodeDate,
-  SeasonView,
-  ShowInfo,
-  ShowSeason
-} from '@/types/watchlistTypes'
+import { EpisodeDate, ListType, SeasonView, ShowInfo, type ShowSeason } from '@/types/watchlistTypes'
 import formatDate from '@/utils/formatDate'
-import WatchlistService from '@/utils/services/WatchlistService'
+import watchlistService from '@/utils/services/watchlistService'
 import tools from '@/utils/tools'
 import { DateTime } from 'luxon'
-import { mapStores } from 'pinia'
-import type { PropType } from 'vue'
+import { computed, ref } from 'vue'
 import ThumbnailImage from '../ThumbnailImage.vue'
 import ReleaseScheduleModal from './ReleaseScheduleModal.vue'
 import BaseDropdown from '../utils/BaseDropdown.vue'
 import type { BaseDropdownOption } from '../utils/types/baseTypes'
+import buildReleaseSchedule from '@/utils/watchlist/buildReleaseSchedule'
 
-export default {
-  components: {
-    ReleaseScheduleModal,
-    ThumbnailImage,
-    BaseDropdown,
-  },
-  props: {
-    parentList: {
-      type: String,
-      required: false,
-      default: 'queue',
-    },
-    seasonView: {
-      type: Object as PropType<SeasonView | undefined>,
-      required: false,
-    },
-    showSeason: {
-      type: Object as PropType<ShowSeason | undefined>,
-      required: false,
-    },
-    showInfo: {
-      type: Object as PropType<ShowInfo | undefined>,
-      required: false,
-    },
-    isReadOnly: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    isReorderable: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-  },
-  data() {
+const seasonView = defineModel<SeasonView>()
+
+const props = defineProps<{
+  parentList: ListType,
+  showSeason?: ShowSeason,
+  showInfo?: ShowInfo,
+  isReadOnly?: boolean,
+  isReorderable: boolean,
+}>()
+
+const emit = defineEmits<{
+  'promote-item': [destination: string | undefined],
+  'demote-item': [],
+  'remove-item': [],
+  'mark-completed': [],
+  // 'season-view-updated': [],
+}>()
+
+const watchlistStore = useWatchlist()
+
+const loadedShowInfo = computed((): ShowInfo | undefined => {
+  if (props.showInfo) {
+    return props.showInfo
+  }
+  const showSeasonData = seasonView.value?.seasonInfo ?? props.showSeason
+  return showSeasonData ? watchlistStore.getShowInfoById(showSeasonData.showId) : undefined
+})
+
+const loadedShowSeason = computed((): ShowSeason | null => props.showSeason ?? seasonView.value?.seasonInfo ?? null)
+
+const imageLink = computed((): string => {
+  if (seasonView.value || props.showSeason) {
+    const showSeasonData = seasonView.value?.seasonInfo ?? props.showSeason
+    if (showSeasonData) {
+      return showSeasonData.imgLink ?? watchlistStore.getImageLink(showSeasonData.showId, showSeasonData.id)
+    } 
+  } else if (props.showInfo) {
+    return watchlistStore.getShowImageLink(props.showInfo)
+  }
+  return ''
+})
+
+const previousSeasonsEpisodeCount = computed((): number => {
+  if (loadedShowSeason.value && loadedShowInfo.value) {
+    const currentSznNumber = loadedShowSeason.value.seasonNumber
+    return loadedShowInfo.value.seasons.reduce((total: number, szn: ShowSeason) => {
+      return total + ((currentSznNumber > szn.seasonNumber && szn.totalEpisodeCount) ? szn.totalEpisodeCount : 0)
+    }, 0)
+  }
+  return 0
+})
+
+const doReleaseSchedule = computed((): boolean => props.parentList === ListType.enum.Live || props.parentList === ListType.enum.Upcoming)
+
+const releaseSchedule = computed((): EpisodeDate[] => {
+  if (doReleaseSchedule.value && loadedShowSeason.value) {
+    return buildReleaseSchedule(loadedShowSeason.value)
+  }
+  return []
+})
+
+const availableEpisodeCount = computed((): number => {
+  let today = DateTime.now()
+  return releaseSchedule.value.filter((d: EpisodeDate) => d.date <= today).length
+})
+
+const displayedAvailableEpisodeCount = computed((): number => {
+  let thisSeasonEpisodes = loadedShowSeason.value?.totalEpisodeCount ?? 0
+  let thisSeasonNotYetAvailable = Math.max(0, thisSeasonEpisodes - availableEpisodeCount.value)
+  if (doEpisodeCountOverall.value) {
+    return overallTotalEpisodeCount.value - thisSeasonNotYetAvailable
+  } else {
+    return availableEpisodeCount.value
+  }
+})
+
+const overallTotalEpisodeCount = computed((): number => {
+  if (seasonView.value && loadedShowInfo.value) {
+    return loadedShowInfo.value.seasons.reduce((total: number, szn: ShowSeason) => {
+      return total + (szn.totalEpisodeCount ? szn.totalEpisodeCount : 0)
+    }, 0)
+  }
+  return 0
+})
+
+const doEpisodeCountOverall = ref(false)
+const doEpisodeCountUnitsLabel = ref(false)
+const toggleEpisodeCountUnits = () => {
+  doEpisodeCountUnitsLabel.value = true
+  doEpisodeCountOverall.value = !doEpisodeCountOverall.value
+}
+
+const displayedTotalEpisodeCount = computed((): number => {
+  if (doEpisodeCountOverall.value) {
+    return overallTotalEpisodeCount.value
+  } else {
+    return loadedShowSeason.value?.totalEpisodeCount ?? 0
+  }
+})
+
+const overallEpisodeProgress = computed((): number => {
+  if (seasonView.value) {
+    return seasonView.value.watchedEpisodes + previousSeasonsEpisodeCount.value
+  }
+  return 0
+})
+
+const displayedEpisodeProgress = computed((): number => {
+  if (doEpisodeCountOverall.value) {
+    return overallEpisodeProgress.value
+  }
+  return seasonView.value?.watchedEpisodes ?? 0
+})
+
+const doProgressBar = computed((): boolean => props.parentList === ListType.enum.Main || props.parentList === ListType.enum.Live)
+
+const getProgressBar = (): string => {
+let progressBarStyle = `border-radius: 0 0 0 ${(itemMessages.value.length > 0 || itemButton.value) ? '0' : '8px'};`
+
+  let progressPct = -1
+  let availablePct = -1
+  if (displayedTotalEpisodeCount.value) {
+    progressPct = 100 * displayedEpisodeProgress.value / displayedTotalEpisodeCount.value
+
+    if (displayedAvailableEpisodeCount.value && props.parentList === 'Live' && seasonView.value?.beganDate) {
+      availablePct = 100 * displayedAvailableEpisodeCount.value / displayedTotalEpisodeCount.value
+    }
+
+    progressBarStyle += `background-image: linear-gradient(to right, ` +
+                        `hsl(222, 71%, 60%) ${progressPct}%, ` +
+                        ( availablePct === -1 ? '' : `hsl(222, 60%, 67.5%) ${progressPct}%, `) +
+                        ( availablePct === -1 ? '' : `hsl(222, 60%, 67.5%) ${availablePct}%, `) +
+                        `hsl(222, 71%, 75%) ${Math.max(progressPct, availablePct)}%);`
+  } else {
+    progressBarStyle += `background-image: linear-gradient(to right, hsl(222, 71%, 60%) 25%, hsl(222, 71%, 75%) 75%);`
+  }
+
+  return progressBarStyle
+}
+
+const formatReleaseDate = (date: DateTime): string => date.toFormat('EEEE, M/d/yyyy')
+
+const hasBegunAiring = computed((): boolean => loadedShowSeason.value?.startDate ? loadedShowSeason.value?.startDate <= tools.getToday() : false)
+const isSeasonFullyReleased = computed((): boolean => availableEpisodeCount.value === (loadedShowSeason.value?.totalEpisodeCount ?? -1))
+const isUpToDateWithLiveSeason = computed((): boolean => props.parentList === 'Live' && seasonView.value?.watchedEpisodes === availableEpisodeCount.value)
+const isSeasonProgressComplete = computed((): boolean => (loadedShowSeason.value?.totalEpisodeCount ?? false) === seasonView.value?.watchedEpisodes)
+
+const itemMessages = computed((): string[] => {
+  let messages: string[] = []
+  if (props.parentList === 'Live' && !isSeasonFullyReleased.value) {
+    if (isUpToDateWithLiveSeason.value) {
+      messages.push('Up to date!')
+    }
+    messages.push(`Next episode expected ${formatReleaseDate(releaseSchedule.value[availableEpisodeCount.value].date)}`)
+  } else if (props.parentList === 'Upcoming' && hasBegunAiring.value) {
+    messages.push('This item has begun airing!')
+  }
+  return messages
+})
+
+type ActionButton = {
+  label: string,
+  action: (...args: ListType[]) => void,
+  args: ListType[],
+}
+const itemButton = computed((): ActionButton | null => {
+  if (isSeasonProgressComplete.value && !props.isReadOnly) {
     return {
-      editedSeasonView: null as SeasonView | null,
-      doEpisodeCountOverall: false as boolean,
-      doEpisodeCountUnitsLabel: false as boolean,
-      doManualProgressEdit: false as boolean,
-      editedProgress: 0 as number,
-      rerenderKey: '' as string,
-      showReleaseScheduleModal: false as boolean,
+      label: 'Mark season completed',
+      action: markSeasonCompleted,
+      args: [],
     }
-  },
-  computed: {
-    ...mapStores(useWatchlist),
-    loadedShowInfo(): ShowInfo | null {
-      if (this.showInfo) {
-        return this.showInfo
-      }
-      const showSeasonData = this.editedSeasonView ? this.editedSeasonView.seasonInfo : this.showSeason
-      return showSeasonData ? this.watchlistStore.getShowInfoById(showSeasonData.showId) : null
-    },
-    loadedShowSeason(): ShowSeason | null {
-      if (this.showSeason) {
-        return this.showSeason
-      }
-      if (this.editedSeasonView) {
-        return this.editedSeasonView.seasonInfo
-      }
-      return null
-    },
-    imageLink(): string {
-      if (this.editedSeasonView || this.showSeason) {
-        const showSeasonData = this.editedSeasonView ? this.editedSeasonView.seasonInfo : this.showSeason
-        if (showSeasonData?.imgLink) {
-          return showSeasonData.imgLink
-        } else if (showSeasonData != undefined) {
-          return this.watchlistStore.getImageLink(showSeasonData.showId, showSeasonData.id)
-        }
-      } else if (this.showInfo) {
-        return this.watchlistStore.getShowImageLink(this.showInfo)
-      }
-      return ''
-    },
-    doProgressBar(): boolean {
-      return this.parentList === 'main' || this.parentList === 'live'
-    },
-    previousSeasonsEpisodeCount(): number {
-      if (this.loadedShowSeason && this.loadedShowInfo) {
-        const currentSznNumber = this.loadedShowSeason.seasonNumber
-        return this.loadedShowInfo.seasons.reduce((total: number, szn: ShowSeason) => {
-          return total + ((currentSznNumber > szn.seasonNumber && szn.totalEpisodeCount) ? szn.totalEpisodeCount : 0)
-        }, 0)
-      }
-      return 0
-    },
-    overallEpisodeProgress(): number {
-      if (this.editedSeasonView) {
-        return this.editedSeasonView.watchedEpisodes + this.previousSeasonsEpisodeCount
-      }
-      return 0
-    },
-    overallTotalEpisodeCount(): number {
-      if (this.editedSeasonView && this.loadedShowInfo) {
-        return this.loadedShowInfo.seasons.reduce((total: number, szn: ShowSeason) => {
-          return total + (szn.totalEpisodeCount ? szn.totalEpisodeCount : 0)
-        }, 0)
-      }
-      return 0
-    },
-    displayedEpisodeProgress(): number {
-      if (this.doEpisodeCountOverall) {
-        return this.overallEpisodeProgress
-      } else {
-        return this.editedSeasonView ? this.editedSeasonView.watchedEpisodes : 0
-      }
-    },
-    displayedTotalEpisodeCount(): number {
-      if (this.doEpisodeCountOverall) {
-        return this.overallTotalEpisodeCount
-      } else {
-        return (this.loadedShowSeason && this.loadedShowSeason.totalEpisodeCount) ? this.loadedShowSeason.totalEpisodeCount : 0
-      }
-    },
-    minValidProgress(): number {
-      return this.doEpisodeCountOverall ? this.previousSeasonsEpisodeCount : 0
-    },
-    maxValidProgress(): number {
-      const currentSznTotalEpisodes: number | null | undefined = this.loadedShowSeason?.totalEpisodeCount
-      if (currentSznTotalEpisodes == null) {
-        return Infinity
-      }
-      return currentSznTotalEpisodes + this.minValidProgress
-    },
-    isEditedProgressValid(): boolean {
-      return this.editedProgress >= this.minValidProgress &&
-             this.editedProgress <= this.maxValidProgress
-    },
-    isSeasonProgressComplete(): boolean {
-      if (this.loadedShowSeason?.totalEpisodeCount) {
-        return this.loadedShowSeason.totalEpisodeCount === this.editedSeasonView?.watchedEpisodes
-      }
-      return false
-    },
-    isPromotable(): boolean {
-      return this.parentList === 'queue' || this.parentList === 'backlog'
-    },
-    isDemotable(): boolean {
-      return this.parentList === 'main' || this.parentList === 'live'
-    },
-    hasBegunAiring(): boolean {
-      if (this.loadedShowSeason && this.loadedShowSeason.startDate) {
-        const today = tools.getToday()
-        return this.loadedShowSeason.startDate <= today
-      }
-      return false
-    },
-    doReleaseSchedule(): boolean {
-      return this.parentList === 'live' || this.parentList === 'upcoming'
-    },
-    releaseSchedule(): EpisodeDate[] {
-      let episodeDates: EpisodeDate[] = []
-      if (this.doReleaseSchedule && this.loadedShowSeason && this.loadedShowSeason.startDate) {
-        let startDate = DateTime.fromISO(this.loadedShowSeason.startDate)
-        if (startDate.isValid)
-        {
-          episodeDates = [{
-            episode: 1,
-            date: startDate,
-          }]
-          let episodeCount = this.loadedShowSeason.totalEpisodeCount ?? 30
-          let previousDate: DateTime = startDate
-          for (let i = 1; i < episodeCount; i++) {
-            let nextIrregularDate = this.loadedShowSeason.irregularDates?.find((d: RawEpisodeDate) => d.episode >= i + 1)
-
-            let currentDate: DateTime
-            if (nextIrregularDate?.episode === i + 1) {
-              currentDate = DateTime.fromISO(nextIrregularDate.date)
-            } else {
-              let nextWeekDate = previousDate.plus({days: 7})
-              currentDate = nextIrregularDate ? DateTime.min(DateTime.fromISO(nextIrregularDate.date), nextWeekDate) : nextWeekDate
-            }
-
-            previousDate = currentDate
-
-            episodeDates.push({
-              episode: i + 1,
-              date: currentDate
-            })
-          }
-        }
-      }
-      return episodeDates
-    },
-    availableEpisodeCount(): number {
-      let today = DateTime.now()
-      return this.releaseSchedule.filter((d: EpisodeDate) => d.date <= today).length
-    },
-    displayedAvailableEpisodeCount(): number {
-      let thisSeasonEpisodes = ((this.loadedShowSeason?.totalEpisodeCount) ? this.loadedShowSeason.totalEpisodeCount : 0)
-      let thisSeasonNotYetAvailable = Math.max(0, thisSeasonEpisodes - this.availableEpisodeCount)
-      if (this.doEpisodeCountOverall) {
-        return this.overallTotalEpisodeCount - thisSeasonNotYetAvailable
-      } else {
-        return this.availableEpisodeCount
-      }
-    },
-    isSeasonFullyReleased(): boolean {
-      return this.availableEpisodeCount === (this.loadedShowSeason?.totalEpisodeCount ?? -1)
-    },
-    isUpToDateWithLiveSeason(): boolean {
-      return this.parentList === 'live' && this.editedSeasonView?.watchedEpisodes === this.availableEpisodeCount
-    },
-    itemMessages(): string[] {
-      let messages: string[] = []
-      if (this.parentList === 'live' && !this.isSeasonFullyReleased) {
-        if (this.isUpToDateWithLiveSeason) {
-          messages.push('Up to date!')
-        }
-        messages.push(`Next episode expected ${this.formatReleaseDate(this.releaseSchedule[this.availableEpisodeCount].date)}`)
-      } else if (this.parentList === 'upcoming' && this.hasBegunAiring) {
-        messages.push('This item has begun airing!')
-      }
-      return messages
-    },
-    itemButton(): { label: string, action: (...args: string[]) => void, args: string[] } | null {
-      if (this.isSeasonProgressComplete && !this.isReadOnly) {
-        return {
-          label: 'Mark season completed',
-          action: this.markSeasonCompleted,
-          args: [],
-        }
-      }
-      if (this.parentList === 'upcoming' && this.hasBegunAiring) {
-        return {
-          label: 'Move to Live',
-          action: this.promoteItem,
-          args: ['live'],
-        }
-      }
-      return null
-    },
-    dropdownOptions(): BaseDropdownOption[] {
-      let options: BaseDropdownOption[] = []
-
-      if (this.isPromotable) {
-        options.push({
-          title: `Promote to ${this.parentList === 'queue' ? 'Main' : 'Queue'}`,
-        })
-      }
-
-      if (this.parentList === 'upcoming') {
-        options.push({
-          title: 'Promote to Live',
-          clickEvent: () => this.promoteItem('live'),
-        })
-        options.push({
-          title: 'Promote to Main',
-          clickEvent: () => this.promoteItem('main'),
-        })
-      }
-
-      if (this.parentList === 'live') {
-        options.push({
-          title: 'Move to Main',
-          clickEvent: this.promoteItem,
-        })
-      }
-
-      if (this.isDemotable) {
-        options.push({
-          title: 'Demote to Queue',
-          clickEvent: this.demoteItem,
-        })
-      }
-
-      options.push({
-        title: this.seasonView ? 'Drop' : 'Remove',
-        clickEvent: this.removeItem,
-      })
-
-      if (this.doReleaseSchedule) {
-        options.push({
-          title: 'View Release Schedule',
-          clickEvent: this.openScheduleModal,
-        })
-      }
-
-      return options
-    },
-  },
-  created() {
-    if (this.seasonView) {
-      this.editedSeasonView = this.seasonView
+  }
+  if (props.parentList === 'Upcoming' && hasBegunAiring.value) {
+    return {
+      label: 'Move to Live',
+      action: promoteItem,
+      args: [ListType.enum.Live],
     }
-    this.doEpisodeCountOverall = this.loadedShowInfo?.doEpisodeCountOverall || false
-  },
-  watch: {
-    seasonView() {
-      this.editedSeasonView = this.seasonView ?? null
-    },
-  },
-  methods: {
-    formatDate(dateStr: string | undefined) {
-      return formatDate(dateStr)
-    },
-    formatReleaseDate(date: DateTime) {
-      return date.toFormat('EEEE, M/d/yyyy')
-    },
-    getProgressBar(): string {
-      let progressBarStyle = `border-radius: 0 0 0 ${(this.itemMessages.length > 0 || this.itemButton) ? '0' : '8px'};`
+  }
+  return null
+})
 
-      let progressPct = -1
-      let availablePct = -1
-      if (this.displayedTotalEpisodeCount) {
-        progressPct = 100 * this.displayedEpisodeProgress / this.displayedTotalEpisodeCount
+const doManualProgressEdit = ref(false)
+const editedProgress = ref(0)
+const enableManualProgressEdit = () => {
+  doManualProgressEdit.value = true
+  editedProgress.value = displayedEpisodeProgress.value
+}
 
-        if (this.displayedAvailableEpisodeCount && this.parentList === 'live' && this.editedSeasonView?.beganDate) {
-          availablePct = 100 * this.displayedAvailableEpisodeCount / this.displayedTotalEpisodeCount
-        }
+const minValidProgress = computed((): number => doEpisodeCountOverall.value ? previousSeasonsEpisodeCount.value : 0)
 
-        progressBarStyle += `background-image: linear-gradient(to right, ` +
-                            `hsl(222, 71%, 60%) ${progressPct}%, ` +
-                            ( availablePct === -1 ? '' : `hsl(222, 60%, 67.5%) ${progressPct}%, `) +
-                            ( availablePct === -1 ? '' : `hsl(222, 60%, 67.5%) ${availablePct}%, `) +
-                            `hsl(222, 71%, 75%) ${Math.max(progressPct, availablePct)}%);`
-      } else {
-        progressBarStyle += `background-image: linear-gradient(to right, hsl(222, 71%, 60%) 25%, hsl(222, 71%, 75%) 75%);`
-      }
+const maxValidProgress = computed((): number => {
+  const currentSznTotalEpisodes: number | null | undefined = loadedShowSeason.value?.totalEpisodeCount
+  if (currentSznTotalEpisodes == null) {
+    return Infinity
+  }
+  return currentSznTotalEpisodes + minValidProgress.value
+})
 
-      return progressBarStyle
-    },
-    incrementProgress() {
-      if (this.editedSeasonView) {
-        const totalEps = this.editedSeasonView.seasonInfo.totalEpisodeCount
-        if (totalEps == null || this.editedSeasonView.watchedEpisodes < totalEps) {
-          this.editedSeasonView.watchedEpisodes++
-          this.saveChanges()
-        }
-      }
-    },
-    toggleEpisodeCountUnits() {
-      this.doEpisodeCountUnitsLabel = true
-      this.doEpisodeCountOverall = !this.doEpisodeCountOverall
-    },
-    enableManualProgressEdit() {
-      this.doManualProgressEdit = true
-      this.editedProgress = this.displayedEpisodeProgress
-    },
-    saveManualProgressEdit() {
-      if (this.editedSeasonView) {
-        if (this.isEditedProgressValid && this.editedProgress !== this.displayedEpisodeProgress) {
-          const seasonProgress = this.doEpisodeCountOverall ? (this.editedProgress - this.previousSeasonsEpisodeCount) : this.editedProgress
-          this.editedSeasonView.watchedEpisodes = seasonProgress
-          this.saveChanges()
-        }
-        this.doManualProgressEdit = false
-      }
-    },
-    beginSeason() {
-      if (this.editedSeasonView && !this.editedSeasonView.beganDate) {
-        this.editedSeasonView.beganDate = tools.getTimestamp()
-        this.saveChanges()
-      }
-      this.rerenderKey = tools.getTimestamp()
-    },
-    promoteItem(destination: string | undefined = undefined) {
-      this.$emit('promote-item', destination)
-    },
-    demoteItem() {
-      this.$emit('demote-item')
-    },
-    removeItem() {
-      this.$emit('remove-item')
-    },
-    markSeasonCompleted() {
-      this.$emit('mark-completed')
-    },
-    saveChanges() {
-      if (this.editedSeasonView) {
-        WatchlistService.SaveSeasonViewDebounced(this.editedSeasonView)
-        this.$emit('season-view-updated', this.editedSeasonView)
-      }
-    },
-    openScheduleModal() {
-      if (this.loadedShowSeason) {
-        console.log('TODO: schedule modal') //// copy RSM file & port to Vue 3
-        this.showReleaseScheduleModal = true
-        // this.$bvModal.show(`release-schedule-modal-${this.parentList}-${this.loadedShowSeason.id}`)
-      }
-    },
-  },
+const isEditedProgressValid = computed((): boolean => editedProgress.value >= minValidProgress.value && editedProgress.value <= maxValidProgress.value)
+
+const saveManualProgressEdit = () => {
+  if (seasonView.value) {
+    if (isEditedProgressValid.value && editedProgress.value !== displayedEpisodeProgress.value) {
+      const seasonProgress = editedProgress.value - (doEpisodeCountOverall.value ? previousSeasonsEpisodeCount.value : 0)
+      seasonView.value.watchedEpisodes = seasonProgress
+      saveChanges()
+    }
+    doManualProgressEdit.value = false
+  }
+}
+
+const incrementProgress = () => {
+  if (seasonView.value) {
+    const totalEps = seasonView.value.seasonInfo.totalEpisodeCount
+    if (totalEps == null || seasonView.value.watchedEpisodes < totalEps) {
+      seasonView.value.watchedEpisodes++
+      saveChanges()
+    }
+  }
+}
+
+const beginSeason = () => {
+  if (seasonView.value && !seasonView.value.beganDate) {
+    seasonView.value.beganDate = tools.getTimestamp()
+    saveChanges()
+  }
+  // rerenderKey.value = tools.getTimestamp() /////////// TODO: still need?
+}
+
+const promoteItem = (destination: ListType | undefined = undefined) => emit('promote-item', destination)
+const demoteItem = () => emit('demote-item')
+const removeItem = () => emit('remove-item')
+const markSeasonCompleted = () => emit('mark-completed')
+
+const isPromotable = computed((): boolean => props.parentList === ListType.enum.Queue || props.parentList === ListType.enum.Backlog)
+const isDemotable = computed((): boolean => props.parentList === ListType.enum.Main || props.parentList === ListType.enum.Live)
+
+const showReleaseScheduleModal = ref(false)
+
+const dropdownOptions = computed((): BaseDropdownOption[] => {
+  let options: BaseDropdownOption[] = []
+
+  if (isPromotable.value) {
+    options.push({
+      title: `Promote to ${props.parentList === ListType.enum.Queue ? 'Main' : 'Queue'}`,
+    })
+  }
+
+  if (props.parentList === ListType.enum.Upcoming) {
+    options.push({
+      title: 'Promote to Live',
+      clickEvent: () => promoteItem(ListType.enum.Live),
+    })
+    options.push({
+      title: 'Promote to Main',
+      clickEvent: () => promoteItem(ListType.enum.Main),
+    })
+  }
+
+  if (props.parentList === ListType.enum.Live) {
+    options.push({
+      title: 'Move to Main',
+      clickEvent: promoteItem,
+    })
+  }
+
+  if (isDemotable.value) {
+    options.push({
+      title: 'Demote to Queue',
+      clickEvent: demoteItem,
+    })
+  }
+
+  options.push({
+    title: seasonView.value ? 'Drop' : 'Remove',
+    clickEvent: removeItem,
+  })
+
+  if (doReleaseSchedule.value) {
+    options.push({
+      title: 'View Release Schedule',
+      clickEvent: () => showReleaseScheduleModal.value = true,
+    })
+  }
+
+  return options
+})
+
+const saveChanges = () => {
+  if (seasonView.value) {
+    watchlistService.SaveSeasonViewDebounced(seasonView.value)
+    // this.$emit('season-view-updated', seasonView.value) ////////// don't need this i think bc model
+  }
 }
 </script>
 
@@ -729,5 +627,24 @@ export default {
 }
 #modify-item-button:active, #begin-watching-button:active {
   background-color: hsl(222, 71%, 65%);
+}
+
+.episode-count-input :deep(.v-btn--icon.v-btn--density-default),
+.episode-count-input :deep(.v-number-input__control),
+.episode-count-input :deep(div),
+.episode-count-input :deep(input),
+.episode-count-input :deep(.v-field__append-inner) {
+  max-height: 32px !important;
+}
+
+.episode-count-input :deep(input) {
+  height: 32px !important;
+  font-size: 16px;
+  padding: 0 0 0 12px;
+  min-height: 30px !important;
+}
+
+.episode-count-input :deep(.v-btn) {
+  width: 20px !important;
 }
 </style>
