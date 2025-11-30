@@ -1,42 +1,52 @@
-import type {
-  ShowInfo,
+import {
+  type ShowInfo,
   ShowSeason,
-  WatchlistData,
-  SeasonView,
+  type WatchlistData,
+  type SeasonView,
 } from '@/types/watchlistTypes'
 import dropbox from '@/translators/dropbox'
 import tools from '../tools'
+import z from 'zod'
 
 interface DataStore<T> {
   [ id: string ]: T
 }
 
-interface RawShowInfo {
-  id: string
-  title: string
-  altTitle?: string
-  isAnime?: boolean
-  doEpisodeCountOverall?: boolean
-  seasonCount?: number
-  showSeasonIds: string[]
-  imgLink?: string
-}
-interface RawWatchlistData {
-  mainSeasonViewIds: string[]
-  liveSeasonViewIds: string[]
-  queueSeasonViewIds: string[]
-  upcomingShowSeasonIds: string[]
-  backlogShowInfoIds: string[]
-}
-interface RawSeasonView {
-  id: string
-  showSeasonId: string
-  watchedEpisodes: number
-  currentEpisodeCount?: number
-  beganDate?: string
-  completedDate?: string
-  droppedDate?: string
-}
+const RawShowInfo = z.object({
+  id: z.string(),
+  title: z.string(),
+  altTitle: z.string().optional(),
+  isAnime: z.boolean().optional(),
+  doEpisodeCountOverall: z.boolean().optional(),
+  seasonCount: z.number().optional(),
+  showSeasonIds: z.array(z.string()),
+  imgLink: z.string().optional(),
+})
+type RawShowInfo = z.infer<typeof RawShowInfo>
+
+const RawSeasonView = z.object({
+  id: z.string(),
+  showSeasonId: z.string(),
+  watchedEpisodes: z.number(),
+  currentEpisodeCount: z.number().optional(),
+  beganDate: z.string().optional(),
+  completedDate: z.string().optional(),
+  droppedDate: z.string().optional(),
+})
+type RawSeasonView = z.infer<typeof RawSeasonView>
+
+const RawWatchlistData = z.object({
+  mainSeasonViewIds: z.array(z.string()),
+  liveSeasonViewIds: z.array(z.string()),
+  queueSeasonViewIds: z.array(z.string()),
+  upcomingShowSeasonIds: z.array(z.string()),
+  backlogShowInfoIds: z.array(z.string()),
+})
+type RawWatchlistData = z.infer<typeof RawWatchlistData>
+
+const RawShowInfoRecord =  z.record(z.string(), RawShowInfo)
+const ShowSeasonRecord =  z.record(z.string(), ShowSeason)
+const RawSeasonViewRecord =  z.record(z.string(), RawSeasonView)
 
 const showInfoPath = '/Watchlist/shows.json'
 const showSeasonsPath = '/Watchlist/seasons.json'
@@ -52,7 +62,7 @@ let DebounceTimeoutId: number | undefined = undefined
 
 async function LoadShowInfo(doForceReload = false): Promise<DataStore<RawShowInfo>> {
   if (doForceReload || Object.keys(ShowInfoCache).length === 0) {
-    let showInfo: DataStore<RawShowInfo> | null = await dropbox.getData(showInfoPath)
+    let showInfo = RawShowInfoRecord.parse(await dropbox.getData(showInfoPath))
     if (showInfo === null) {
       showInfo = {}
     }
@@ -63,7 +73,7 @@ async function LoadShowInfo(doForceReload = false): Promise<DataStore<RawShowInf
 
 async function LoadShowSeasons(doForceReload = false): Promise<DataStore<ShowSeason>> {
   if (doForceReload || Object.keys(ShowSeasonCache).length === 0) {
-    let showSeasons: DataStore<ShowSeason> | null = await dropbox.getData(showSeasonsPath)
+    let showSeasons: DataStore<ShowSeason> | null = ShowSeasonRecord.parse(await dropbox.getData(showSeasonsPath))
     if (showSeasons === null) {
       showSeasons = {}
     }
@@ -74,7 +84,7 @@ async function LoadShowSeasons(doForceReload = false): Promise<DataStore<ShowSea
 
 async function LoadSeasonViews(doForceReload = false): Promise<DataStore<RawSeasonView>> {
   if (doForceReload || Object.keys(SeasonViewCache).length === 0) {
-    let seasonViews: DataStore<RawSeasonView> | null = await dropbox.getData(seasonViewsPath)
+    let seasonViews = RawSeasonViewRecord.parse(await dropbox.getData(seasonViewsPath))
     if (seasonViews === null) {
       seasonViews = {}
     }
@@ -84,7 +94,7 @@ async function LoadSeasonViews(doForceReload = false): Promise<DataStore<RawSeas
 }
 
 async function LoadWatchlistData(): Promise<RawWatchlistData> {
-  let watchlistData: RawWatchlistData | null = await dropbox.getData(watchlistDataPath)
+  let watchlistData = RawWatchlistData.parse(await dropbox.getData(watchlistDataPath))
   if (watchlistData === null) {
     watchlistData = {
       mainSeasonViewIds: [],

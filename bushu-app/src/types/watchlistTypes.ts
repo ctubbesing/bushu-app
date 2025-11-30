@@ -1,5 +1,5 @@
 import * as z from 'zod'
-import { DateTime } from "luxon"
+import { DateTime } from 'luxon'
 
 export const ListType = z.enum([
   'Main',
@@ -22,7 +22,7 @@ export const ShowSeason = z.object({
   seasonNumber: z.number(),
   name: z.string().optional(),
   totalEpisodeCount: z.number().nullable().optional(),
-  irregularDates: z.array(RawEpisodeDate),
+  irregularDates: z.array(RawEpisodeDate).optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   airingSeason: z.string().optional(),
@@ -66,6 +66,6 @@ export type WatchlistData = z.infer<typeof WatchlistData>
 
 export const EpisodeDate = z.object({
   episode: z.number(),
-  date: z.custom<DateTime>(arg => arg instanceof DateTime),
+  date: z.custom<DateTime<true>>(arg => arg instanceof DateTime),
 })
 export type EpisodeDate = z.infer<typeof EpisodeDate>
