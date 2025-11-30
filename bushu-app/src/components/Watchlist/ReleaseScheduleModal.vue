@@ -1,162 +1,176 @@
 <template>
-  <!-- <div> -->
-    <!-- :id="`release-schedule-modal-${parentList}-${showSeason.id}`" -->
-    <!-- centered -->
-    <base-modal
-      v-model="showModal"
-      title="Projected Release Schedule"
-      ok-title="Done"
-      :do-cancel="false"
-    >
-      <!-- ok-variant="outline-primary" -->
-      <slot name="item-info"></slot>
-      <div class="text-caption">
-        This is only a projection. Manually adjust the date of any episode to update the schedule.
+  <base-modal
+    v-model="showModal"
+    title="Projected Release Schedule"
+    ok-title="Done"
+    :do-cancel="false"
+    @ok="showModal = false"
+  >
+    <div class="d-flex pa-2">
+      <ThumbnailImage
+        :link="imageLink"
+        :height="100"
+        style="margin-right: 5px"
+      />
+      <div>
+        <div
+          v-if="showInfo"
+        >
+          <span class="text-h6 font-weight-bold">
+            {{ showInfo.title }}
+          </span>
+          <span
+            v-if="showSeason.name"
+            class="text-body-2"
+          >
+            {{ showSeason.name }}
+          </span>
+          <span
+            v-else
+            class="text-body-2"
+          >
+            Season {{ showSeason.seasonNumber }}
+          </span>
+        </div>
       </div>
-      <table id="release-schedule-table">
-        <thead>
-          <tr>
-            <th style="width: 30%"> Episode </th>
-            <th style="width: 70%"> Date </th>
-          </tr>
-        </thead>
-        <tbody>
-          <div
-            v-if="isLoading"
-            class="loading-cover"
-          >
-            <!-- <b-spinner variant="light" /> -->
-            [spinner]
-          </div>
-          <tr
-            v-for="episodeDate in releaseSchedule"
-            :key="episodeDate.episode"
-            :class="{
-              'released-episode': episodeDate.episode <= availableEpisodeCount,
-              'latest-episode': episodeDate.episode === availableEpisodeCount,
-            }"
-          >
-            <td> {{ episodeDate.episode }} </td>
-            <td>
-              <!-- <div
-                v-if="episodeDate.episode === editingEpisode"
-                class="date-editor"
+    </div>
+    <div class="text-caption">
+      This is only a projection. Manually adjust the date of any episode to update the schedule. (Edit feature WIP)
+    </div>
+    <table id="release-schedule-table">
+      <thead>
+        <tr>
+          <th style="width: 30%"> Episode </th>
+          <th style="width: 70%"> Date </th>
+        </tr>
+      </thead>
+      <tbody>
+        <div
+          v-if="isLoading"
+          class="loading-cover"
+        >
+          <!-- <b-spinner variant="light" /> -->
+          [spinner]
+        </div>
+        <tr
+          v-for="episodeDate in releaseSchedule"
+          :key="episodeDate.episode"
+          :class="{
+            'released-episode': episodeDate.episode <= availableEpisodeCount,
+            'latest-episode': episodeDate.episode === availableEpisodeCount,
+          }"
+        >
+          <td> {{ episodeDate.episode }} </td>
+          <td>
+            <!-- <div
+              v-if="episodeDate.episode === editingEpisode"
+              class="date-editor"
+            >
+              <div
+                v-if="conflictingIrregularEpisodes.length > 0"
+                class="invalid-entry-message"
               >
-                <div
-                  v-if="conflictingIrregularEpisodes.length > 0"
-                  class="invalid-entry-message"
-                >
-                  This conflicts with other episode dates.
-                </div>
-                <b-form-datepicker
-                  v-model="editingDate"
-                  :min="showSeason.startDate"
-                  size="sm"
-                  style="margin: 2px 0"
-                  :state="datePickerState"
-                  :label-help="''"
-                />
-                <div>
-                  <b-button
-                    variant="secondary"
-                    size="sm"
-                    :disabled="isLoading"
-                    @click="closeDateEditor()"
-                  >
-                    Cancel
-                  </b-button>
-                  <b-button
-                    variant="warning"
-                    size="sm"
-                    :disabled="!isEditingDateIrregular || isLoading"
-                    @click="setIrregularDate(true)"
-                  >
-                    Reset
-                  </b-button>
-                  <b-button
-                    variant="primary"
-                    size="sm"
-                    :disabled="!isEditingDateChanged || isLoading || conflictingIrregularEpisodes.length > 0"
-                    @click="setIrregularDate()"
-                  >
-                    Save
-                  </b-button>
-                </div>
-              </div> -->
-              <!-- v-else -->
-               <v-tooltip :open-on-hover="false" open-on-click @click.stop>
-                <template v-slot:activator="{ props }">
-                  <div
-                    v-bind="props"
-                    :class="[
-                      'schedule-date',
-                      {
-                        'irregular-date': isIrregularlyScheduledEpisode(episodeDate.episode),
-                        'invalid-date': isConflictingIrregularDate(episodeDate.episode),
-                        'clickable': !isLoading && episodeDate.episode !== 1,
-                      }
-                    ]"
-                    @click="editEpisodeDate(episodeDate)"
-                  >
-                    {{ formatReleaseDate(episodeDate.date) }}
-                  </div>
-               </template>
-               <v-date-picker />
-               </v-tooltip>
-            </td>
-          </tr>
-          <tr
-            v-if="showSeason.totalEpisodeCount == undefined"
-            style="background-color: #0001; font-size: 0.7em; color: #0008"
-          >
-            <td colspan="2">
-              <div style="padding: 2px">
-                <span style="margin-right: 2px">
-                  <v-icon icon="mdi-alert-circle-outline" />
-                </span>
-                The number of episodes shown may be inaccurate because the total episode count for this season is unset.
+                This conflicts with other episode dates.
               </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </base-modal>
-  <!-- </div> -->
+              <b-form-datepicker
+                v-model="editingDate"
+                :min="showSeason.startDate"
+                size="sm"
+                style="margin: 2px 0"
+                :state="datePickerState"
+                :label-help="''"
+              />
+              <div>
+                <b-button
+                  variant="secondary"
+                  size="sm"
+                  :disabled="isLoading"
+                  @click="closeDateEditor()"
+                >
+                  Cancel
+                </b-button>
+                <b-button
+                  variant="warning"
+                  size="sm"
+                  :disabled="!isEditingDateIrregular || isLoading"
+                  @click="setIrregularDate(true)"
+                >
+                  Reset
+                </b-button>
+                <b-button
+                  variant="primary"
+                  size="sm"
+                  :disabled="!isEditingDateChanged || isLoading || conflictingIrregularEpisodes.length > 0"
+                  @click="setIrregularDate()"
+                >
+                  Save
+                </b-button>
+              </div>
+            </div> -->
+            <!-- v-else -->
+              <!-- <v-tooltip :open-on-hover="false" open-on-click @click.stop>
+              <template v-slot:activator="{ props }"> -->
+                <!-- v-bind="props" -->
+                <div
+                  :class="[
+                    'schedule-date',
+                    {
+                      'irregular-date': isIrregularlyScheduledEpisode(episodeDate.episode),
+                      'invalid-date': isConflictingIrregularDate(episodeDate.episode),
+                      'clickable': !isLoading && episodeDate.episode !== 1,
+                    }
+                  ]"
+                  @click="editEpisodeDate(episodeDate)"
+                >
+                  {{ formatReleaseDate(episodeDate.date) }}
+                </div>
+              <!-- </template>
+              <v-date-picker />
+              </v-tooltip> -->
+          </td>
+        </tr>
+        <tr
+          v-if="showSeason.totalEpisodeCount == undefined"
+          style="background-color: #0001; font-size: 0.7em; color: #0008"
+        >
+          <td colspan="2">
+            <div style="padding: 2px">
+              <span style="margin-right: 2px">
+                <v-icon icon="mdi-alert-circle-outline" />
+              </span>
+              The number of episodes shown may be inaccurate because the total episode count for this season is unset.
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </base-modal>
 </template>
 
 <script lang="ts">
 import { useWatchlist } from '@/stores/watchlist'
-import type { EpisodeDate, RawEpisodeDate, ShowSeason } from '@/types/watchlistTypes'
+import type { EpisodeDate, RawEpisodeDate, ShowInfo, ShowSeason } from '@/types/watchlistTypes'
 import tools from '@/utils/tools'
-import type { DateTime } from 'luxon'
+import { DateTime } from 'luxon'
 import { mapStores } from 'pinia'
 import type { PropType } from 'vue'
 import BaseModal from '../utils/BaseModal.vue'
+import ThumbnailImage from '../ThumbnailImage.vue'
+import buildReleaseSchedule from '@/utils/watchlist/buildReleaseSchedule'
 
 export default {
   components: {
     BaseModal,
+    ThumbnailImage,
   },
   props: {
-    releaseSchedule: {
-      type: Array as PropType<EpisodeDate[]>,
-      required: true,
-    },
     showSeason: {
       type: Object as PropType<ShowSeason>,
       required: true,
     },
-    availableEpisodeCount: {
-      type: Number,
-      required: true,
-    },
-    parentList: {
-      type: String,
-      required: true,
-    },
     value: {
       type: Boolean,
-      // required: true,
+      required: true,
     }
   },
   data() {
@@ -168,6 +182,19 @@ export default {
   },
   computed: {
     ...mapStores(useWatchlist),
+    releaseSchedule(): EpisodeDate[] {
+      return buildReleaseSchedule(this.showSeason)
+    },
+    availableEpisodeCount(): number {
+      let today = DateTime.now()
+      return this.releaseSchedule.filter((d: EpisodeDate) => d.date <= today).length
+    },
+    imageLink(): string {
+      return this.showSeason.imgLink ?? this.watchlistStore.getImageLink(this.showSeason.showId, this.showSeason.id)
+    },
+    showInfo(): ShowInfo | undefined {
+      return this.watchlistStore.getShowInfoById(this.showSeason.showId)
+    },
     datePickerState(): boolean | null {
       if (this.conflictingIrregularEpisodes.length > 0) {
         return false
@@ -255,7 +282,8 @@ export default {
       }
     },
     async updateShowSeason(updatedSeason: ShowSeason) {
-      await this.watchlistStore.updateCatalogShowSeason(updatedSeason)
+      ///////// TODO: fix this part
+      // await this.watchlistStore.updateCatalogShowSeason(updatedSeason)
     }
   },
 }

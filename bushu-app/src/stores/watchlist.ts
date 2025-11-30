@@ -6,7 +6,7 @@ import { ref } from 'vue'
 
 export const useWatchlist = defineStore('watchlist', () => {
   const isLoading = ref(false)
-  // const isUpdatingSeason = ref(false)
+  const isUpdatingSeason = ref(false)
   const catalog = ref<ShowInfo[]>([])
 
   const loadCatalog = async () => {
@@ -63,6 +63,7 @@ export const useWatchlist = defineStore('watchlist', () => {
 
   return {
     isLoading,
+    isUpdatingSeason,
     loadCatalog,
     getShowInfoById,
     getShowImageLink,
