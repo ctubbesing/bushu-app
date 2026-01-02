@@ -206,11 +206,11 @@ const props = defineProps<{
   showSeason?: ShowSeason,
   showInfo?: ShowInfo,
   isReadOnly?: boolean,
-  isReorderable: boolean,
+  isReorderable?: boolean,
 }>()
 
 const emit = defineEmits<{
-  'promote-item': [destination: string | undefined],
+  'promote-item': [destination: ListType | undefined],
   'demote-item': [],
   'remove-item': [],
   'mark-completed': [],
@@ -219,12 +219,12 @@ const emit = defineEmits<{
 
 const watchlistStore = useWatchlist()
 
-const loadedShowInfo = computed((): ShowInfo | undefined => {
+const loadedShowInfo = computed((): ShowInfo | null => {
   if (props.showInfo) {
     return props.showInfo
   }
   const showSeasonData = seasonView.value?.seasonInfo ?? props.showSeason
-  return showSeasonData ? watchlistStore.getShowInfoById(showSeasonData.showId) : undefined
+  return showSeasonData ? watchlistStore.getShowInfoById(showSeasonData.showId) ?? null : null
 })
 
 const loadedShowSeason = computed((): ShowSeason | null => props.showSeason ?? seasonView.value?.seasonInfo ?? null)
