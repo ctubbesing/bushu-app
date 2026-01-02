@@ -90,22 +90,24 @@
             class="live-episode-release-details"
           >
             <table>
-              <tr>
-                <td>
-                  {{ displayedAvailableEpisodeCount ? displayedAvailableEpisodeCount : '?' }}
-                </td>
-                <td>
-                  available
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  {{ displayedTotalEpisodeCount ? displayedTotalEpisodeCount : '?' }}
-                </td>
-                <td>
-                  total
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td>
+                    {{ displayedAvailableEpisodeCount ? displayedAvailableEpisodeCount : '?' }}
+                  </td>
+                  <td>
+                    available
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    {{ displayedTotalEpisodeCount ? displayedTotalEpisodeCount : '?' }}
+                  </td>
+                  <td>
+                    total
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
           <span
