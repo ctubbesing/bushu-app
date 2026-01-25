@@ -8,6 +8,7 @@ import CanvasTest from './components/gallery/CanvasTest.vue'
 import AlethiWrapper from './components/gallery/AlethiWrapper.vue'
 import RomajiConverter from './components/gallery/RomajiConverter.vue'
 import WatchlistView from './views/WatchlistView.vue'
+import CameraSim from './components/gallery/CameraSim.vue'
 // import About from "@/views/About.vue"
 
 const router = createRouter({
@@ -66,6 +67,11 @@ const router = createRouter({
           path: 'romaji',
           name: 'Romaji Converter',
           component: RomajiConverter,
+        },
+        {
+          path: 'cameraSim',
+          name: 'Camera Sim',
+          component: CameraSim,
         },
       ],
     },
