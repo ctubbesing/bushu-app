@@ -130,6 +130,7 @@
           </div>
         </div>
         <v-btn
+          v-else-if="!isSeasonProgressComplete && !isUpToDateWithLiveSeason"
           icon="mdi-plus"
           variant="tonal"
           class="my-1 mx-2"
@@ -448,6 +449,7 @@ const dropdownOptions = computed((): BaseDropdownOption[] => {
   if (isPromotable.value) {
     options.push({
       title: `Promote to ${props.parentList === ListType.enum.Queue ? 'Main' : 'Queue'}`,
+      clickEvent: () => promoteItem(ListType.enum.Main),
     })
   }
 
