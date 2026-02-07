@@ -8,6 +8,7 @@ import CanvasTest from './components/gallery/CanvasTest.vue'
 import AlethiWrapper from './components/gallery/AlethiWrapper.vue'
 import RomajiConverter from './components/gallery/RomajiConverter.vue'
 import WatchlistView from './views/WatchlistView.vue'
+import WebGL from './components/gallery/WebGL.vue'
 // import About from "@/views/About.vue"
 
 const router = createRouter({
@@ -56,6 +57,11 @@ const router = createRouter({
           path: 'rayTracer',
           name: 'Ray Tracer',
           component: CanvasTest,
+        },
+        {
+          path: 'webGL',
+          name: 'WebGL',
+          component: WebGL,
         },
         {
           path: 'alethiScript',
