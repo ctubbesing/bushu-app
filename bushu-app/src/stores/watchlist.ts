@@ -64,6 +64,7 @@ export const useWatchlist = defineStore('watchlist', () => {
   return {
     isLoading,
     isUpdatingSeason,
+    catalog,
     loadCatalog,
     getShowInfoById,
     getShowImageLink,

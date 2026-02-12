@@ -13,8 +13,8 @@
           icon="mdi-television-guide"
           color="app-gray"
           variant="outlined"
+          @click="openCatalogModal()"
         />
-          <!-- @click="openCatalog()" -->
       </div>
       <div id="active-sections-container">
         <div id="currently-watching-section">
@@ -121,6 +121,9 @@
       </div>
     </div>
     <!-- Catalog Modal -->
+    <CatalogModal
+      v-model="showCatalogModal"
+    />
     <!-- <catalog-modal
       id="catalogModal"
       :selection-target-list="targetListName"
@@ -197,6 +200,7 @@
 </template>
 
 <script lang="ts" setup>
+import CatalogModal from '@/components/Watchlist/CatalogModal.vue'
 import WatchlistSection from '@/components/Watchlist/WatchlistSection.vue'
 import { useDropbox } from '@/stores/dropbox'
 import { useWatchlist } from '@/stores/watchlist'
@@ -232,6 +236,8 @@ const loadData = async (doForceReload: boolean = false) => {
 
 watch(() => dropboxStore.isReady, loadData, { immediate: true })
 
+const showCatalogModal = ref(false)
+const openCatalogModal = () => showCatalogModal.value = true
 </script>
 
 <style scoped>
