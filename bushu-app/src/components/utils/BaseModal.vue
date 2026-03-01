@@ -4,14 +4,34 @@
     max-width="800"
   >
     <v-card
-      :prepend-icon="titleIcon"
-      :title="title"
-      :subtitle="subtitle"
-      class="base-modal-body"
+    class="base-modal-body"
     >
-      <template
+      <v-card-title
+        v-if="title"
+        class="position-sticky top-0 bg-surface elevation-1"
+        style="z-index: 1"
+      >
+        <div class="d-flex align-items-center">
+          <v-icon
+            v-if="titleIcon"
+            :icon="titleIcon"
+            class="mr-3"
+          />
+          {{ title }}
+        </div>
+        <div
+          v-if="$slots.subheader"
+          class="mt-2"
+        >
+          <slot name="subheader"></slot>
+        </div>
+      </v-card-title>
+      <v-card-text>
+        <slot></slot>
+      </v-card-text>
+      <v-card-actions
         v-if="doCancel || doOk"
-        #actions
+        class="position-sticky bottom-0 bg-surface elevation-1"
       >
         <slot name="actions">
           <v-btn
@@ -29,12 +49,7 @@
             @click="$emit('ok')"
           />
         </slot>
-      </template>
-      <template #text>
-        <!-- <v-card-text> -->
-          <slot></slot>
-        <!-- </v-card-text> -->
-      </template>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
