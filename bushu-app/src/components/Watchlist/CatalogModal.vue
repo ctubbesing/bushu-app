@@ -2,30 +2,41 @@
   <BaseModal
     v-model="showModal"
     title="Catalog"
+    title-icon="mdi-television-guide"
   >
-    <!-- :do-ok="true"
-    :do-cancel="false" -->
-    <div id="catalog-search">
-      <v-text-field
-        v-model="searchString"
-        label="Search"
-        variant="outlined"
-        clearable
-      />
-    </div>
+    <template #subheader>
+      <div id="catalog-search">
+        <v-text-field
+          v-model="searchString"
+          label="Search"
+          variant="outlined"
+          clearable
+        />
+      </div>
+    </template>
     <v-card
       variant="tonal"
-      class="mt-2 pa-2"
+      class="pa-2"
     >
       <v-expansion-panels>
         <v-expansion-panel
-          v-for="show in catalog"
+          v-for="show in filteredCatalog"
           :key="show.id"
+          class="show-entry"
         >
-          <template #title>
+          <v-expansion-panel-title>
+            <template #actions="{ expanded, expandIcon, collapseIcon }">
+              <div class="show-icons">
+                <v-icon
+                  icon="mdi-pencil"
+                  color="app-gray"
+                />
+                <v-icon :icon=" expanded ? collapseIcon : expandIcon" />
+              </div>
+            </template>
             <div
               class="d-flex w-100"
-              style="height: 90px;"
+              style="min-height: 90px;"
             >
               <ThumbnailImage
                 :link="watchlistStore.getShowImageLink(show)"
@@ -51,17 +62,53 @@
                 </div>
               </div>
             </div>
-          </template>
-          <template #text>
-            <v-list>
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <v-list
+              rounded
+              class="py-0 overflow-y-hidden"
+            >
               <v-list-item
-                v-for="season in show.seasons"
+                v-for="(season, sznIdx) in show.seasons"
                 :key="season.id"
-                :title="season.name ?? `Season ${season.seasonNumber}`"
-                :subtitle="season.totalEpisodeCount ? `${season.totalEpisodeCount} episodes` : undefined"
-              />
+                class="px-1 show-season"
+              >
+                <template #prepend>
+                  <ThumbnailImage
+                    v-if="show.seasons.some(s => s.imgLink)"
+                    :link="getSeasonImageLink(show, sznIdx)"
+                    :doFaded="!season.imgLink"
+                    :colorSeed="season.id"
+                    :height="80"
+                    class="mr-2"
+                  />
+                </template>
+                <div class="season-details">
+                  <h5>
+                    {{ `Season ${season.seasonNumber}` + (season.name ? `: ${season.name}` : '') }}
+                  </h5>
+                  <div style="display: flex; justify-content: space-between; align-items: flex-end">
+                    <div>
+                      <div v-if="season.totalEpisodeCount">
+                        {{  tools.pluralFormat(season.totalEpisodeCount, 'episode') }}
+                      </div>
+                      <div v-if="season.startDate || season.endDate">
+                        {{ formatDate(season.startDate) }}
+                        <span v-if="season.startDate !== season.endDate">
+                          - {{ formatDate(season.endDate) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      v-if="season.airingYear && season.airingSeason"
+                    >
+                      <b>{{ season.airingYear + ' ' + season.airingSeason }}</b>
+                    </div>
+                  </div>
+                </div>
+              </v-list-item>
             </v-list>
-          </template>
+          </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
     </v-card>
@@ -76,6 +123,7 @@ import type { ShowInfo, ShowSeason } from '@/types/watchlistTypes'
 import { computed, onMounted, ref } from 'vue'
 import ThumbnailImage from '../ThumbnailImage.vue'
 import tools from '@/utils/tools'
+import formatDate from '@/utils/formatDate'
 
 const showModal = defineModel<boolean>()
 
@@ -84,6 +132,16 @@ const searchString = ref('')
 const watchlistStore = useWatchlist()
 const catalog = computed((): ShowInfo[] => watchlistStore.catalog)
 
+const filteredCatalog = computed((): ShowInfo[] => {
+  if (!searchString.value) {
+    return catalog.value
+  }
+
+  return catalog.value.filter((s: ShowInfo) => {
+    return s.title.toLowerCase().includes(searchString.value.toLowerCase())
+  })
+})
+
 onMounted(() => watchlistStore.loadCatalog())
 
 const getTotalEpisodeCount = (show: ShowInfo): number => {
@@ -91,10 +149,50 @@ const getTotalEpisodeCount = (show: ShowInfo): number => {
     return sum + (s.totalEpisodeCount ? s.totalEpisodeCount : 0)
   }, 0)
 }
+
+const getSeasonImageLink = (show: ShowInfo, sznIdx: number): string => {
+  return show.seasons[sznIdx].imgLink ?? watchlistStore.getShowImageLink(show)
+}
 </script>
 
 <style scoped>
 :deep(.v-expansion-panel-title) {
   padding: 8px;
+}
+.show-entry {
+  background-image:
+    linear-gradient(to bottom, hsl(192, 71%, 85%) 110px, #0000),
+    url('https://media.themoviedb.org/t/p/w1066_and_h600_face/3GQKYh6Trm8pxd2AypovoYQf4Ay.jpg');
+  background-position: 50%;
+  background-size: cover;
+  background-color: hsl(192, 71%, 85%);
+}
+.show-entry:not(.v-expansion-panel--active) {
+  background-image: linear-gradient(to bottom, hsl(192, 71%, 85%) 110px, #0000 80%);
+}
+.show-season:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+}
+.show-season {
+  min-height: 80px;
+  /* width: 90%; */
+  background-color: hsl(192, 71%, 95%);
+  font-size: 0.8em;
+}
+.season-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+}
+.show-icons {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 80px;
+}
+span.v-expansion-panel-title__icon {
+  height: 100% !important;
 }
 </style>
